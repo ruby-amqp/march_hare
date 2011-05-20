@@ -40,6 +40,11 @@ module HotBunnies
       Subscription.new(@channel, subscriber)
     end
     
+    def status
+      response = @channel.queue_declare_passive(@name)
+      [response.message_count, response.consumer_count]
+    end
+
   private
   
     def self.bytes_to_string(bytes)
