@@ -35,13 +35,27 @@ module HotBunnies
     end
     
     def subscribe(options={}, &subscriber)
-      @channel.basic_consume(@name, !options.fetch(:ack, false), ConsumerWrapper.new(@channel, &subscriber))
+      subscriber = Subscriber.new(@channel, &subscriber)
+      @channel.basic_consume(@name, !options.fetch(:ack, false), subscriber)
+      Subscription.new(@channel, subscriber)
     end
-
+    
   private
   
     def self.bytes_to_string(bytes)
       java.lang.String.new(bytes).to_s
+    end
+    
+    class Subscription
+      def initialize(channel, subscriber)
+        @channel = channel
+        @subscriber = subscriber
+      end
+      
+      def cancel
+        raise "Can't cancel: the subscriber haven't received an OK yet" unless @subscriber.consumer_tag
+        @channel.basic_cancel(@subscriber.consumer_tag)
+      end
     end
   
     class Headers
@@ -61,11 +75,17 @@ module HotBunnies
       end
     end
   
-    class ConsumerWrapper < DefaultConsumer
+    class Subscriber < DefaultConsumer
+      attr_reader :consumer_tag
+      
       def initialize(channel, &subscriber)
         super(channel)
         @channel = channel
         @subscriber = subscriber
+      end
+      
+      def handleConsumeOk(consumer_tag)
+        @consumer_tag = consumer_tag
       end
       
       def handleDelivery(consumer_tag, envelope, properties, body_bytes)
