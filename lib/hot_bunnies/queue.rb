@@ -35,9 +35,12 @@ module HotBunnies
     end
     
     def subscribe(options={}, &subscriber)
-      subscriber = Subscriber.new(@channel, &subscriber)
-      @channel.basic_consume(@name, !options.fetch(:ack, false), subscriber)
-      Subscription.new(@channel, subscriber)
+      subscriber_type = if options[:blocking] then BlockingSubscriber else AsyncSubscriber end
+      subscriber = subscriber_type.new(@channel, &subscriber)
+      @channel.basic_consume(@name, !options.fetch(:ack, false), subscriber.consumer)
+      subscription = Subscription.new(@channel, subscriber)
+      subscriber.start(subscription)
+      subscription
     end
     
     def status
@@ -80,13 +83,63 @@ module HotBunnies
       end
     end
   
-    class Subscriber < DefaultConsumer
-      attr_reader :consumer_tag
+    module Subscriber
+      def start(subscription)
+        @subscription = subscription
+      end
       
+      def handle_message(consumer_tag, envelope, properties, body_bytes)
+        case @subscriber.arity
+        when 2 then @subscriber.call(Headers.new(@channel, consumer_tag, envelope, properties), Queue.bytes_to_string(body_bytes))
+        when 1 then @subscriber.call(body)
+        else raise ArgumentError, 'Consumer callback wants no arguments'
+        end
+      end
+    end
+  
+    class BlockingSubscriber
+      include Subscriber
+      
+      attr_reader :consumer
+      
+      def initialize(channel, &subscriber)
+        @channel = channel
+        @subscriber = subscriber
+        @consumer = QueueingConsumer.new(@channel)
+      end
+      
+      def consumer_tag
+        @consumer.consumer_tag
+      end
+      
+      def start(subscription)
+        super
+        while delivery = @consumer.next_delivery
+          result = handle_message(@consumer.consumer_tag, delivery.envelope, delivery.properties, delivery.body)
+          if result == :cancel
+            @subscription.cancel
+            while delivery = @consumer.next_delivery(0)
+              handle_message(@consumer.consumer_tag, delivery.envelope, delivery.properties, delivery.body)
+            end
+            break
+          end
+        end
+      end
+    end
+  
+    class AsyncSubscriber < DefaultConsumer
+      include Subscriber
+      
+      attr_reader :consumer_tag
+
       def initialize(channel, &subscriber)
         super(channel)
         @channel = channel
         @subscriber = subscriber
+      end
+      
+      def consumer
+        self
       end
       
       def handleConsumeOk(consumer_tag)
@@ -94,11 +147,7 @@ module HotBunnies
       end
       
       def handleDelivery(consumer_tag, envelope, properties, body_bytes)
-        case @subscriber.arity
-        when 2 then @subscriber.call(Headers.new(@channel, consumer_tag, envelope, properties), Queue.bytes_to_string(body_bytes))
-        when 1 then @subscriber.call(body)
-        else raise ArgumentError, 'Consumer callback wants no arguments'
-        end
+        handle_message(consumer_tag, envelope, properties, body_bytes)
       end
     end
     

@@ -10,6 +10,7 @@ module HotBunnies
   import com.rabbitmq.client.Connection
   import com.rabbitmq.client.Channel
   import com.rabbitmq.client.DefaultConsumer
+  import com.rabbitmq.client.QueueingConsumer
 
   CONNECTION_PROPERTIES = [:host, :port, :virtual_host, :connection_timeout, :username, :password]
   
