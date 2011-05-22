@@ -7,7 +7,7 @@ module HotBunnies
     def initialize(channel, name, options={})
       @channel = channel
       @name = name
-      @options = {:durable => false, :exclusive => false, :auto_delete => false}.merge(options)
+      @options = {:durable => false, :exclusive => false, :auto_delete => false, :passive => false}.merge(options)
       declare!
     end
     
@@ -52,6 +52,13 @@ module HotBunnies
   
     def self.bytes_to_string(bytes)
       java.lang.String.new(bytes).to_s
+    end
+    
+    def declare!
+      if @options[:passive]
+      then @channel.queue_declare_passive(@name)
+      else @channel.queue_declare(@name, @options[:durable], @options[:exclusive], @options[:auto_delete], nil)
+      end
     end
     
     class Subscription
@@ -149,10 +156,6 @@ module HotBunnies
       def handleDelivery(consumer_tag, envelope, properties, body_bytes)
         handle_message(consumer_tag, envelope, properties, body_bytes)
       end
-    end
-    
-    def declare!
-      @channel.queue_declare(@name, @options[:durable], @options[:exclusive], @options[:auto_delete], nil)
     end
   end
 end
