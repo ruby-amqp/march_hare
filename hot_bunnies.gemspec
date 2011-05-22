@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.authors     = ['Theo Hultberg']
   s.email       = ['theo@burtcorp.com']
-  s.homepage    = ''
+  s.homepage    = 'http://github.com/iconara/hot_bunnies'
   s.summary     = %q{Ruby wrapper for the RabbitMQ Java driver}
   s.description = %q{A object oriented interface to RabbitMQ that uses the Java driver under the hood}
 
