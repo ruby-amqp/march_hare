@@ -31,7 +31,7 @@ module HotBunnies
     
     def get(options={})
       response = @channel.basic_get(@name, !options.fetch(:ack, false))
-      [Headers.new(@channel, nil, response.envelope, response.props), Queue.bytes_to_string(response.body)]
+      [Headers.new(@channel, nil, response.envelope, response.props), String.from_java_bytes(response.body)]
     end
     
     def subscribe(options={}, &subscriber)
@@ -50,10 +50,6 @@ module HotBunnies
 
   private
   
-    def self.bytes_to_string(bytes)
-      java.lang.String.new(bytes).to_s
-    end
-    
     def declare!
       if @options[:passive]
       then @channel.queue_declare_passive(@name)
@@ -97,7 +93,7 @@ module HotBunnies
       
       def handle_message(consumer_tag, envelope, properties, body_bytes)
         case @subscriber.arity
-        when 2 then @subscriber.call(Headers.new(@channel, consumer_tag, envelope, properties), Queue.bytes_to_string(body_bytes))
+        when 2 then @subscriber.call(Headers.new(@channel, consumer_tag, envelope, properties), String.from_java_bytes(body_bytes))
         when 1 then @subscriber.call(body)
         else raise ArgumentError, 'Consumer callback wants no arguments'
         end

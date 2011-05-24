@@ -13,7 +13,7 @@ module HotBunnies
     
     def publish(body, options={})
       options = {:routing_key => '', :mandatory => false, :immediate => false}.merge(options)
-      @channel.basic_publish(@name, options[:routing_key], options[:mandatory], options[:immediate], nil, body.to_java.bytes)
+      @channel.basic_publish(@name, options[:routing_key], options[:mandatory], options[:immediate], nil, body.to_java_bytes)
     end
     
     def delete(options={})
