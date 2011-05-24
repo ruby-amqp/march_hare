@@ -35,7 +35,7 @@ module HotBunnies
     end
     
     def subscribe(options={}, &subscriber)
-      subscriber_type = if options[:blocking] then BlockingSubscriber else AsyncSubscriber end
+      subscriber_type = if options[:blocking] then BlockingSubscriber else NonBlockingSubscriber end
       subscriber = subscriber_type.new(@channel, &subscriber)
       @channel.basic_consume(@name, !options.fetch(:ack, false), subscriber.consumer)
       subscription = Subscription.new(@channel, subscriber)
@@ -130,27 +130,11 @@ module HotBunnies
       end
     end
   
-    class AsyncSubscriber < DefaultConsumer
-      include Subscriber
-      
-      attr_reader :consumer_tag
-
-      def initialize(channel, &subscriber)
-        super(channel)
-        @channel = channel
-        @subscriber = subscriber
-      end
-      
-      def consumer
-        self
-      end
-      
-      def handleConsumeOk(consumer_tag)
-        @consumer_tag = consumer_tag
-      end
-      
-      def handleDelivery(consumer_tag, envelope, properties, body_bytes)
-        handle_message(consumer_tag, envelope, properties, body_bytes)
+    class NonBlockingSubscriber < BlockingSubscriber
+      def start(subscription)
+        Thread.new do
+          super
+        end
       end
     end
   end
