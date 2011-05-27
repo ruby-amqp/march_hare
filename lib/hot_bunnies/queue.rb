@@ -34,12 +34,9 @@ module HotBunnies
       [Headers.new(@channel, nil, response.envelope, response.props), String.from_java_bytes(response.body)]
     end
     
-    def subscribe(options={}, &subscriber)
-      subscriber_type = if options[:blocking] then BlockingSubscriber else NonBlockingSubscriber end
-      subscriber = subscriber_type.new(@channel, &subscriber)
-      @channel.basic_consume(@name, !options.fetch(:ack, false), subscriber.consumer)
-      subscription = Subscription.new(@channel, subscriber)
-      subscriber.start(subscription)
+    def subscribe(options={}, &block)
+      subscription = Subscription.new(@channel, @name, options)
+      subscription.each(options, &block) if block
       subscription
     end
     
@@ -58,13 +55,22 @@ module HotBunnies
     end
     
     class Subscription
-      def initialize(channel, subscriber)
+      def initialize(channel, queue_name, options={})
         @channel = channel
-        @subscriber = subscriber
+        @queue_name = queue_name
+        @ack = options.fetch(:ack, false)
+      end
+      
+      def each(options={}, &block)
+        raise 'The subscription already has a message listener' if @subscriber
+        subscriber_type = if options.fetch(:blocking, true) then BlockingSubscriber else NonBlockingSubscriber end
+        @subscriber = subscriber_type.new(@channel, self)
+        @channel.basic_consume(@queue_name, !@ack, @subscriber.consumer)
+        @subscriber.on_message(&block)
       end
       
       def cancel
-        raise "Can't cancel: the subscriber haven't received an OK yet" unless @subscriber.consumer_tag
+        raise 'Can\'t cancel: the subscriber haven\'t received an OK yet' unless @subscriber.consumer_tag
         @channel.basic_cancel(@subscriber.consumer_tag)
       end
     end
@@ -87,8 +93,14 @@ module HotBunnies
     end
   
     module Subscriber
-      def start(subscription)
-        @subscription = subscription
+      def start
+        # to be implemented by the host class
+      end
+      
+      def on_message(&block)
+        raise ArgumentError, 'Message listener already registered for this subscriber' if @subscriber
+        @subscriber = block
+        start
       end
       
       def handle_message(consumer_tag, envelope, properties, body_bytes)
@@ -105,9 +117,9 @@ module HotBunnies
       
       attr_reader :consumer
       
-      def initialize(channel, &subscriber)
+      def initialize(channel, subscription)
         @channel = channel
-        @subscriber = subscriber
+        @subscription = subscription
         @consumer = QueueingConsumer.new(@channel)
       end
       
@@ -115,7 +127,7 @@ module HotBunnies
         @consumer.consumer_tag
       end
       
-      def start(subscription)
+      def start
         super
         while delivery = @consumer.next_delivery
           result = handle_message(@consumer.consumer_tag, delivery.envelope, delivery.properties, delivery.body)
@@ -131,7 +143,7 @@ module HotBunnies
     end
   
     class NonBlockingSubscriber < BlockingSubscriber
-      def start(subscription)
+      def start
         Thread.new do
           super
         end
