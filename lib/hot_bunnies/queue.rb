@@ -108,8 +108,9 @@ module HotBunnies
       end
       
       def handle_message(consumer_tag, envelope, properties, body_bytes)
+        body = String.from_java_bytes(body_bytes)
         case @subscriber.arity
-        when 2 then @subscriber.call(Headers.new(@channel, consumer_tag, envelope, properties), String.from_java_bytes(body_bytes))
+        when 2 then @subscriber.call(Headers.new(@channel, consumer_tag, envelope, properties), body)
         when 1 then @subscriber.call(body)
         else raise ArgumentError, 'Consumer callback wants no arguments'
         end
