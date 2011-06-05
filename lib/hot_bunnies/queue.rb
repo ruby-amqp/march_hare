@@ -51,10 +51,11 @@ module HotBunnies
   private
   
     def declare!
-      if @options[:passive]
+      response = if @options[:passive]
       then @channel.queue_declare_passive(@name)
       else @channel.queue_declare(@name, @options[:durable], @options[:exclusive], @options[:auto_delete], nil)
       end
+      @name = response.queue
     end
     
     class Subscription
