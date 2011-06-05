@@ -31,7 +31,10 @@ module HotBunnies
     
     def get(options={})
       response = @channel.basic_get(@name, !options.fetch(:ack, false))
-      [Headers.new(@channel, nil, response.envelope, response.props), String.from_java_bytes(response.body)]
+      if response
+      then [Headers.new(@channel, nil, response.envelope, response.props), String.from_java_bytes(response.body)]
+      else nil
+      end
     end
     
     def subscribe(options={}, &block)
