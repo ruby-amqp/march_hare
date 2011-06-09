@@ -2,7 +2,7 @@
 
 module HotBunnies
   class Exchange
-    attr_reader :name
+    attr_reader :name, :channel
     
     def initialize(channel, name, options={})
       @channel = channel
