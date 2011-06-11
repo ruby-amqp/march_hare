@@ -27,7 +27,7 @@ end
   exchange.publish("hello world! #{i}", :routing_key => 'xyz')
 end
 
-thread_pool.shutdown
+thread_pool.shutdown_now
 subscription.cancel
 
 puts "ALMOST ALL DONE!"
