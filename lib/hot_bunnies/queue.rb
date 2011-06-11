@@ -70,7 +70,13 @@ module HotBunnies
         if options.fetch(:blocking, true)
           run(&block)
         else
-          @executor = options[:executor] || java.util.concurrent.Executors.new_single_thread_executor
+          if options[:executor]
+            @shut_down_executor = false
+            @executor = options[:executor]
+          else
+            @shut_down_executor = true
+            @executor = java.util.concurrent.Executors.new_single_thread_executor
+          end
           @executor.submit { run(&block) }
         end
       end
@@ -78,7 +84,7 @@ module HotBunnies
       def cancel
         raise 'Can\'t cancel: the subscriber haven\'t received an OK yet' if !@subscriber || !@subscriber.consumer_tag
         result = @channel.basic_cancel(@subscriber.consumer_tag)
-        @executor.shutdown if @executor
+        @executor.shutdown if @executor && @shut_down_executor
         result
       end
       
