@@ -67,15 +67,27 @@ module HotBunnies
       
       def each(options={}, &block)
         raise 'The subscription already has a message listener' if @subscriber
-        subscriber_type = if options.fetch(:blocking, true) then BlockingSubscriber else NonBlockingSubscriber end
-        @subscriber = subscriber_type.new(@channel, self)
-        @channel.basic_consume(@queue_name, !@ack, @subscriber.consumer)
-        @subscriber.on_message(&block)
+        if options.fetch(:blocking, true)
+          run(&block)
+        else
+          @executor = options.fetch(:executor, java.util.concurrent.Executors.new_single_thread_executor)
+          @executor.submit { run(&block) }
+        end
+      end
+
+      def cancel
+        raise 'Can\'t cancel: the subscriber haven\'t received an OK yet' if !@subscriber || !@subscriber.consumer_tag
+        result = @channel.basic_cancel(@subscriber.consumer_tag)
+        @executor.shutdown if @executor
+        result
       end
       
-      def cancel
-        raise 'Can\'t cancel: the subscriber haven\'t received an OK yet' unless @subscriber.consumer_tag
-        @channel.basic_cancel(@subscriber.consumer_tag)
+    private
+    
+      def run(&block)
+        @subscriber = BlockingSubscriber.new(@channel, self)
+        @channel.basic_consume(@queue_name, !@ack, @subscriber.consumer)
+        @subscriber.on_message(&block)
       end
     end
   
@@ -143,14 +155,6 @@ module HotBunnies
             end
             break
           end
-        end
-      end
-    end
-  
-    class NonBlockingSubscriber < BlockingSubscriber
-      def start
-        Thread.new do
-          super
         end
       end
     end
