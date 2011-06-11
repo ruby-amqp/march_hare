@@ -70,7 +70,7 @@ module HotBunnies
         if options.fetch(:blocking, true)
           run(&block)
         else
-          @executor = options.fetch(:executor, java.util.concurrent.Executors.new_single_thread_executor)
+          @executor = options[:executor] || java.util.concurrent.Executors.new_single_thread_executor
           @executor.submit { run(&block) }
         end
       end
