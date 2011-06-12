@@ -84,7 +84,7 @@ module HotBunnies
       def cancel
         raise 'Can\'t cancel: the subscriber haven\'t received an OK yet' if !@subscriber || !@subscriber.consumer_tag
         @channel.basic_cancel(@subscriber.consumer_tag)
-        @executor.shutdown if @executor && @shut_down_executor
+        @executor.shutdown_now if @executor && @shut_down_executor
       end
       
     private
