@@ -105,11 +105,15 @@ module HotBunnies
       end
       
       def ack(options={})
-        @channel.basic_ack(@envelope.delivery_tag, options.fetch(:multiple, false))
+        @channel.basic_ack(delivery_tag, options.fetch(:multiple, false))
       end
       
       def reject(options={})
-        @channel.basic_ack(@envelope.delivery_tag, options.fetch(:requeue, false))
+        @channel.basic_ack(delivery_tag, options.fetch(:requeue, false))
+      end
+      
+      def delivery_tag
+        @envelope.delivery_tag
       end
     end
   
