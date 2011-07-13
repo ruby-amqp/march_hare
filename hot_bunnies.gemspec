@@ -8,7 +8,7 @@ require 'hot_bunnies/version'
 Gem::Specification.new do |s|
   s.name        = 'hot_bunnies'
   s.version     = HotBunnies::VERSION
-  s.platform    = Gem::Platform::RUBY
+  s.platform    = 'java'
   s.authors     = ['Theo Hultberg']
   s.email       = ['theo@burtcorp.com']
   s.homepage    = 'http://github.com/iconara/hot_bunnies'
