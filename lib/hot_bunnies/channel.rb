@@ -20,5 +20,9 @@ module HotBunnies
     def prefetch=(n)
       qos(:prefetch_count => n)
     end
+    
+    def on_return(&block)
+      self.set_return_listener(block)
+    end
   end
 end
