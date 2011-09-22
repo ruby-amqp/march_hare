@@ -25,6 +25,13 @@ Hot Bunnies is not
  * A cure for cancer
 
 
+## Continuous Integration
+
+[![Continuous Integration status](https://secure.travis-ci.org/ruby-amqp/hot_bunnies.png)](http://travis-ci.org/ruby-amqp/hot_bunnies)
+
+CI is hosted by [travis-ci.org](http://travis-ci.org)
+
+
 ## License
 
 MIT, see LICESE in the repository root
