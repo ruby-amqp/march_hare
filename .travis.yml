@@ -1,4 +1,4 @@
-script: "bundle exec spec -c spec"
+script: "bundle exec rspec -c spec"
 rvm:
   - jruby
 env:
