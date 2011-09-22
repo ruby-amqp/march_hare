@@ -6,13 +6,10 @@ describe "Queue" do
     let(:connection) { HotBunnies.connect }    
     let(:channel) { connection.create_channel }
 
-    after :all do
-      channel.close
-      connection.close      
-    end
-
     it "can be declared" do
       channel.queue("", :auto_delete => true)
+      channel.close
+      connection.close
     end
   end
 end
