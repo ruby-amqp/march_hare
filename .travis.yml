@@ -3,6 +3,6 @@ rvm:
   - jruby
 env:
   - JRUBY_OPTS="--server"
-  - JRUBY_OPTS="--server--1.9"
+  - JRUBY_OPTS="--server --1.9"
 notifications:
   email: false
