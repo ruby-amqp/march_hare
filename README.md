@@ -34,7 +34,7 @@ CI is hosted by [travis-ci.org](http://travis-ci.org)
 
 ## License
 
-MIT, see LICESE in the repository root
+MIT, see LICENSE in the repository root
 
 
 ## Copyright
