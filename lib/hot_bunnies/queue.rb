@@ -3,32 +3,32 @@
 module HotBunnies
   class Queue
     attr_reader :name, :channel
-    
+
     def initialize(channel, name, options={})
       @channel = channel
       @name = name
       @options = {:durable => false, :exclusive => false, :auto_delete => false, :passive => false}.merge(options)
       declare!
     end
-    
+
     def bind(exchange, options={})
       exchange_name = if exchange.respond_to?(:name) then exchange.name else exchange.to_s end
       @channel.queue_bind(@name, exchange_name, options.fetch(:routing_key, ''))
     end
-    
+
     def unbind(exchange, options={})
       exchange_name = if exchange.respond_to?(:name) then exchange.name else exchange.to_s end
       @channel.queue_unbind(@name, exchange_name, options.fetch(:routing_key, ''))
     end
-    
+
     def delete
       @channel.queue_delete(@name)
     end
-    
+
     def purge
       @channel.queue_purge(@name)
     end
-    
+
     def get(options={})
       response = @channel.basic_get(@name, !options.fetch(:ack, false))
       if response
@@ -36,20 +36,20 @@ module HotBunnies
       else nil
       end
     end
-    
+
     def subscribe(options={}, &block)
       subscription = Subscription.new(@channel, @name, options)
       subscription.each(options, &block) if block
       subscription
     end
-    
+
     def status
       response = @channel.queue_declare_passive(@name)
       [response.message_count, response.consumer_count]
     end
 
   private
-  
+
     def declare!
       response = if @options[:passive]
       then @channel.queue_declare_passive(@name)
@@ -57,14 +57,14 @@ module HotBunnies
       end
       @name = response.queue
     end
-    
+
     class Subscription
       def initialize(channel, queue_name, options={})
         @channel = channel
         @queue_name = queue_name
         @ack = options.fetch(:ack, false)
       end
-      
+
       def each(options={}, &block)
         raise 'The subscription already has a message listener' if @subscriber
         if options.fetch(:blocking, true)
@@ -86,16 +86,16 @@ module HotBunnies
         @channel.basic_cancel(@subscriber.consumer_tag)
         @executor.shutdown_now if @executor && @shut_down_executor
       end
-      
+
     private
-    
+
       def run(&block)
         @subscriber = BlockingSubscriber.new(@channel, self)
         @channel.basic_consume(@queue_name, !@ack, @subscriber.consumer)
         @subscriber.on_message(&block)
       end
     end
-  
+
     class Headers
       def initialize(channel, consumer_tag, envelope, properties)
         @channel = channel
@@ -103,31 +103,31 @@ module HotBunnies
         @envelope = envelope
         @properties = properties
       end
-      
+
       def ack(options={})
         @channel.basic_ack(delivery_tag, options.fetch(:multiple, false))
       end
-      
+
       def reject(options={})
         @channel.basic_ack(delivery_tag, options.fetch(:requeue, false))
       end
-      
+
       def delivery_tag
         @envelope.delivery_tag
       end
     end
-  
+
     module Subscriber
       def start
         # to be implemented by the host class
       end
-      
+
       def on_message(&block)
         raise ArgumentError, 'Message listener already registered for this subscriber' if @subscriber
         @subscriber = block
         start
       end
-      
+
       def handle_message(consumer_tag, envelope, properties, body_bytes)
         body = String.from_java_bytes(body_bytes)
         case @subscriber.arity
@@ -137,22 +137,22 @@ module HotBunnies
         end
       end
     end
-  
+
     class BlockingSubscriber
       include Subscriber
-      
+
       attr_reader :consumer
-      
+
       def initialize(channel, subscription)
         @channel = channel
         @subscription = subscription
         @consumer = QueueingConsumer.new(@channel)
       end
-      
+
       def consumer_tag
         @consumer.consumer_tag
       end
-      
+
       def start
         super
         while delivery = @consumer.next_delivery
