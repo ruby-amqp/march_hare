@@ -44,4 +44,13 @@ describe "Any queue" do
     exchange.publish("", :routing_key => queue.name)
     queue.get.should_not be_nil
   end
+
+
+  it "is automatically bound to the default exchange" do
+    exchange = channel.default_exchange
+    queue    = channel.queue("", :auto_delete => true)
+
+    exchange.publish("", :routing_key => queue.name)
+    queue.get.should_not be_nil
+  end
 end
