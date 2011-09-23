@@ -7,7 +7,7 @@ module HotBunnies
     def initialize(channel, name, options={})
       @channel = channel
       @name = name
-      @options = {:durable => false, :exclusive => false, :auto_delete => false, :passive => false}.merge(options)
+      @options = {:durable => false, :exclusive => false, :auto_delete => false, :passive => false, :arguments => Hash.new}.merge(options)
       declare!
     end
 
@@ -53,7 +53,7 @@ module HotBunnies
     def declare!
       response = if @options[:passive]
       then @channel.queue_declare_passive(@name)
-      else @channel.queue_declare(@name, @options[:durable], @options[:exclusive], @options[:auto_delete], nil)
+      else @channel.queue_declare(@name, @options[:durable], @options[:exclusive], @options[:auto_delete], @options[:arguments])
       end
       @name = response.queue
     end

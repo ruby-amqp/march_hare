@@ -26,5 +26,19 @@ describe "Queue" do
     it "can be declared as NON-durable" do
       channel.queue("", :durable => false)
     end
+
+    it "can be declared with additional attributes like x-message-ttle" do
+      queue    = channel.queue("", :durable => false, :arguments => { 'x-message-ttl' => 2000 })
+      exchange = channel.exchange("", :type => :direct)
+
+      100.times do |i|
+        exchange.publish("Message #{i}", :routing_key => queue.name)
+      end
+
+      queue.get.should_not be_nil
+      sleep(2.1)
+
+      queue.get.should be_nil
+    end
   end
 end
