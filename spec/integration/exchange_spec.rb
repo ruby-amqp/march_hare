@@ -23,7 +23,7 @@ describe HotBunnies::Exchange do
     end
   end
 
-  it "should declare an durable direct exchange" do
+  it "should declare a durable direct exchange" do
     channel.exchange("hot_bunnies.spec.exchanges.direct03", :type => :direct, :durable => true) do
       |exchange, declare_ok|
       declare_ok.java_kind_of?(HotBunnies::AMQP::Exchange::DeclareOk).should be_true
@@ -37,14 +37,14 @@ describe HotBunnies::Exchange do
     end
   end
 
-  it "should declare a direct exchange auto-deleted fanout exchange" do
+  it "should declare an auto-deleted fanout exchange" do
     channel.exchange("hot_bunnies.spec.exchanges.fanout02", :auto_delete => true) do
       |exchange, declare_ok|
       declare_ok.java_kind_of?(HotBunnies::AMQP::Exchange::DeclareOk).should be_true
     end
   end
 
-  it "should declare a direct exchange durable fanout exchange" do
+  it "should declare a durable fanout exchange" do
     channel.exchange("hot_bunnies.spec.exchanges.fanout03", :durable => true) do
       |exchange, declare_ok|
       declare_ok.java_kind_of?(HotBunnies::AMQP::Exchange::DeclareOk).should be_true
@@ -52,7 +52,7 @@ describe HotBunnies::Exchange do
   end
 
   it "shuold delete fresh declared exchange" do
-    channel.exchange("hot_bunnies.spec.exchanges.direct01", :type => :direct).
+    channel.exchange("hot_bunnies.spec.exchanges.direct04", :type => :direct).
       delete().java_kind_of?(HotBunnies::AMQP::Exchange::DeleteOk).should be_true
   end
 
