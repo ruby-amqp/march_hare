@@ -19,6 +19,11 @@ module HotBunnies
       @channel.exchange_delete(@name, options.fetch(:if_unused, false))
     end
 
+    def bind(exchange, options={})
+      exchange_name = if exchange.respond_to?(:name) then exchange.name else exchange.to_s end
+      @channel.exchange_bind(@name, exchange_name, options.fetch(:routing_key, ''))
+    end
+
     def declare!
       unless @name == ''
         if @options[:passive]

@@ -63,8 +63,19 @@ describe HotBunnies::Exchange do
     queue = channel.queue("", :auto_delete => true)
     queue.bind(destianation)
 
-    channel.exchange_bind(destianation.name, source.name, "")
+    destianation.bind(source)
+    source.publish("")
+    queue.get.should_not be_nil
+  end
 
+  it "should bind two exchanges by exchange name" do
+    source =       channel.exchange("hot_bunnies.spec.exchanges.source", :auto_delete => true)
+    destianation = channel.exchange("hot_bunnies.spec.exchanges.destination", :auto_delete => true)
+
+    queue = channel.queue("", :auto_delete => true)
+    queue.bind(destianation)
+
+    destianation.bind(source.name)
     source.publish("")
     queue.get.should_not be_nil
   end
