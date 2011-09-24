@@ -16,6 +16,10 @@ module HotBunnies
       exchange
     end
 
+    def default_exchange
+      self.exchange("", :durable => true, :auto_delete => false)
+    end # default_exchange
+
     def qos(options={})
       if options.size == 1 && options[:prefetch_count]
       then basic_qos(options[:prefetch_count])

@@ -37,7 +37,7 @@ describe "Any queue" do
 
 
   it "can be unbound from a client-declared exchange" do
-    exchange = channel.exchange("hot.bunnies.fanout", :type => :fanout, :durable => false, :auto_delete => true)
+    exchange = channel.exchange("hot.bunnies.fanout#{Time.now.to_i}", :type => :fanout, :durable => false)
     queue    = channel.queue("", :auto_delete => true)
 
     queue.bind(exchange)
