@@ -8,7 +8,6 @@ module HotBunnies
       @channel = channel
       @name = name
       @options = {:type => :fanout, :durable => false, :auto_delete => false, :internal => false, :passive => false}.merge(options)
-      declare!
     end
 
     def publish(body, options={})
@@ -20,7 +19,10 @@ module HotBunnies
       @channel.exchange_delete(@name, options.fetch(:if_unused, false))
     end
 
-  private
+    def bind(exchange, options={})
+      exchange_name = if exchange.respond_to?(:name) then exchange.name else exchange.to_s end
+      @channel.exchange_bind(@name, exchange_name, options.fetch(:routing_key, ''))
+    end
 
     def declare!
       unless @name == ''
