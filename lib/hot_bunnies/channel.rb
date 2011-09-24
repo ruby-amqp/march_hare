@@ -7,7 +7,13 @@ module HotBunnies
     end
 
     def exchange(name, options={})
-      Exchange.new(self, name, options)
+      exchange = Exchange.new(self, name, options)
+      if block_given?
+        yield(exchange, exchange.declare!)
+      else
+        exchange.declare!
+      end
+      exchange
     end
 
     def qos(options={})

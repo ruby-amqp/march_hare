@@ -8,7 +8,6 @@ module HotBunnies
       @channel = channel
       @name = name
       @options = {:type => :fanout, :durable => false, :auto_delete => false, :internal => false, :passive => false}.merge(options)
-      declare!
     end
 
     def publish(body, options={})
@@ -19,8 +18,6 @@ module HotBunnies
     def delete(options={})
       @channel.exchange_delete(@name, options.fetch(:if_unused, false))
     end
-
-  private
 
     def declare!
       unless @name == ''

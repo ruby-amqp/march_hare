@@ -12,13 +12,15 @@ module HotBunnies
   import com.rabbitmq.client.DefaultConsumer
   import com.rabbitmq.client.QueueingConsumer
 
+  import com.rabbitmq.client.AMQP
+
   CONNECTION_PROPERTIES = [:host, :port, :virtual_host, :connection_timeout, :username, :password]
-  
+
   def self.connect(options={})
     cf = ConnectionFactory.new
     CONNECTION_PROPERTIES.each do |property|
       if options[property]
-        cf.send("#{property}=".to_sym, options[property]) 
+        cf.send("#{property}=".to_sym, options[property])
       end
     end
     cf.new_connection
