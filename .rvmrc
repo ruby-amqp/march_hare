@@ -1,1 +1,1 @@
-rvm --create use jruby-1.6.2@hot_bunnies
+rvm --create use jruby@hot_bunnies
