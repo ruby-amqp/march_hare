@@ -9,7 +9,7 @@ describe HotBunnies::Exchange do
     connection.close
   end
 
-  it "should bind two exchanges" do
+  it "should bind two exchanges using exchange instances" do
     source =       channel.exchange("hot_bunnies.spec.exchanges.source", :auto_delete => true)
     destianation = channel.exchange("hot_bunnies.spec.exchanges.destination", :auto_delete => true)
 
@@ -21,7 +21,7 @@ describe HotBunnies::Exchange do
     queue.get.should_not be_nil
   end
 
-  it "should bind two exchanges by exchange name" do
+  it "should bind two exchanges using exchange name" do
     source =       channel.exchange("hot_bunnies.spec.exchanges.source", :auto_delete => true)
     destianation = channel.exchange("hot_bunnies.spec.exchanges.destination", :auto_delete => true)
 
