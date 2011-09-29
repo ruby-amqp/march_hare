@@ -12,7 +12,7 @@ module HotBunnies
 
     def publish(body, options={})
       options = {:routing_key => '', :mandatory => false, :immediate => false}.merge(options)
-      @channel.basic_publish(@name, options[:routing_key], options[:mandatory], options[:immediate], nil, body.to_java_bytes)
+      @channel.basic_publish(@name, options[:routing_key], options[:mandatory], options[:immediate], build_properties_from(options.fetch(:properties, Hash.new)), body.to_java_bytes)
     end
 
     def delete(options={})
@@ -32,5 +32,29 @@ module HotBunnies
         end
       end
     end
+
+
+    protected
+
+    def build_properties_from(props = {})
+      builder = AMQP::BasicProperties::Builder.new
+
+      builder.content_type(props[:content_type]).
+        content_encoding(props[:content_encoding]).
+        headers(props[:headers]).
+        delivery_mode(props[:persistent] ? 2 : 1).
+        priority(props[:priority]).
+        correlation_id(props[:correlation_id]).
+        reply_to(props[:reply_to]).
+        expiration(props[:expiration]).
+        message_id(props[:message_id]).
+        timestamp(props[:timestamp]).
+        type(props[:type]).
+        user_id(props[:user_id]).
+        app_id(props[:app_id]).
+        cluster_id(props[:cluster_id]).
+        build
+    end # build_properties_from(props)
+
   end
 end
