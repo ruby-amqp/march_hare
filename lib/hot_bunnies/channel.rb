@@ -8,17 +8,13 @@ module HotBunnies
 
     def exchange(name, options={})
       exchange = Exchange.new(self, name, options)
-      if block_given?
-        yield(exchange, exchange.declare!)
-      else
-        exchange.declare!
-      end
+      exchange.declare!
       exchange
     end
 
     def default_exchange
       self.exchange("", :durable => true, :auto_delete => false)
-    end # default_exchange
+    end
 
     def qos(options={})
       if options.size == 1 && options[:prefetch_count]
