@@ -18,6 +18,8 @@ describe "Direct exchange" do
     exchange.publish("", :routing_key => "xyz")
     exchange.publish("", :routing_key => "abc")
 
+    sleep(0.3)
+
     mc, cc = queue.status
     mc.should == 1
   end
@@ -102,6 +104,8 @@ describe "Headers exchange" do
     exchange.publish "For any linux",    :properties => { :headers => { 'os' => 'linux' } }
     exchange.publish "For OS X",         :properties => { :headers => { 'os' => 'macosx' } }
     exchange.publish "For solaris/IA64", :properties => { :headers => { 'os' => 'solaris', 'arch' => 'x86_64' } }
+
+    sleep(0.3)
 
     mc, cc = queue.status
     mc.should == 1
