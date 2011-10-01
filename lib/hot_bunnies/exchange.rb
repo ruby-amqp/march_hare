@@ -37,24 +37,22 @@ module HotBunnies
     protected
 
     def build_properties_from(props = {})
-      builder = AMQP::BasicProperties::Builder.new
-
-      builder.content_type(props[:content_type]).
-        content_encoding(props[:content_encoding]).
-        headers(props[:headers]).
-        delivery_mode(props[:persistent] ? 2 : 1).
-        priority(props[:priority]).
-        correlation_id(props[:correlation_id]).
-        reply_to(props[:reply_to]).
-        expiration(props[:expiration]).
-        message_id(props[:message_id]).
-        timestamp(props[:timestamp]).
-        type(props[:type]).
-        user_id(props[:user_id]).
-        app_id(props[:app_id]).
-        cluster_id(props[:cluster_id]).
-        build
+      builder = AMQP::BasicProperties.new(props[:content_type],
+                                          props[:content_encoding],
+                                          props[:headers],
+                                          props[:persistent] ? 2 : 1,
+                                          props[:priority],
+                                          props[:correlation_id],
+                                          props[:reply_to],
+                                          props[:expiration],
+                                          props[:message_id],
+                                          props[:timestamp],
+                                          props[:type],
+                                          props[:user_id],
+                                          props[:app_id],
+                                          props[:cluster_id])
     end # build_properties_from(props)
 
   end
 end
+
