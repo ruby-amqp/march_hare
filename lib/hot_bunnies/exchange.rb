@@ -28,7 +28,7 @@ module HotBunnies
       unless @name == ''
         if @options[:passive]
         then @channel.exchange_declare_passive(@name)
-        else @channel.exchange_declare(@name, @options[:type].to_s, @options[:durable], @options[:auto_delete], @options[:internal], nil)
+        else @channel.exchange_declare(@name, @options[:type].to_s, @options[:durable], @options[:auto_delete], @options[:internal], @options[:arguments])
         end
       end
     end
