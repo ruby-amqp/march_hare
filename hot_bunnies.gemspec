@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.name        = 'hot_bunnies'
   s.version     = HotBunnies::VERSION
   s.platform    = 'java'
-  s.authors     = ['Theo Hultberg']
+  s.authors     = ['Theo Hultberg', 'Michael S. Klishin']
   s.email       = ['theo@burtcorp.com']
   s.homepage    = 'http://github.com/iconara/hot_bunnies'
   s.summary     = %q{Ruby wrapper for the RabbitMQ Java driver}
