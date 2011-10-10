@@ -24,8 +24,12 @@ module HotBunnies
       @channel.exchange_bind(@name, exchange_name, options.fetch(:routing_key, ''))
     end
 
+    def predefined?
+      (@name == "") || (@name =~ /^amq\.(.+)/)
+    end # predefined?
+
     def declare!
-      unless @name == ''
+      unless predefined?
         if @options[:passive]
         then @channel.exchange_declare_passive(@name)
         else @channel.exchange_declare(@name, @options[:type].to_s, @options[:durable], @options[:auto_delete], @options[:internal], @options[:arguments])
