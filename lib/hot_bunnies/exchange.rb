@@ -25,8 +25,8 @@ module HotBunnies
     end
 
     def predefined?
-      (@name == "") || (@name =~ /^amq\.(.+)/)
-    end # predefined?
+      @name.empty? || @name.start_with?("amq.")
+    end
 
     def declare!
       unless predefined?
@@ -58,7 +58,7 @@ module HotBunnies
         app_id(props[:app_id]).
         cluster_id(props[:cluster_id]).
         build
-    end # build_properties_from(props)
+    end
 
   end
 end
