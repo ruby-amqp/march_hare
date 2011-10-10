@@ -13,7 +13,7 @@ module HotBunnies
     end
 
     def default_exchange
-      self.exchange("", :durable => true, :auto_delete => false)
+      self.exchange("", :durable => true, :auto_delete => false, :type => "direct")
     end
 
     def qos(options={})
