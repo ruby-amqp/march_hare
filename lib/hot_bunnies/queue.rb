@@ -115,6 +115,10 @@ module HotBunnies
       def delivery_tag
         @envelope.delivery_tag
       end
+
+      def routing_key
+        @envelope.routing_key
+      end
     end
 
     module Subscriber
