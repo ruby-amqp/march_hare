@@ -97,6 +97,8 @@ module HotBunnies
     end
 
     class Headers
+      attr_reader :channel, :consumer_tag, :envelope, :properties
+
       def initialize(channel, consumer_tag, envelope, properties)
         @channel = channel
         @consumer_tag = consumer_tag
