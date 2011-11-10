@@ -32,6 +32,8 @@ describe "Any AMQP 0.9.1 client using RabbitMQ" do
                                        }
                                      }, :routing_key => queue1.name)
 
+    sleep 1
+
     mc1, _ = queue1.status
     mc2, _ = queue2.status
     mc3, _ = queue3.status
