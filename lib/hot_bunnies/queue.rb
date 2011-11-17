@@ -48,21 +48,23 @@ module HotBunnies
       [response.message_count, response.consumer_count]
     end
 
-  private
+    private
 
     def declare!
       response = if @options[:passive]
-      then @channel.queue_declare_passive(@name)
-      else @channel.queue_declare(@name, @options[:durable], @options[:exclusive], @options[:auto_delete], @options[:arguments])
-      end
+                 then @channel.queue_declare_passive(@name)
+                 else @channel.queue_declare(@name, @options[:durable], @options[:exclusive], @options[:auto_delete], @options[:arguments])
+                 end
       @name = response.queue
     end
 
     class Subscription
       def initialize(channel, queue_name, options={})
-        @channel = channel
+        @channel    = channel
         @queue_name = queue_name
-        @ack = options.fetch(:ack, false)
+        @ack        = options.fetch(:ack, false)
+
+        @cancelled  = java.util.concurrent.atomic.AtomicBoolean.new(false)
       end
 
       def each(options={}, &block)
@@ -82,12 +84,35 @@ module HotBunnies
       end
 
       def cancel
-        raise 'Can\'t cancel: the subscriber haven\'t received an OK yet' if !@subscriber || !@subscriber.consumer_tag
+        raise 'Can\'t cancel: the subscriber haven\'t received an OK yet' if !self.active?
         @channel.basic_cancel(@subscriber.consumer_tag)
-        @executor.shutdown_now if @executor && @shut_down_executor
+
+        # RabbitMQ Java client won't clear consumer_tag from cancelled consumers,
+        # so we have to do this. Sharing consumers
+        # between threads in general is a can of worms but someone somewhere
+        # will almost certainly do it, so. MK.
+        @cancelled.set(true)
+
+        maybe_shutdown_executor
       end
 
-    private
+      def active?
+        !@cancelled.get && !@subscriber.nil? && !@subscriber.consumer_tag.nil?
+      end
+
+      def shutdown!
+        if @executor && @shut_down_executor
+          @executor.shutdown_now
+        end
+      end
+
+      private
+
+      def maybe_shutdown_executor
+        if @executor && @shut_down_executor
+          @executor.shutdown
+        end
+      end
 
       def run(&block)
         @subscriber = BlockingSubscriber.new(@channel, self)
