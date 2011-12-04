@@ -39,7 +39,7 @@ describe "Any channel" do
 
   it "can use publisher confirmations with listener objects" do
     channel.confirm_select
-    channel.confirm_listener = ConfirmationListener.new(latch)
+    channel.add_confirm_listener(ConfirmationListener.new(latch))
 
     queue = channel.queue("", :auto_delete => true)
     Thread.new do
