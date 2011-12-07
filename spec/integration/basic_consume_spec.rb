@@ -35,16 +35,16 @@ describe "Multiple non-exclusive consumers per queue" do
       end
 
 
-      sleep 1.5 # let consumers in other threads start.
+      sleep 2.0 # let consumers in other threads start.
       n.times do |i|
         channel.default_exchange.publish("Message #{i}", :routing_key => queue.name)
       end
 
       all_received.await
 
-      mailbox1.size.should >= 33
-      mailbox2.size.should >= 33
-      mailbox3.size.should >= 33
+      mailbox1.size.should >= 30
+      mailbox2.size.should >= 30
+      mailbox3.size.should >= 30
 
       consumer1.shutdown!
       consumer2.shutdown!

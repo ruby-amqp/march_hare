@@ -61,7 +61,7 @@ describe "An AMQP consumer that DOES NOT catch exceptions" do
 
   it "becomes inactive" do
     mailbox  = []
-    exchange = channel.exchange("hot_bunnies.exchanges.fanout#{Time.now.to_i}", :type => :fanout, :auto_delete => true)
+    exchange = channel.exchange("hot_bunnies.exchanges.fanout#{Time.now.to_i}#{rand}", :type => :fanout, :auto_delete => true)
     queue    = channel.queue("", :auto_delete => true)
 
     queue.bind(exchange)
