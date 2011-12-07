@@ -46,3 +46,49 @@ describe "An AMQP consumer that catches exceptions" do
     consumer.shutdown!
   end
 end
+
+
+
+
+describe "An AMQP consumer that DOES NOT catch exceptions" do
+  let(:connection) { HotBunnies.connect }
+  let(:channel)    { connection.create_channel }
+
+  after :each do
+    channel.close
+    connection.close
+  end
+
+  it "becomes inactive" do
+    mailbox  = []
+    exchange = channel.exchange("hot_bunnies.exchanges.fanout#{Time.now.to_i}", :type => :fanout, :auto_delete => true)
+    queue    = channel.queue("", :auto_delete => true)
+
+    queue.bind(exchange)
+    consumer = queue.subscribe(:blocking => false) do |meta, payload|
+      n = meta.properties.headers['X-Number']
+
+      if n.odd?
+        raise "A failure"
+      else
+        mailbox << payload
+      end
+    end
+
+    25.times do |i|
+      exchange.publish("Message ##{i}", :routing_key => "xyz", :properties => {
+                         :headers => {
+                           'X-Number' => i
+                         }
+                       })
+    end
+
+    sleep(0.5)
+
+    mc, cc = queue.status
+    mc.should == 0
+
+    mailbox.size.should == 1
+    consumer.shutdown!
+  end
+end
