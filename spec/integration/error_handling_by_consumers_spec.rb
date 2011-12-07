@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe "An AMQP consumer" do
+describe "An AMQP consumer that catches exceptions" do
   let(:connection) { HotBunnies.connect }
   let(:channel)    { connection.create_channel }
 
@@ -9,5 +9,40 @@ describe "An AMQP consumer" do
     connection.close
   end
 
-  
+  it "stays up" do
+    mailbox  = []
+    exchange = channel.exchange("hot_bunnies.exchanges.fanout#{Time.now.to_i}", :type => :fanout, :auto_delete => true)
+    queue    = channel.queue("", :auto_delete => true)
+
+    queue.bind(exchange)
+    consumer = queue.subscribe(:blocking => false) do |meta, payload|
+      n = meta.properties.headers['X-Number']
+
+      begin
+        if n.odd?
+          raise "A failure"
+        else
+          mailbox << payload
+        end
+      rescue Exception => e
+        # no-op
+      end
+    end
+
+    25.times do |i|
+      exchange.publish("Message ##{i}", :routing_key => "xyz", :properties => {
+                         :headers => {
+                           'X-Number' => i
+                         }
+                       })
+    end
+
+    sleep(0.5)
+
+    mc, cc = queue.status
+    mc.should == 0
+
+    mailbox.size.should == 13
+    consumer.shutdown!
+  end
 end
