@@ -105,6 +105,7 @@ module HotBunnies
           @executor.shutdown_now
         end
       end
+      alias shut_down! shutdown!
 
       private
 
