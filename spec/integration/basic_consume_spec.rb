@@ -16,7 +16,7 @@ describe "Multiple non-exclusive consumers per queue" do
       mailbox2         = []
       mailbox3         = []
 
-      all_received     = java.util.concurrent.CountDownLatch.new(50)
+      all_received     = java.util.concurrent.CountDownLatch.new(n)
       consumer_channel = connection.create_channel
 
       queue            = channel.queue("", :auto_delete => true)
@@ -42,9 +42,9 @@ describe "Multiple non-exclusive consumers per queue" do
 
       all_received.await
 
-      mailbox1.size.should >= 30
-      mailbox2.size.should >= 30
-      mailbox3.size.should >= 30
+      mailbox1.size.should >= 33
+      mailbox2.size.should >= 33
+      mailbox3.size.should >= 33
 
       consumer1.shutdown!
       consumer2.shutdown!
