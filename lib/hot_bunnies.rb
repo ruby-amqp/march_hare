@@ -17,6 +17,7 @@ module HotBunnies
   def self.connect(options={})
     cf = ConnectionFactory.new
 
+    cf.uri                = options[:uri]          if options[:uri]
     cf.host               = hostname_from(options) if include_host?(options)
     cf.port               = options[:port]         if options[:port]
     cf.virtual_host       = vhost_from(options)    if include_vhost?(options)
