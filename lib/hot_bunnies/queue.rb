@@ -137,7 +137,7 @@ module HotBunnies
       end
 
       def reject(options={})
-        @channel.basic_ack(delivery_tag, options.fetch(:requeue, false))
+        @channel.basic_reject(delivery_tag, options.fetch(:requeue, false))
       end
 
 
