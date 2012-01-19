@@ -1,6 +1,8 @@
 script: "bundle exec rspec -c spec"
 rvm:
-  - jruby-18mode
-  - jruby-19mode
+  - jruby
+env:
+  - JRUBY_OPTS="--server"
+  - JRUBY_OPTS="--server --1.9"
 notifications:
-  email: michaelklishin@me.com
+  email: false
