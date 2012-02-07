@@ -14,3 +14,5 @@ end
 
 
 require "hot_bunnies"
+
+puts "Running on Ruby #{RUBY_VERSION}."
