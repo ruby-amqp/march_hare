@@ -25,6 +25,9 @@ module HotBunnies
     cf.username           = username_from(options) if include_username?(options)
     cf.password           = password_from(options) if include_password?(options)
 
+    cf.requested_heartbeat = heartbeat_from(options)          if include_heartbeat?(options)
+    cf.connection_timeout  = connection_timeout_from(options) if include_connection_timeout?(options)
+
     cf.new_connection
   end
 
@@ -59,6 +62,14 @@ module HotBunnies
     options[:username] || options[:user] || ConnectionFactory.DEFAULT_USER
   end
 
+  def self.heartbeat_from(options)
+    options[:heartbeat_interval] || options[:requested_heartbeat] || ConnectionFactory.DEFAULT_HEARTBEAT
+  end
+
+  def self.connection_timeout_from(options)
+    options[:connection_timeout_interval] || options[:connection_timeout] || ConnectionFactory.DEFAULT_CONNECTION_TIMEOUT
+  end
+
   def self.include_username?(options)
     !!(options[:username] || options[:user])
   end
@@ -69,6 +80,14 @@ module HotBunnies
 
   def self.include_password?(options)
     !!(options[:password] || options[:pass])
+  end
+
+  def self.include_heartbeat?(options)
+    !!(options[:heartbeat_interval] || options[:requested_heartbeat] || options[:heartbeat])
+  end
+
+  def self.include_connection_timeout?(options)
+    !!(options[:connection_timeout_interval] || options[:connection_timeout])
   end
 end
 
