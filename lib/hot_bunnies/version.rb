@@ -1,5 +1,5 @@
 # encoding: utf-8
 
 module HotBunnies
-  VERSION = '1.3.5.pre'
+  VERSION = '1.3.5'
 end
