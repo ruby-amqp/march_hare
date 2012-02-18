@@ -1,3 +1,4 @@
+language: ruby
 script: "bundle exec rspec -c spec"
 rvm:
   - jruby-18mode
