@@ -59,6 +59,8 @@ module HotBunnies
     end
 
     class Subscription
+      attr_reader :channel, :queue_name
+
       def initialize(channel, queue_name, options={})
         @channel    = channel
         @queue_name = queue_name
@@ -94,6 +96,10 @@ module HotBunnies
         @cancelled.set(true)
 
         maybe_shutdown_executor
+      end
+
+      def cancelled?
+        @cancelled.get
       end
 
       def active?
