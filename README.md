@@ -39,4 +39,4 @@ MIT, see LICENSE in the repository root
 
 ## Copyright
 
-Theo Hultberg, 2011.
+Theo Hultberg, Michael Klishin, 2011-2012.
