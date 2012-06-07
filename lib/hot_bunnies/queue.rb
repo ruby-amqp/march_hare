@@ -59,7 +59,7 @@ module HotBunnies
     end
 
     class Subscription
-      attr_reader :channel, :queue_name
+      attr_reader :channel, :queue_name, :consumer_tag
 
       def initialize(channel, queue_name, options={})
         @channel    = channel
@@ -123,7 +123,7 @@ module HotBunnies
 
       def run(&block)
         @subscriber = BlockingSubscriber.new(@channel, self)
-        @channel.basic_consume(@queue_name, !@ack, @subscriber.consumer)
+        @consumer_tag = @channel.basic_consume(@queue_name, !@ack, @subscriber.consumer)
         @subscriber.on_message(&block)
       end
     end
