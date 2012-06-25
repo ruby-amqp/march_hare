@@ -224,96 +224,43 @@ module HotBunnies
         @channel.basic_reject(delivery_tag, options.fetch(:requeue, false))
       end
 
+      begin :envelope_delegation
+        [
+          :delivery_tag,
+          :routing_key,
+          :redeliver,
+          :exchange
+        ].each do |envelope_property|
+          define_method(envelope_property) { @envelope.__send__(envelope_property) }
+        end
 
-      #
-      # Envelope information
-      #
-
-
-      def delivery_tag
-        @envelope.delivery_tag
+        alias_method :redelivered?, :redeliver
       end
 
-      def routing_key
-        @envelope.routing_key
-      end
+      begin :message_properties_delegation
+        [
+          :content_encoding,
+          :content_type,
+          :content_encoding,
+          :headers,
+          :delivery_mode,
+          :priority,
+          :correlation_id,
+          :reply_to,
+          :expiration,
+          :message_id,
+          :timestamp,
+          :type,
+          :user_id,
+          :app_id,
+          :cluster_id
+        ].each do |properties_property|
+          define_method(properties_property) { @properties.__send__(properties_property) }
+        end
 
-      def redeliver
-        @envelope.redeliver
-      end
-      alias redelivered? redeliver
-
-      def exchange
-        @envelope.exchange
-      end
-
-
-      #
-      # Message properties information
-      #
-
-      def content_encoding
-        @properties.content_encoding
-      end
-
-      def content_type
-        @properties.content_type
-      end
-
-      def content_encoding
-        @properties.content_encoding
-      end
-
-      def headers
-        @properties.headers
-      end
-
-      def delivery_mode
-        @properties.delivery_mode
-      end
-
-      def persistent?
-        @properties.delivery_mode == 2
-      end
-
-      def priority
-        @properties.priority
-      end
-
-      def correlation_id
-        @properties.correlation_id
-      end
-
-      def reply_to
-        @properties.reply_to
-      end
-
-      def expiration
-        @properties.expiration
-      end
-
-      def message_id
-        @properties.message_id
-      end
-
-      def timestamp
-        @properties.timestamp
-      end
-
-      def type
-        @properties.type
-      end
-
-      def user_id
-        @properties.user_id
-      end
-
-      def app_id
-        @properties.app_id
-      end
-
-      def cluster_id
-        @properties.cluster_id
+        def persistent?
+          persistent == 2
+        end
       end
     end
   end
