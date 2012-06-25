@@ -70,24 +70,16 @@ module HotBunnies
       end
 
       def each(options={}, &block)
-        raise 'The subscription already has a message listener' if @subscriber
-        if options.fetch(:blocking, true)
-          run(&block)
-        else
-          if options[:executor]
-            @shut_down_executor = false
-            @executor = options[:executor]
-          else
-            @shut_down_executor = true
-            @executor = java.util.concurrent.Executors.new_single_thread_executor
-          end
-          @executor.submit { run(&block) }
-        end
+        raise 'The subscription already has a message listener' if @consumer
+        setup_consumer(options, block)
+        @consumer.start
+        nil
       end
+      alias_method :each_message, :each
 
       def cancel
         raise 'Can\'t cancel: the subscriber haven\'t received an OK yet' if !self.active?
-        @channel.basic_cancel(@subscriber.consumer_tag)
+        @consumer.cancel
 
         # RabbitMQ Java client won't clear consumer_tag from cancelled consumers,
         # so we have to do this. Sharing consumers
@@ -103,7 +95,7 @@ module HotBunnies
       end
 
       def active?
-        !@cancelled.get && !@subscriber.nil? && !@subscriber.consumer_tag.nil?
+        !@cancelled.get && !@consumer.nil? && !@consumer.consumer_tag.nil?
       end
 
       def shutdown!
@@ -121,10 +113,93 @@ module HotBunnies
         end
       end
 
-      def run(&block)
-        @subscriber = BlockingSubscriber.new(@channel, self)
-        @consumer_tag = @channel.basic_consume(@queue_name, !@ack, @subscriber.consumer)
-        @subscriber.on_message(&block)
+      def setup_consumer(options, callback)
+        if options.fetch(:blocking, true)
+          @consumer = BlockingCallbackConsumer.new(@channel, callback)
+        else
+          if options[:executor]
+            @shut_down_executor = false
+            @executor = options[:executor]
+          else
+            @shut_down_executor = true
+            @executor = java.util.concurrent.Executors.new_single_thread_executor
+          end
+          @consumer = AsyncCallbackConsumer.new(@channel, callback, @executor)
+        end
+        @consumer_tag = @channel.basic_consume(@queue_name, !@ack, @consumer)
+      end
+    end
+
+    class CallbackConsumer < DefaultConsumer
+      def initialize(channel, callback)
+        super(channel)
+        @callback = callback
+        @callback_arity = @callback.arity
+        @cancelled = false
+      end
+
+      def handleDelivery(consumer_tag, envelope, properties, body)
+        body = String.from_java_bytes(body)
+        headers = Headers.new(channel, consumer_tag, envelope, properties)
+        deliver(headers, body)
+      end
+
+      def handleCancel(consumer_tag)
+        @cancelled = true
+      end
+
+      def handleCancelOk(consumer_tag)
+        @cancelled = true
+      end
+
+      def start
+      end
+
+      def cancel
+        channel.basic_cancel(consumer_tag)
+      end
+
+      def deliver(headers, message)
+        raise NotImplementedError, 'To be implemented by a subclass'
+      end
+
+      def callback(headers, message)
+        if @callback_arity == 2
+          @callback.call(headers, message)
+        else
+          @callback.call(message)
+        end
+      end
+    end
+
+    class AsyncCallbackConsumer < CallbackConsumer
+      def initialize(channel, callback, executor)
+        super(channel, callback)
+        @executor = executor
+      end
+
+      def deliver(headers, message)
+        @executor.submit do
+          callback(headers, message)
+        end
+      end
+    end
+
+    class BlockingCallbackConsumer < CallbackConsumer
+      def initialize(channel, callback)
+        super(channel, callback)
+        @internal_queue = java.util.concurrent.LinkedBlockingQueue.new
+      end
+
+      def start
+        until @cancelled
+          pair = @internal_queue.poll(1, java.util.concurrent.TimeUnit::SECONDS)
+          callback(*pair) if pair
+        end
+      end
+
+      def deliver(*pair)
+        @internal_queue.add(pair)
       end
     end
 
@@ -236,58 +311,6 @@ module HotBunnies
 
       def cluster_id
         @properties.cluster_id
-      end
-    end
-
-
-    module Subscriber
-      def start
-        # to be implemented by the host class
-      end
-
-      def on_message(&block)
-        raise ArgumentError, 'Message listener already registered for this subscriber' if @subscriber
-        @subscriber = block
-        start
-      end
-
-      def handle_message(consumer_tag, envelope, properties, body_bytes)
-        body = String.from_java_bytes(body_bytes)
-        case @subscriber.arity
-        when 2 then @subscriber.call(Headers.new(@channel, consumer_tag, envelope, properties), body)
-        when 1 then @subscriber.call(body)
-        else raise ArgumentError, 'Consumer callback wants no arguments'
-        end
-      end
-    end
-
-    class BlockingSubscriber
-      include Subscriber
-
-      attr_reader :consumer
-
-      def initialize(channel, subscription)
-        @channel = channel
-        @subscription = subscription
-        @consumer = QueueingConsumer.new(@channel)
-      end
-
-      def consumer_tag
-        @consumer.consumer_tag
-      end
-
-      def start
-        super
-        while delivery = @consumer.next_delivery
-          result = handle_message(@consumer.consumer_tag, delivery.envelope, delivery.properties, delivery.body)
-          if result == :cancel
-            @subscription.cancel
-            while delivery = @consumer.next_delivery(0)
-              handle_message(@consumer.consumer_tag, delivery.envelope, delivery.properties, delivery.body)
-            end
-            break
-          end
-        end
       end
     end
   end

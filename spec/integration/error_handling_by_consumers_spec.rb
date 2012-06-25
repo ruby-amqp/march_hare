@@ -59,19 +59,22 @@ describe "An AMQP consumer that DOES NOT catch exceptions" do
     connection.close
   end
 
-  it "becomes inactive" do
+  it "becomes inactive when the channels prefetch is filled with unacked messages" do
     mailbox  = []
     exchange = channel.exchange("hot_bunnies.exchanges.fanout#{Time.now.to_i}#{rand}", :type => :fanout, :auto_delete => true)
     queue    = channel.queue("", :auto_delete => true)
 
+    channel.prefetch = 5
+
     queue.bind(exchange)
-    consumer = queue.subscribe(:blocking => false) do |meta, payload|
+    consumer = queue.subscribe(:blocking => false, :ack => true) do |meta, payload|
       n = meta.properties.headers['X-Number']
 
       if n.odd?
         raise "A failure"
       else
         mailbox << payload
+        meta.ack
       end
     end
 
@@ -85,10 +88,10 @@ describe "An AMQP consumer that DOES NOT catch exceptions" do
 
     sleep(0.5)
 
-    mc, cc = queue.status
-    mc.should == 0
+    message_count, _ = queue.status
+    message_count.should == 15
 
-    mailbox.size.should == 1
+    mailbox.size.should == 5
     consumer.shutdown!
   end
 end

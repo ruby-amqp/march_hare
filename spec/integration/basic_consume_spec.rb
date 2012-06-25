@@ -1,5 +1,42 @@
 require "spec_helper"
 
+
+describe 'A consumer of a queue' do
+  let(:connection) { HotBunnies.connect }
+  let(:channel)    { connection.create_channel }
+
+  after :each do
+    channel.close
+    connection.close
+  end
+
+  it 'receives messages until cancelled' do
+    exchange = connection.create_channel.default_exchange
+    queue = connection.create_channel.queue("", :auto_delete => true)
+    subscription = queue.subscribe
+
+    messages = []
+
+    Thread.new do
+      subscription.each do |headers, message|
+        messages << message
+      end
+    end
+
+    Thread.new do
+      loop do
+        exchange.publish('hello world', :routing_key => queue.name)
+      end
+    end
+
+    sleep 1.0
+
+    subscription.cancel
+
+    messages.should_not be_empty
+  end
+end
+
 describe "Multiple non-exclusive consumers per queue" do
   let(:connection) { HotBunnies.connect }
   let(:channel)    { connection.create_channel }
