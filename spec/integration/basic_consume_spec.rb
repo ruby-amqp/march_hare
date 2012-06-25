@@ -16,24 +16,32 @@ describe 'A consumer of a queue' do
     subscription = queue.subscribe
 
     messages = []
+    consumer_exited = false
 
-    Thread.new do
+    consumer_thread = Thread.new do
       subscription.each do |headers, message|
         messages << message
+        sleep 0.1
       end
+      consumer_exited = true
     end
 
-    Thread.new do
-      loop do
+    publisher_thread = Thread.new do
+      20.times do
         exchange.publish('hello world', :routing_key => queue.name)
+        sleep 0.01
       end
     end
 
-    sleep 1.0
+    sleep 0.2
 
     subscription.cancel
 
+    consumer_thread.join
+    publisher_thread.join
+
     messages.should_not be_empty
+    consumer_exited.should be_true
   end
 end
 

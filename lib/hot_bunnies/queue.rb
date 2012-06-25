@@ -196,6 +196,9 @@ module HotBunnies
           pair = @internal_queue.poll(1, java.util.concurrent.TimeUnit::SECONDS)
           callback(*pair) if pair
         end
+        while (pair = @internal_queue.poll)
+          callback(*pair)
+        end
       end
 
       def deliver(*pair)
