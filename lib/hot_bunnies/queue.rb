@@ -115,7 +115,7 @@ module HotBunnies
 
       def setup_consumer(options, callback)
         if options.fetch(:blocking, true)
-          @consumer = BlockingCallbackConsumer.new(@channel, callback)
+          @consumer = BlockingCallbackConsumer.new(@channel, options[:buffer_size], callback)
         else
           if options[:executor]
             @shut_down_executor = false
@@ -136,6 +136,7 @@ module HotBunnies
         @callback = callback
         @callback_arity = @callback.arity
         @cancelled = false
+        @cancelling = false
       end
 
       def handleDelivery(consumer_tag, envelope, properties, body)
@@ -157,6 +158,7 @@ module HotBunnies
 
       def cancel
         channel.basic_cancel(consumer_tag)
+        @cancelling = true
       end
 
       def deliver(headers, message)
@@ -176,24 +178,35 @@ module HotBunnies
       def initialize(channel, callback, executor)
         super(channel, callback)
         @executor = executor
+        @tasks = []
       end
 
       def deliver(headers, message)
-        @executor.submit do
-          callback(headers, message)
+        unless @executor.shutdown?
+          @executor.submit do
+            callback(headers, message)
+          end
         end
       end
     end
 
     class BlockingCallbackConsumer < CallbackConsumer
-      def initialize(channel, callback)
+      import 'java.util.concurrent.LinkedBlockingQueue'
+      import 'java.util.concurrent.ArrayBlockingQueue'
+      import 'java.util.concurrent.TimeUnit'
+
+      def initialize(channel, buffer_size, callback)
         super(channel, callback)
-        @internal_queue = java.util.concurrent.LinkedBlockingQueue.new
+        if buffer_size
+          @internal_queue = ArrayBlockingQueue.new(buffer_size)
+        else
+          @internal_queue = LinkedBlockingQueue.new
+        end
       end
 
       def start
         until @cancelled
-          pair = @internal_queue.poll(1, java.util.concurrent.TimeUnit::SECONDS)
+          pair = @internal_queue.poll(1, TimeUnit::SECONDS)
           callback(*pair) if pair
         end
         while (pair = @internal_queue.poll)
@@ -202,7 +215,13 @@ module HotBunnies
       end
 
       def deliver(*pair)
-        @internal_queue.add(pair)
+        if @cancelling || @cancelled
+          @internal_queue.offer(pair)
+        else
+          until @internal_queue.offer(pair, 1, TimeUnit::SECONDS)
+            break if @cancelling || @cancelled
+          end
+        end
       end
     end
 
