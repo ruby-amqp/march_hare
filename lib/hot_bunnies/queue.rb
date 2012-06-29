@@ -74,11 +74,16 @@ module HotBunnies
 
       def each(options={}, &block)
         raise 'The subscription already has a message listener' if @consumer
-        setup_consumer(options, block)
-        @consumer.start
+        start(create_consumer(options, block))
         nil
       end
       alias_method :each_message, :each
+
+      def start(consumer)
+        @consumer = consumer
+        @consumer_tag = @channel.basic_consume(@queue_name, !@ack, @consumer)
+        @consumer.start
+      end
 
       def cancel
         raise 'Can\'t cancel: the subscriber haven\'t received an OK yet' if !self.active?
@@ -119,9 +124,9 @@ module HotBunnies
         end
       end
 
-      def setup_consumer(options, callback)
+      def create_consumer(options, callback)
         if options.fetch(:blocking, true)
-          @consumer = BlockingCallbackConsumer.new(@channel, options[:buffer_size], callback)
+          BlockingCallbackConsumer.new(@channel, options[:buffer_size], callback)
         else
           if options[:executor]
             @shut_down_executor = false
@@ -130,21 +135,14 @@ module HotBunnies
             @shut_down_executor = true
             @executor = java.util.concurrent.Executors.new_single_thread_executor
           end
-          @consumer = AsyncCallbackConsumer.new(@channel, callback, @executor)
+          AsyncCallbackConsumer.new(@channel, callback, @executor)
         end
-        @consumer_tag = @channel.basic_consume(@queue_name, !@ack, @consumer)
       end
     end
 
-    class CallbackConsumer < DefaultConsumer
-      def initialize(channel, callback)
-        super(channel)
-        @callback = callback
-        @callback_arity = @callback.arity
-        @cancelled = false
-        @cancelling = false
-      end
+    public
 
+    class BaseConsumer < DefaultConsumer
       def handleDelivery(consumer_tag, envelope, properties, body)
         body = String.from_java_bytes(body)
         headers = Headers.new(channel, consumer_tag, envelope, properties)
@@ -162,13 +160,25 @@ module HotBunnies
       def start
       end
 
+      def deliver(headers, message)
+        raise NotImplementedError, 'To be implemented by a subclass'
+      end
+
       def cancel
         channel.basic_cancel(consumer_tag)
         @cancelling = true
       end
+    end
 
-      def deliver(headers, message)
-        raise NotImplementedError, 'To be implemented by a subclass'
+    private
+
+    class CallbackConsumer < BaseConsumer
+      def initialize(channel, callback)
+        super(channel)
+        @callback = callback
+        @callback_arity = @callback.arity
+        @cancelled = false
+        @cancelling = false
       end
 
       def callback(headers, message)
