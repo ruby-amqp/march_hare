@@ -59,6 +59,9 @@ module HotBunnies
     end
 
     class Subscription
+      import 'java.util.concurrent.TimeUnit'
+      import 'java.util.concurrent.atomic.AtomicBoolean'
+
       attr_reader :channel, :queue_name, :consumer_tag
 
       def initialize(channel, queue_name, options={})
@@ -66,7 +69,7 @@ module HotBunnies
         @queue_name = queue_name
         @ack        = options.fetch(:ack, false)
 
-        @cancelled  = java.util.concurrent.atomic.AtomicBoolean.new(false)
+        @cancelled  = AtomicBoolean.new(false)
       end
 
       def each(options={}, &block)
@@ -110,6 +113,9 @@ module HotBunnies
       def maybe_shutdown_executor
         if @executor && @shut_down_executor
           @executor.shutdown
+          unless @executor.await_termination(1, TimeUnit::SECONDS)
+            @executor.shutdown_now
+          end
         end
       end
 
@@ -194,6 +200,7 @@ module HotBunnies
       import 'java.util.concurrent.LinkedBlockingQueue'
       import 'java.util.concurrent.ArrayBlockingQueue'
       import 'java.util.concurrent.TimeUnit'
+      import 'java.lang.InterruptedException'
 
       def initialize(channel, buffer_size, callback)
         super(channel, callback)
@@ -206,8 +213,12 @@ module HotBunnies
 
       def start
         until @cancelled
-          pair = @internal_queue.poll(1, TimeUnit::SECONDS)
-          callback(*pair) if pair
+          begin
+            pair = @internal_queue.take
+            callback(*pair) if pair
+          rescue InterruptedException => e
+            # time to stop
+          end
         end
         while (pair = @internal_queue.poll)
           callback(*pair)
@@ -218,8 +229,10 @@ module HotBunnies
         if @cancelling || @cancelled
           @internal_queue.offer(pair)
         else
-          until @internal_queue.offer(pair, 1, TimeUnit::SECONDS)
-            break if @cancelling || @cancelled
+          begin
+            @internal_queue.put(pair)
+          rescue InterruptedException => e
+            # time to stop
           end
         end
       end
