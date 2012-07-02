@@ -211,6 +211,7 @@ module HotBunnies
       import 'java.util.concurrent.ArrayBlockingQueue'
       import 'java.util.concurrent.TimeUnit'
       import 'java.lang.InterruptedException'
+      JavaThread = java.lang.Thread
 
       def initialize(channel, buffer_size, callback)
         super(channel, callback)
@@ -222,27 +223,31 @@ module HotBunnies
       end
 
       def start
-        until @cancelled
+        interrupted = false
+        until @cancelled || JavaThread.current_thread.interrupted?
           begin
             pair = @internal_queue.take
             callback(*pair) if pair
           rescue InterruptedException => e
-            # time to stop
+            interrupted = true
           end
         end
         while (pair = @internal_queue.poll)
           callback(*pair)
         end
+        if interrupted
+          JavaThread.current_thread.interrupt
+        end
       end
 
       def deliver(*pair)
-        if @cancelling || @cancelled
+        if @cancelling || @cancelled || JavaThread.current_thread.interrupted?
           @internal_queue.offer(pair)
         else
           begin
             @internal_queue.put(pair)
           rescue InterruptedException => e
-            # time to stop
+            java.lang.Thread.current_thread.interrupt
           end
         end
       end
