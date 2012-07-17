@@ -6,13 +6,11 @@ require 'ext/rabbitmq-client'
 
 
 module HotBunnies
-  import com.rabbitmq.client.ConnectionFactory
-  import com.rabbitmq.client.Connection
-  import com.rabbitmq.client.Channel
-  import com.rabbitmq.client.DefaultConsumer
-  import com.rabbitmq.client.QueueingConsumer
-
-  import com.rabbitmq.client.AMQP
+  java_import 'com.rabbitmq.client.ConnectionFactory'
+  java_import 'com.rabbitmq.client.Connection'
+  java_import 'com.rabbitmq.client.Channel'
+  java_import 'com.rabbitmq.client.DefaultConsumer'
+  java_import 'com.rabbitmq.client.AMQP'
 
   def self.connect(options={})
     cf = ConnectionFactory.new
@@ -30,7 +28,6 @@ module HotBunnies
 
     cf.new_connection
   end
-
 
   protected
 

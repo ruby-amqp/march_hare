@@ -1,5 +1,15 @@
 # encoding: utf-8
 
+module JavaConcurrent
+  java_import 'java.lang.Thread'
+  java_import 'java.lang.InterruptedException'
+  java_import 'java.util.concurrent.Executors'
+  java_import 'java.util.concurrent.LinkedBlockingQueue'
+  java_import 'java.util.concurrent.ArrayBlockingQueue'
+  java_import 'java.util.concurrent.TimeUnit'
+  java_import 'java.util.concurrent.atomic.AtomicBoolean'
+end
+
 module HotBunnies
   class Queue
     attr_reader :name, :channel
@@ -59,8 +69,7 @@ module HotBunnies
     end
 
     class Subscription
-      import 'java.util.concurrent.TimeUnit'
-      import 'java.util.concurrent.atomic.AtomicBoolean'
+      include JavaConcurrent
 
       attr_reader :channel, :queue_name, :consumer_tag
 
@@ -133,7 +142,7 @@ module HotBunnies
             @executor = options[:executor]
           else
             @shut_down_executor = true
-            @executor = java.util.concurrent.Executors.new_single_thread_executor
+            @executor = Executors.new_single_thread_executor
           end
           AsyncCallbackConsumer.new(@channel, callback, @executor)
         end
@@ -207,11 +216,7 @@ module HotBunnies
     end
 
     class BlockingCallbackConsumer < CallbackConsumer
-      import 'java.util.concurrent.LinkedBlockingQueue'
-      import 'java.util.concurrent.ArrayBlockingQueue'
-      import 'java.util.concurrent.TimeUnit'
-      import 'java.lang.InterruptedException'
-      JavaThread = java.lang.Thread
+      include JavaConcurrent
 
       def initialize(channel, buffer_size, callback)
         super(channel, callback)
@@ -224,7 +229,7 @@ module HotBunnies
 
       def start
         interrupted = false
-        until @cancelled || JavaThread.current_thread.interrupted?
+        until @cancelled || JavaConcurrent::Thread.current_thread.interrupted?
           begin
             pair = @internal_queue.take
             callback(*pair) if pair
@@ -236,18 +241,18 @@ module HotBunnies
           callback(*pair)
         end
         if interrupted
-          JavaThread.current_thread.interrupt
+          JavaConcurrent::Thread.current_thread.interrupt
         end
       end
 
       def deliver(*pair)
-        if @cancelling || @cancelled || JavaThread.current_thread.interrupted?
+        if @cancelling || @cancelled || JavaConcurrent::Thread.current_thread.interrupted?
           @internal_queue.offer(pair)
         else
           begin
             @internal_queue.put(pair)
           rescue InterruptedException => e
-            java.lang.Thread.current_thread.interrupt
+            JavaConcurrent::Thread.current_thread.interrupt
           end
         end
       end
