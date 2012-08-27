@@ -7,3 +7,6 @@ rvm:
 notifications:
   recipients:
     - michaelklishin@me.com
+
+services:
+  - rabbitmq
