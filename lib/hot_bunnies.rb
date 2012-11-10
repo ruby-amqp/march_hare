@@ -31,9 +31,9 @@ module HotBunnies
       cf.use_ssl_protocol
     when String then
       if options[:trust_manager]
-        
-      else
         cf.use_ssl_protocol(options[:tls_protocol] || options[:ssl_protocol], options[:trust_manager])
+      else
+        cf.use_ssl_protocol(options[:tls_protocol] || options[:ssl_protocol])
       end
     end
 
