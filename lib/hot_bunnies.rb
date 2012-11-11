@@ -26,14 +26,15 @@ module HotBunnies
     cf.requested_heartbeat = heartbeat_from(options)          if include_heartbeat?(options)
     cf.connection_timeout  = connection_timeout_from(options) if include_connection_timeout?(options)
 
-    case (options[:ssl] || options[:tls])
+    tls = (options[:ssl] || options[:tls])
+    case tls
     when true then
       cf.use_ssl_protocol
     when String then
       if options[:trust_manager]
-        cf.use_ssl_protocol(options[:tls_protocol] || options[:ssl_protocol], options[:trust_manager])
+        cf.use_ssl_protocol(tls, options[:trust_manager])
       else
-        cf.use_ssl_protocol(options[:tls_protocol] || options[:ssl_protocol])
+        cf.use_ssl_protocol(tls)
       end
     end
 
