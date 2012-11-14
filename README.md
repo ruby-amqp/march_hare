@@ -25,6 +25,22 @@ Hot Bunnies is not
  * A cure for cancer
 
 
+## Installation, Dependency
+
+### With Rubygems
+
+    gem install hot_bunnies
+
+### With Bundler
+
+    gem "hot_bunnies", "~> 1.4.0"
+
+
+## Change Log
+
+See ChangeLog.md.
+
+
 ## Continuous Integration
 
 [![Continuous Integration status](https://secure.travis-ci.org/ruby-amqp/hot_bunnies.png)](http://travis-ci.org/ruby-amqp/hot_bunnies)
