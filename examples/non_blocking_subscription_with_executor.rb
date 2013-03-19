@@ -28,7 +28,7 @@ end
 end
 
 # make sure all messages are processed before we cancel
-# to avoid exceptions that scare beginners away. MK.
+# to avoid confusing exceptions from the [already shutdown] executor. MK.
 sleep 1.0
 thread_pool.shutdown_now
 subscription.cancel
