@@ -44,7 +44,7 @@ known to work well on OpenJDK 6 and Sun JDK 6.
 
 ## Change Log
 
-See ChangeLog.md.
+See [ChangeLog.md](ChangeLog.md).
 
 
 ## Continuous Integration
