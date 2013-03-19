@@ -1,4 +1,4 @@
-# What is Hot Bunnies
+# Hot Bunnies, a JRuby RabbitMQ Client
 
 Hot Bunnies is an idiomatic, fast and well-maintained (J)Ruby DSL on top of the [RabbitMQ Java client](http://www.rabbitmq.com/api-guide.html). It strives to combine
 strong parts of the Java client with over 3 years of [Ruby amqp gem](https://github.com/ruby-amqp/amqp) development experience.
