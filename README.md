@@ -36,6 +36,12 @@ Hot Bunnies is not
     gem "hot_bunnies", "~> 1.4.0"
 
 
+## Supported JDK Versions
+
+HotBunnies is tested against OpenJDK 7, Oracle JDK 7 and is
+known to work well on OpenJDK 6 and Sun JDK 6.
+
+
 ## Change Log
 
 See ChangeLog.md.
