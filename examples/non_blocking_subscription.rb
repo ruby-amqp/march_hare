@@ -22,9 +22,12 @@ end
   exchange.publish("hello world! #{i}", :routing_key => 'xyz')
 end
 
+# make sure all messages are processed before we cancel
+# to avoid exceptions that scare beginners away. MK.
+sleep 1.0
 subscription.cancel
 
-puts "ALMOST ALL DONE!"
+puts "Disconnecting now..."
 
 at_exit do
   channel.close
