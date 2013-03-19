@@ -33,7 +33,7 @@ Hot Bunnies is not
 
 ### With Bundler
 
-    gem "hot_bunnies", "~> 1.4.0"
+    gem "hot_bunnies", "~> 1.5.0"
 
 
 ## Supported JDK Versions
