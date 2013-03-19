@@ -36,6 +36,14 @@ Hot Bunnies is not
     gem "hot_bunnies", "~> 1.5.0"
 
 
+## Documentation
+
+HotBunnies currently does not have documentation guides like [amqp gem](http://rubyamqp.info) or [Bunny](http://rubybunny.info).
+
+Several [code examples](examples) are available. Our [test suite](spec/integration) also has many code examples
+that demonstrate various parts of the API.
+
+
 ## Supported JDK Versions
 
 HotBunnies is tested against OpenJDK 7, Oracle JDK 7 and is
