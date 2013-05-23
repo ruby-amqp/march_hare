@@ -1,4 +1,4 @@
-# What is Hot Bunnies
+# Hot Bunnies, a JRuby RabbitMQ Client
 
 Hot Bunnies is an idiomatic, fast and well-maintained (J)Ruby DSL on top of the [RabbitMQ Java client](http://www.rabbitmq.com/api-guide.html). It strives to combine
 strong parts of the Java client with over 3 years of [Ruby amqp gem](https://github.com/ruby-amqp/amqp) development experience.
@@ -33,12 +33,26 @@ Hot Bunnies is not
 
 ### With Bundler
 
-    gem "hot_bunnies", "~> 1.4.0"
+    gem "hot_bunnies", "~> 1.5.0"
+
+
+## Documentation
+
+HotBunnies currently does not have documentation guides like [amqp gem](http://rubyamqp.info) or [Bunny](http://rubybunny.info).
+
+Several [code examples](examples) are available. Our [test suite](spec/integration) also has many code examples
+that demonstrate various parts of the API.
+
+
+## Supported JDK Versions
+
+HotBunnies is tested against OpenJDK 7, Oracle JDK 7 and is
+known to work well on OpenJDK 6 and Sun JDK 6.
 
 
 ## Change Log
 
-See ChangeLog.md.
+See [ChangeLog.md](ChangeLog.md).
 
 
 ## Continuous Integration
@@ -55,4 +69,4 @@ MIT, see LICENSE in the repository root
 
 ## Copyright
 
-Theo Hultberg, Michael Klishin, 2011-2012.
+Theo Hultberg, Michael Klishin, 2011-2013.

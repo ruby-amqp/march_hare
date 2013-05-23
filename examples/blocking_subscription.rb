@@ -23,12 +23,10 @@ subscription = queue.subscribe(:ack => true)
 subscription.each(:blocking => true) do |headers, msg|
   puts msg
   headers.ack
-  if msg == "POISON!"
-    :cancel
-  end
+  subscription.cancel if msg == "POISON!"
 end
 
-puts "ALL DONE!"
+puts "Disconnecting now..."
 
 at_exit do
   channel.close

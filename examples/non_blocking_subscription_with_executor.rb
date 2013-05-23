@@ -27,10 +27,13 @@ end
   exchange.publish("hello world! #{i}", :routing_key => 'xyz')
 end
 
+# make sure all messages are processed before we cancel
+# to avoid confusing exceptions from the [already shutdown] executor. MK.
+sleep 1.0
 thread_pool.shutdown_now
 subscription.cancel
 
-puts "ALMOST ALL DONE!"
+puts "Disconnecting now..."
 
 at_exit do
   channel.close
