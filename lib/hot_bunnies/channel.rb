@@ -30,5 +30,18 @@ module HotBunnies
     def on_return(&block)
       self.set_return_listener(block)
     end
+
+    def ack(delivery_tag, multiple = false)
+      basic_ack(delivery_tag, multiple)
+    end
+    alias acknowledge ack
+
+    def reject(delivery_tag, requeue = false)
+      basic_reject(delivery_tag, requeue)
+    end
+
+    def nack(delivery_tag, multiple = false, requeue = false)
+      basic_nack(delivery_tag, multiple, requeue)
+    end
   end
 end

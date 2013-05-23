@@ -41,11 +41,14 @@ module HotBunnies
 
     def get(options={})
       response = @channel.basic_get(@name, !options.fetch(:ack, false))
+
       if response
-      then [Headers.new(@channel, nil, response.envelope, response.props), String.from_java_bytes(response.body)]
-      else nil
+        [Headers.new(@channel, nil, response.envelope, response.props), String.from_java_bytes(response.body)]
+      else
+        nil
       end
     end
+    alias pop get
 
     def subscribe(options={}, &block)
       subscription = Subscription.new(@channel, @name, options)
@@ -56,6 +59,16 @@ module HotBunnies
     def status
       response = @channel.queue_declare_passive(@name)
       [response.message_count, response.consumer_count]
+    end
+
+    def message_count
+      response = @channel.queue_declare_passive(@name)
+      response.message_count
+    end
+
+    def consumer_count
+      response = @channel.queue_declare_passive(@name)
+      response.consumer_count
     end
 
     private
