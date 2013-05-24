@@ -3,13 +3,9 @@
 module HotBunnies
   class Channel
 
-    # Wraps a com.rabbitmq.client.ChannelN instance
-    def self.wrap(java_channel)
-      new(java_channel)
-    end
-
-    def initialize(delegate)
-      @delegate = delegate
+    def initialize(session, delegate)
+      @connection = session
+      @delegate   = delegate
     end
 
     def id
@@ -21,7 +17,10 @@ module HotBunnies
     end
 
     def close(code = 200, reason = "Goodbye")
-      @delegate.close(code, reason)
+      v = @delegate.close(code, reason)
+      @connection.unregister_channel(self)
+
+      v
     end
 
 

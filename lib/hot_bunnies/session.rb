@@ -1,6 +1,7 @@
 module HotBunnies
   import com.rabbitmq.client.ConnectionFactory
   import com.rabbitmq.client.Connection
+  import java.util.concurrent.ConcurrentHashMap
 
   class Session
 
@@ -39,9 +40,10 @@ module HotBunnies
 
 
     def initialize(connection_factory)
-      @connection = connection_factory.new_connection
+      @cf         = connection_factory
+      @connection = self.new_connection
+      @channels   = ConcurrentHashMap.new
     end
-
 
     def create_channel(n = nil)
       jc = if n
@@ -50,7 +52,10 @@ module HotBunnies
              @connection.create_channel
            end
 
-      Channel.wrap(jc)
+      ch = Channel.new(self, jc)
+      register_channel(ch)
+
+      ch
     end
 
     def close
@@ -69,6 +74,18 @@ module HotBunnies
       @connection.__send__(selector, *args)
     end
 
+
+    #
+    # Implementation
+    #
+
+    def register_channel(ch)
+      @channels[ch.channel_number] = ch
+    end
+
+    def unregister_channel(ch)
+      @channels.delete(ch.channel_number)
+    end
 
     protected
 
@@ -126,6 +143,10 @@ module HotBunnies
 
     def self.include_connection_timeout?(options)
       !!(options[:connection_timeout_interval] || options[:connection_timeout])
+    end
+
+    def new_connection
+      @cf.new_connection
     end
   end
 end
