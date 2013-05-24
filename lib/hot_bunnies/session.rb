@@ -1,7 +1,7 @@
-import com.rabbitmq.client.ConnectionFactory
-import com.rabbitmq.client.Connection
-
 module HotBunnies
+  import com.rabbitmq.client.ConnectionFactory
+  import com.rabbitmq.client.Connection
+
   class Session
 
     #
