@@ -1,6 +1,8 @@
 # encoding: utf-8
 
 module HotBunnies
+  import com.rabbitmq.client.AMQP
+
   class Exchange
     attr_reader :name, :channel
 
@@ -32,7 +34,7 @@ module HotBunnies
       unless predefined?
         if @options[:passive]
         then @channel.exchange_declare_passive(@name)
-        else @channel.exchange_declare(@name, @options[:type].to_s, @options[:durable], @options[:auto_delete], @options[:internal], @options[:arguments])
+        else @channel.exchange_declare(@name, @options[:type].to_s, @options[:durable], @options[:auto_delete], @options[:arguments])
         end
       end
     end
