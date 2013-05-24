@@ -11,6 +11,8 @@ module JavaConcurrent
 end
 
 module HotBunnies
+  import com.rabbitmq.client.DefaultConsumer
+
   class Queue
     attr_reader :name, :channel
 
