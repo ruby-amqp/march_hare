@@ -7,14 +7,24 @@ module HotBunnies
     attr_reader :name, :channel
 
     def initialize(channel, name, options={})
+      raise ArgumentError, "exchange channel cannot be nil" if channel.nil?
+      raise ArgumentError, "exchange name cannot be nil" if name.nil?
+      raise ArgumentError, "exchange :type must be specified as an option" if options[:type].nil?
+
       @channel = channel
-      @name = name
+      @name    = name
+      @type    = options[:type]
       @options = {:type => :fanout, :durable => false, :auto_delete => false, :internal => false, :passive => false}.merge(options)
     end
 
     def publish(body, options={})
       options = {:routing_key => '', :mandatory => false, :immediate => false}.merge(options)
-      @channel.basic_publish(@name, options[:routing_key], options[:mandatory], options[:immediate], build_properties_from(options.fetch(:properties, Hash.new)), body.to_java_bytes)
+      @channel.basic_publish(@name,
+                             options[:routing_key],
+                             options[:mandatory],
+                             options[:immediate],
+                             build_properties_from(options.fetch(:properties, Hash.new)),
+                             body.to_java_bytes)
     end
 
     def delete(options={})
