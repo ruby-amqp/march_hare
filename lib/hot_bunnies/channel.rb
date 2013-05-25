@@ -3,12 +3,22 @@
 module HotBunnies
   class Channel
 
+    attr_reader :session
+
     def initialize(session, delegate)
       @connection = session
       @delegate   = delegate
     end
 
+    def client
+      @connection
+    end
+
     def id
+      @delegate.channel_number
+    end
+
+    def number
       @delegate.channel_number
     end
 
@@ -32,8 +42,24 @@ module HotBunnies
       exchange
     end
 
+    def fanout(name, opts = {})
+      Exchange.new(self, opts.merge(:type => "fanout"))
+    end
+
+    def direct(name, opts = {})
+      Exchange.new(self, opts.merge(:type => "direct"))
+    end
+
+    def topic(name, opts = {})
+      Exchange.new(self, opts.merge(:type => "topic"))
+    end
+
+    def headers(name, opts = {})
+      Exchange.new(self, opts.merge(:type => "headers"))
+    end
+
     def default_exchange
-      self.exchange("", :durable => true, :auto_delete => false, :type => "direct")
+      @default_exchange ||= self.exchange("", :durable => true, :auto_delete => false, :type => "direct")
     end
 
     def exchange_declare(name, type, durable = false, auto_delete = false, arguments = nil)
@@ -133,8 +159,20 @@ module HotBunnies
       @delegate.confirm_select
     end
 
-    def wait_for_confirms
-      @delegate.wait_for_confirms
+    # Waits until all outstanding publisher confirms arrive.
+    #
+    # Takes an optional timeout in milliseconds. Will raise
+    # an exception in timeout has occured.
+    #
+    # @param [Integer] timeout Timeout in milliseconds
+    # @return [Boolean] true if all confirms were positive,
+    #                        false if some were negative
+    def wait_for_confirms(timeout = nil)
+      if timeout
+        @delegate.wait_for_confirms(timeout)
+      else
+        @delegate.wait_for_confirms
+      end
     end
 
     def next_publisher_seq_no
