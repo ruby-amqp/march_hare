@@ -41,7 +41,7 @@ module HotBunnies
       @channel.queue_purge(@name)
     end
 
-    def get(options={})
+    def get(options = {:block => false})
       response = @channel.basic_get(@name, !options.fetch(:ack, false))
 
       if response
@@ -88,7 +88,7 @@ module HotBunnies
 
       attr_reader :channel, :queue_name, :consumer_tag
 
-      def initialize(channel, queue_name, options={})
+      def initialize(channel, queue_name, options = {})
         @channel    = channel
         @queue_name = queue_name
         @ack        = options.fetch(:ack, false)
@@ -110,8 +110,8 @@ module HotBunnies
       end
 
       def cancel
-        raise 'Can\'t cancel: the subscriber haven\'t received an OK yet' if !self.active?
-        @consumer.cancel
+        raise 'Can\'t cancel: the subscriber haven\'t received basic.consume-ok yet (consumer tag is not known)' if !self.active?
+        response = @consumer.cancel
 
         # RabbitMQ Java client won't clear consumer_tag from cancelled consumers,
         # so we have to do this. Sharing consumers
@@ -120,6 +120,8 @@ module HotBunnies
         @cancelled.set(true)
 
         maybe_shutdown_executor
+
+        response
       end
 
       def cancelled?
@@ -149,7 +151,9 @@ module HotBunnies
       end
 
       def create_consumer(options, callback)
-        if options.fetch(:blocking, true)
+        block_caller = options[:block] || options[:blocking]
+
+        if block_caller
           BlockingCallbackConsumer.new(@channel, options[:buffer_size], callback)
         else
           if options[:executor]
@@ -189,8 +193,10 @@ module HotBunnies
       end
 
       def cancel
-        channel.basic_cancel(consumer_tag)
+        response = channel.basic_cancel(consumer_tag)
         @cancelling = true
+
+        response
       end
     end
 
