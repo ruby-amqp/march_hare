@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe "An AMQP consumer that catches exceptions" do
+describe "A consumer that catches exceptions" do
   let(:connection) { HotBunnies.connect }
   let(:channel)    { connection.create_channel }
 
@@ -50,7 +50,7 @@ end
 
 
 
-describe "An AMQP consumer that DOES NOT catch exceptions" do
+describe "A consumer that DOES NOT catch exceptions" do
   let(:connection) { HotBunnies.connect }
   let(:channel)    { connection.create_channel }
 

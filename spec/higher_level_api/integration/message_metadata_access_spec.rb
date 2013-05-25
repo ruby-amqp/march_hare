@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe "An AMQP consumer" do
+describe "A consumer" do
   let(:connection) { HotBunnies.connect }
   let(:channel)    { connection.create_channel }
 

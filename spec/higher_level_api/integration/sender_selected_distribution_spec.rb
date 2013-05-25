@@ -19,7 +19,7 @@ describe "Any AMQP 0.9.1 client using RabbitMQ" do
   # Examples
   #
 
-  it "can have use CC and BCC headers for sender selected routing (a RabbitMQ-specific extension to AMQP 0.9.1)" do
+  it "can have use CC and BCC headers for sender selected routing" do
     queue1 = channel.queue("", :auto_delete => true)
     queue2 = channel.queue("", :auto_delete => true)
     queue3 = channel.queue("", :auto_delete => true)
