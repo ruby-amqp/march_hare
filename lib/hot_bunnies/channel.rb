@@ -43,23 +43,23 @@ module HotBunnies
     end
 
     def fanout(name, opts = {})
-      Exchange.new(self, opts.merge(:type => "fanout"))
+      Exchange.new(self, name, opts.merge(:type => "fanout"))
     end
 
     def direct(name, opts = {})
-      Exchange.new(self, opts.merge(:type => "direct"))
+      Exchange.new(self, name, opts.merge(:type => "direct"))
     end
 
     def topic(name, opts = {})
-      Exchange.new(self, opts.merge(:type => "topic"))
+      Exchange.new(self, name, opts.merge(:type => "topic"))
     end
 
     def headers(name, opts = {})
-      Exchange.new(self, opts.merge(:type => "headers"))
+      Exchange.new(self, name opts.merge(:type => "headers"))
     end
 
     def default_exchange
-      @default_exchange ||= self.exchange("", :durable => true, :auto_delete => false, :type => "direct")
+      @default_exchange ||= self.exchange(self, "", :durable => true, :auto_delete => false, :type => "direct")
     end
 
     def exchange_declare(name, type, durable = false, auto_delete = false, arguments = nil)
