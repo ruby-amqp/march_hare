@@ -11,14 +11,14 @@ Gem::Specification.new do |s|
   s.platform    = 'java'
   s.authors     = ['Theo Hultberg', 'Michael S. Klishin']
   s.email       = ['theo@burtcorp.com']
-  s.homepage    = 'http://github.com/iconara/hot_bunnies'
-  s.summary     = %q{Ruby wrapper for the RabbitMQ Java driver}
-  s.description = %q{A object oriented interface to RabbitMQ that uses the Java driver under the hood}
+  s.homepage    = 'http://github.com/ruby-amqp/hot_bunnies'
+  s.summary     = %q{RabbitMQ client for JRuby built around the official RabbitMQ Java client}
+  s.description = %q{RabbitMQ client for JRuby built around the official RabbitMQ Java client}
 
   s.rubyforge_project = 'hot_bunnies'
 
   s.files         = `git ls-files -- lib`.split("\n")
   s.test_files    = `git ls-files -- {spec}/*`.split("\n")
-# s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
+
   s.require_paths = %w(lib)
 end
