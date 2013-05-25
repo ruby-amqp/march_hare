@@ -1,6 +1,17 @@
-# Changes Between 1.5.0 and 1.6.0
+# Changes Between 1.5.0 and 2.0.0
 
-No changes yet.
+Hot Bunnies 2.0 has **breaking API changes**.
+
+## HotBunnies::Queue#subscribe Uses :block => false By Default
+
+**This is a breaking API change**
+
+`HotBunnies::Queue#subscribe` now uses `:block => false` by default, thus
+not blocking the caller. This reduces the need to use explicitly
+started threads for consumers.
+
+This is also how Bunny 0.9 works and we've seen this default to be
+a better idea.
 
 
 # Changes Between 1.4.0 and 1.5.0
