@@ -2,18 +2,17 @@ require "spec_helper"
 
 describe HotBunnies::Exchange do
   let(:connection) { HotBunnies.connect }
-  let(:channel)    { connection.create_channel }
 
   after :each do
-    channel.close
     connection.close
   end
 
   it "should bind two exchanges using exchange instances" do
-    source =       channel.exchange("hot_bunnies.spec.exchanges.source", :auto_delete => true)
-    destination = channel.exchange("hot_bunnies.spec.exchanges.destination", :auto_delete => true)
+    ch          = connection.create_channel
+    source      = ch.fanout("hot_bunnies.spec.exchanges.source", :auto_delete => true)
+    destination = ch.fanout("hot_bunnies.spec.exchanges.destination", :auto_delete => true)
 
-    queue = channel.queue("", :auto_delete => true)
+    queue = ch.queue("", :exclusive => true)
     queue.bind(destination)
 
     destination.bind(source)
@@ -22,10 +21,11 @@ describe HotBunnies::Exchange do
   end
 
   it "should bind two exchanges using exchange name" do
-    source =       channel.exchange("hot_bunnies.spec.exchanges.source", :auto_delete => true)
-    destination = channel.exchange("hot_bunnies.spec.exchanges.destination", :auto_delete => true)
+    ch          = connection.create_channel
+    source      = ch.fanout("hot_bunnies.spec.exchanges.source", :auto_delete => true)
+    destination = ch.fanout("hot_bunnies.spec.exchanges.destination", :auto_delete => true)
 
-    queue = channel.queue("", :auto_delete => true)
+    queue = ch.queue("", :exclusive => true)
     queue.bind(destination)
 
     destination.bind(source.name)

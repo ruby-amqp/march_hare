@@ -7,29 +7,9 @@ describe "Any channel" do
   #
 
   let(:connection) { HotBunnies.connect }
-  let(:channel)    { connection.create_channel }
 
   after :each do
-    channel.close
     connection.close
-  end
-
-  let(:latch) { java.util.concurrent.CountDownLatch.new(1) }
-
-  class ConfirmationListener
-    include com.rabbitmq.client.ConfirmListener
-
-    def initialize(latch)
-      @latch = latch
-    end
-
-    def handle_ack(delivery_tag, multiple)
-      @latch.count_down
-    end
-
-    def handle_nack(delivery_tag, multiple)
-      @latch.count_down
-    end
   end
 
 
@@ -37,15 +17,15 @@ describe "Any channel" do
   # Examples
   #
 
-  it "can use publisher confirmations with listener objects" do
-    channel.confirm_select
-    channel.add_confirm_listener(ConfirmationListener.new(latch))
+  it "can use publisher confirmations" do
+    ch = connection.create_channel
+    q  = ch.queue("", :exclusive => true)
 
-    queue = channel.queue("", :auto_delete => true)
-    Thread.new do
-      channel.default_exchange.publish("", :routing_key => queue.name)
-    end
+    ch.confirm_select
+    ch.default_exchange.publish("", :routing_key => q.name)
 
-    latch.await
+    ch.wait_for_confirms(400)
+
+    true.should be_true
   end
 end
