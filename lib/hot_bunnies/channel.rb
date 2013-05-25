@@ -55,11 +55,11 @@ module HotBunnies
     end
 
     def headers(name, opts = {})
-      Exchange.new(self, name opts.merge(:type => "headers"))
+      Exchange.new(self, name, opts.merge(:type => "headers"))
     end
 
     def default_exchange
-      @default_exchange ||= self.exchange(self, "", :durable => true, :auto_delete => false, :type => "direct")
+      @default_exchange ||= self.exchange("", :durable => true, :auto_delete => false, :type => "direct")
     end
 
     def exchange_declare(name, type, durable = false, auto_delete = false, arguments = nil)
