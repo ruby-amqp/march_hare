@@ -37,25 +37,33 @@ module HotBunnies
     # @group Exchanges
 
     def exchange(name, options={})
-      exchange = Exchange.new(self, name, options)
-      exchange.declare!
-      exchange
+      Exchange.new(self, name, options).tap do |x|
+        x.declare!
+      end
     end
 
     def fanout(name, opts = {})
-      Exchange.new(self, name, opts.merge(:type => "fanout"))
+      Exchange.new(self, name, opts.merge(:type => "fanout")).tap do |x|
+        x.declare!
+      end
     end
 
     def direct(name, opts = {})
-      Exchange.new(self, name, opts.merge(:type => "direct"))
+      Exchange.new(self, name, opts.merge(:type => "direct")).tap do |x|
+        x.declare!
+      end
     end
 
     def topic(name, opts = {})
-      Exchange.new(self, name, opts.merge(:type => "topic"))
+      Exchange.new(self, name, opts.merge(:type => "topic")).tap do |x|
+        x.declare!
+      end
     end
 
     def headers(name, opts = {})
-      Exchange.new(self, name, opts.merge(:type => "headers"))
+      Exchange.new(self, name, opts.merge(:type => "headers")).tap do |x|
+        x.declare!
+      end
     end
 
     def default_exchange
