@@ -80,7 +80,9 @@ module HotBunnies
     # @group Queues
 
     def queue(name, options={})
-      Queue.new(self, name, options)
+      Queue.new(self, name, options).tap do |q|
+        q.declare!
+      end
     end
 
     def queue_declare(name, durable, exclusive, auto_delete, arguments = {})

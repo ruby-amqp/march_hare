@@ -12,7 +12,6 @@ module HotBunnies
       @channel = channel
       @name = name
       @options = {:durable => false, :exclusive => false, :auto_delete => false, :passive => false, :arguments => Hash.new}.merge(options)
-      declare!
     end
 
     def bind(exchange, options={})
@@ -87,7 +86,9 @@ module HotBunnies
     end
 
 
-    private
+    #
+    # Implementation
+    #
 
     def declare!
       response = if @options[:passive]
