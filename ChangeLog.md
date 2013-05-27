@@ -25,6 +25,12 @@ This is also how Bunny 0.9 works and we've seen this default to be
 a better idea.
 
 
+## RabbitMQ Java Client Upgrade
+
+Hot Bunnies now uses RabbitMQ Java client 3.1.
+
+
+
 # Changes Between 1.4.0 and 1.5.0
 
 ## RabbitMQ Java Client Upgrade
