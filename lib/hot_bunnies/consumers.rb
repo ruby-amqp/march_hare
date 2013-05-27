@@ -95,7 +95,7 @@ module HotBunnies
     alias shut_down! shutdown!
 
     def gracefully_shut_down
-      unless @executor.await_termination(2, JavaConcurrent::TimeUnit::SECONDS)
+      unless @executor.await_termination(1, JavaConcurrent::TimeUnit::SECONDS)
         @executor.shutdown_now
       end
     end
