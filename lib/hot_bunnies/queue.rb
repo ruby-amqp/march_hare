@@ -58,6 +58,7 @@ module HotBunnies
       consumer.consumer_tag = @consumer_tag
 
       @default_consumer = consumer
+      @channel.register_consumer(@consumer_tag, consumer)
       consumer.start
 
       consumer

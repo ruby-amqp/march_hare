@@ -8,6 +8,11 @@ module HotBunnies
     def initialize(session, delegate)
       @connection = session
       @delegate   = delegate
+
+      # we keep track of consumers to gracefully shut down their
+      # executors when the channel is closed. This frees library users
+      # from having to worry about this. MK.
+      @consumers  = ConcurrentHashMap.new
     end
 
     def client
@@ -28,6 +33,11 @@ module HotBunnies
 
     def close(code = 200, reason = "Goodbye")
       v = @delegate.close(code, reason)
+
+      @consumers.each do |tag, consumer|
+        consumer.gracefully_shut_down
+      end
+
       @connection.unregister_channel(self)
 
       v
@@ -212,6 +222,21 @@ module HotBunnies
 
     def method_missing(selector, *args)
       @delegate.__send__(selector, *args)
+    end
+
+
+    #
+    # Implementation
+    #
+
+    # @private
+    def register_consumer(consumer_tag, consumer)
+      @consumers[consumer_tag] = consumer
+    end
+
+    # @private
+    def unregister_consumer(consumer_tag)
+      @consumers.delete(consumer_tag)
     end
 
   end

@@ -6,14 +6,16 @@ module HotBunnies
 
     def initialize(channel)
       super(channel)
+      @channel    = channel
 
       @cancelling = JavaConcurrent::AtomicBoolean.new
       @cancelled  = JavaConcurrent::AtomicBoolean.new
     end
 
     def handleDelivery(consumer_tag, envelope, properties, body)
-      body = String.from_java_bytes(body)
+      body    = String.from_java_bytes(body)
       headers = Headers.new(channel, consumer_tag, envelope, properties)
+
       deliver(headers, body)
     end
 
@@ -23,6 +25,7 @@ module HotBunnies
 
     def handleCancelOk(consumer_tag)
       @cancelled.set(true)
+      @channel.unregister_consumer(consumer_tag)
     end
 
     def start
@@ -91,11 +94,13 @@ module HotBunnies
     end
     alias shut_down! shutdown!
 
-    def maybe_shut_down_executor
+    def gracefully_shut_down
       unless @executor.await_termination(2, JavaConcurrent::TimeUnit::SECONDS)
         @executor.shutdown_now
       end
     end
+    alias maybe_shut_down_executor gracefully_shut_down
+    alias gracefully_shutdown      gracefully_shut_down
   end
 
   class BlockingCallbackConsumer < CallbackConsumer

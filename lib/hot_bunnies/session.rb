@@ -59,6 +59,10 @@ module HotBunnies
     end
 
     def close
+      @channels.each do |_, ch|
+        ch.close
+      end
+
       @connection.close
     end
 
