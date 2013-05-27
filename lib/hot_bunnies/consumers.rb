@@ -2,6 +2,15 @@ module HotBunnies
   import com.rabbitmq.client.DefaultConsumer
 
   class BaseConsumer < DefaultConsumer
+    attr_accessor :consumer_tag
+
+    def initialize(channel)
+      super(channel)
+
+      @cancelling = JavaConcurrent::AtomicBoolean.new
+      @cancelled  = JavaConcurrent::AtomicBoolean.new
+    end
+
     def handleDelivery(consumer_tag, envelope, properties, body)
       body = String.from_java_bytes(body)
       headers = Headers.new(channel, consumer_tag, envelope, properties)
@@ -9,11 +18,11 @@ module HotBunnies
     end
 
     def handleCancel(consumer_tag)
-      @cancelled = true
+      @cancelled.set(true)
     end
 
     def handleCancelOk(consumer_tag)
-      @cancelled = true
+      @cancelled.set(true)
     end
 
     def start
@@ -24,10 +33,19 @@ module HotBunnies
     end
 
     def cancel
+      @cancelling.set(true)
       response = channel.basic_cancel(consumer_tag)
-      @cancelling = true
+      @cancelled.set(true)
 
       response
+    end
+
+    def cancelled?
+      @cancelling.get || @cancelled.get
+    end
+
+    def active?
+      !cancelled?
     end
   end
 
@@ -37,8 +55,6 @@ module HotBunnies
       super(channel)
       @callback = callback
       @callback_arity = @callback.arity
-      @cancelled = false
-      @cancelling = false
     end
 
     def callback(headers, message)
@@ -54,7 +70,6 @@ module HotBunnies
     def initialize(channel, callback, executor)
       super(channel, callback)
       @executor = executor
-      @tasks = []
     end
 
     def deliver(headers, message)
@@ -62,6 +77,23 @@ module HotBunnies
         @executor.submit do
           callback(headers, message)
         end
+      end
+    end
+
+    def cancel
+      super
+
+      maybe_shut_down_executor
+    end
+
+    def shutdown!
+      @executor.shutdown_now if @executor
+    end
+    alias shut_down! shutdown!
+
+    def maybe_shut_down_executor
+      unless @executor.await_termination(2, JavaConcurrent::TimeUnit::SECONDS)
+        @executor.shutdown_now
       end
     end
   end
@@ -80,7 +112,7 @@ module HotBunnies
 
     def start
       interrupted = false
-      until @cancelled || JavaConcurrent::Thread.current_thread.interrupted?
+      until (@cancelling.get || @cancelled.get) || JavaConcurrent::Thread.current_thread.interrupted?
         begin
           pair = @internal_queue.take
           callback(*pair) if pair
@@ -97,7 +129,7 @@ module HotBunnies
     end
 
     def deliver(*pair)
-      if @cancelling || @cancelled || JavaConcurrent::Thread.current_thread.interrupted?
+      if (@cancelling.get || @cancelled.get) || JavaConcurrent::Thread.current_thread.interrupted?
         @internal_queue.offer(pair)
       else
         begin

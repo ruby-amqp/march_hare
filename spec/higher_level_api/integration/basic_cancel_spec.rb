@@ -1,40 +1,42 @@
 require "spec_helper"
 
-describe "A consumer" do
+describe 'A consumer' do
   let(:connection) { HotBunnies.connect }
-  let(:queue_name) { "hotbunnies.queues.#{rand}" }
 
   after :each do
     connection.close
   end
 
+  it 'receives messages until cancelled' do
+    x  = connection.create_channel.default_exchange
+    q  = connection.create_channel.queue("", :auto_delete => true)
 
+    messages        = []
+    consumer_exited = false
+    consumer        = nil
 
-  it "can be cancelled" do
-    delivered_data = []
-
-    t = Thread.new do
-      ch         = connection.create_channel
-      q          = ch.queue(queue_name, :exclusive => true)
-      consumer = q.subscribe(:block => false) do |meta, payload|
-        puts "consumed #{payload}"
-        delivered_data << payload
+    consumer_thread = Thread.new do
+      consumer = q.subscribe do |headers, message|
+        messages << message
+        sleep 0.1
       end
-
-      consumer.consumer_tag.should_not be_nil
-      cancel_ok = consumer.cancel
-      # puts cancel_ok.inspect
-      # cancel_ok.consumer_tag.should == consumer.consumer_tag
-
-      ch.close
+      consumer_exited = true
     end
-    t.abort_on_exception = true
-    sleep 0.5
 
-    ch = connection.create_channel
-    ch.default_exchange.publish("xyzzy", :routing_key => queue_name)
+    publisher_thread = Thread.new do
+      20.times do
+        x.publish('hello world', :routing_key => q.name)
+      end
+    end
 
-    sleep 0.7
-    delivered_data.should be_empty
+    sleep 0.2
+
+    consumer.cancel
+
+    consumer_thread.join
+    publisher_thread.join
+
+    messages.should_not be_empty
+    consumer_exited.should be_true
   end
 end

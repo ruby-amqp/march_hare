@@ -44,10 +44,20 @@ module HotBunnies
     end
     alias pop get
 
-    def subscribe(options={}, &block)
-      subscription = Subscription.new(@channel, @name, options)
-      subscription.each(options, &block) if block
-      subscription
+    def subscribe(opts = {}, &block)
+      consumer = if opts[:block] || opts[:blocking]
+                   BlockingCallbackConsumer.new(@channel, opts[:buffer_size], block)
+                 else
+                   AsyncCallbackConsumer.new(@channel, block, opts.fetch(:executor, JavaConcurrent::Executors.new_single_thread_executor))
+                 end
+
+      @consumer_tag     = @channel.basic_consume(@name, !(opts[:ack] || opts[:manual_ack]), consumer)
+      consumer.consumer_tag = @consumer_tag
+
+      @default_consumer = consumer
+      consumer.start
+
+      consumer
     end
 
     def status
@@ -65,89 +75,6 @@ module HotBunnies
       response.consumer_count
     end
 
-
-    class Subscription
-      attr_reader :channel, :queue_name, :consumer_tag
-
-      def initialize(channel, queue_name, options = {})
-        @channel    = channel
-        @queue_name = queue_name
-        @ack        = options.fetch(:ack, false)
-
-        @cancelled  = JavaConcurrent::AtomicBoolean.new(false)
-      end
-
-      def each(options={}, &block)
-        raise 'The subscription already has a message listener' if @consumer
-        start(create_consumer(options, block))
-        nil
-      end
-      alias_method :each_message, :each
-
-      def start(consumer)
-        @consumer = consumer
-        @consumer_tag = @channel.basic_consume(@queue_name, !@ack, @consumer)
-        @consumer.start
-      end
-
-      def cancel
-        raise 'Can\'t cancel: the subscriber haven\'t received basic.consume-ok yet (consumer tag is not known)' if !self.active?
-        response = @consumer.cancel
-
-        # RabbitMQ Java client won't clear consumer_tag from cancelled consumers,
-        # so we have to do this. Sharing consumers
-        # between threads in general is a can of worms but someone somewhere
-        # will almost certainly do it, so. MK.
-        @cancelled.set(true)
-
-        maybe_shutdown_executor
-
-        response
-      end
-
-      def cancelled?
-        @cancelled.get
-      end
-
-      def active?
-        !@cancelled.get && !@consumer.nil? && !@consumer.consumer_tag.nil?
-      end
-
-      def shutdown!
-        if @executor && @shut_down_executor
-          @executor.shutdown_now
-        end
-      end
-      alias shut_down! shutdown!
-
-      private
-
-      def maybe_shutdown_executor
-        if @executor && @shut_down_executor
-          @executor.shutdown
-          unless @executor.await_termination(1, JavaConcurrent::TimeUnit::SECONDS)
-            @executor.shutdown_now
-          end
-        end
-      end
-
-      def create_consumer(options, callback)
-        block_caller = options[:block] || options[:blocking]
-
-        if block_caller
-          BlockingCallbackConsumer.new(@channel, options[:buffer_size], callback)
-        else
-          if options[:executor]
-            @shut_down_executor = false
-            @executor = options[:executor]
-          else
-            @shut_down_executor = true
-            @executor = JavaConcurrent::Executors.new_single_thread_executor
-          end
-          AsyncCallbackConsumer.new(@channel, callback, @executor)
-        end
-      end
-    end
 
     private
 
