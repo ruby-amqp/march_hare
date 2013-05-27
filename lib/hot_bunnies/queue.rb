@@ -17,11 +17,15 @@ module HotBunnies
     def bind(exchange, options={})
       exchange_name = if exchange.respond_to?(:name) then exchange.name else exchange.to_s end
       @channel.queue_bind(@name, exchange_name, options.fetch(:routing_key, ''), options[:arguments])
+
+      self
     end
 
     def unbind(exchange, options={})
       exchange_name = if exchange.respond_to?(:name) then exchange.name else exchange.to_s end
       @channel.queue_unbind(@name, exchange_name, options.fetch(:routing_key, ''))
+
+      self
     end
 
     def delete
