@@ -75,6 +75,17 @@ module HotBunnies
       response.consumer_count
     end
 
+    # Publishes a message to the queue via default exchange. Takes the same arguments
+    # as {Bunny::Exchange#publish}
+    #
+    # @see HotBunnies::Exchange#publish
+    # @see HotBunnies::Channel#default_exchange
+    def publish(payload, opts = {})
+      @channel.default_exchange.publish(payload, opts.merge(:routing_key => @name))
+
+      self
+    end
+
 
     private
 
