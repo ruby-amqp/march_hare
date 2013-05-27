@@ -6,6 +6,17 @@ Hot Bunnies 2.0 has **breaking API changes**.
 
 **This is a breaking API change**
 
+`HotBunnies::Queue#subscribe` now returns a consumer (a `HotBunnies::Consumer` instance)
+that can be cancelled and contains a consumer tag.
+
+`HotBunnies::Subscription` was eliminated as redundant. All the same methods are
+now available on `HotBunnies::Consumer` subclasses.
+
+
+## HotBunnies::Queue#subscribe Uses :block => false By Default
+
+**This is a breaking API change**
+
 `HotBunnies::Queue#subscribe` now uses `:block => false` by default, thus
 not blocking the caller. This reduces the need to use explicitly
 started threads for consumers.
