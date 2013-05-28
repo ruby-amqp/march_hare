@@ -1,7 +1,7 @@
 module HotBunnies
-  import com.rabbitmq.client.ConnectionFactory
-  import com.rabbitmq.client.Connection
-  import java.util.concurrent.ConcurrentHashMap
+  java_import com.rabbitmq.client.ConnectionFactory
+  java_import com.rabbitmq.client.Connection
+  java_import java.util.concurrent.ConcurrentHashMap
 
   class Session
 
