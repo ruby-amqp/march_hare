@@ -6,7 +6,7 @@ module HotBunnies
   class Exchange
     attr_reader :name, :channel
 
-    def initialize(channel, name, options={})
+    def initialize(channel, name, options = {})
       raise ArgumentError, "exchange channel cannot be nil" if channel.nil?
       raise ArgumentError, "exchange name cannot be nil" if name.nil?
       raise ArgumentError, "exchange :type must be specified as an option" if options[:type].nil?
@@ -17,13 +17,12 @@ module HotBunnies
       @options = {:type => :fanout, :durable => false, :auto_delete => false, :internal => false, :passive => false}.merge(options)
     end
 
-    def publish(body, options={})
-      options = {:routing_key => '', :mandatory => false, :immediate => false}.merge(options)
+    def publish(body, opts = {})
+      options = {:routing_key => '', :mandatory => false}.merge(opts)
       @channel.basic_publish(@name,
                              options[:routing_key],
                              options[:mandatory],
-                             options[:immediate],
-                             build_properties_from(options.fetch(:properties, Hash.new)),
+                             options.fetch(:properties, Hash.new),
                              body.to_java_bytes)
     end
 
@@ -40,6 +39,11 @@ module HotBunnies
       @name.empty? || @name.start_with?("amq.")
     end
 
+    #
+    # Implementation
+    #
+
+    # @api private
     def declare!
       unless predefined?
         if @options[:passive]
@@ -48,29 +52,5 @@ module HotBunnies
         end
       end
     end
-
-
-    protected
-
-    def build_properties_from(props = {})
-      builder = AMQP::BasicProperties::Builder.new
-
-      builder.content_type(props[:content_type]).
-        content_encoding(props[:content_encoding]).
-        headers(props[:headers]).
-        delivery_mode(props[:persistent] ? 2 : 1).
-        priority(props[:priority]).
-        correlation_id(props[:correlation_id]).
-        reply_to(props[:reply_to]).
-        expiration(props[:expiration]).
-        message_id(props[:message_id]).
-        timestamp(props[:timestamp]).
-        type(props[:type]).
-        user_id(props[:user_id]).
-        app_id(props[:app_id]).
-        cluster_id(props[:cluster_id]).
-        build
-    end
-
   end
 end

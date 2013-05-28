@@ -123,8 +123,8 @@ module HotBunnies
 
     # @group basic.*
 
-    def basic_publish(exchange, routing_key, mandatory, immediate, properties, body)
-      @delegate.basic_publish(exchange, routing_key, mandatory, immediate, properties, body)
+    def basic_publish(exchange, routing_key, mandatory, properties, body)
+      @delegate.basic_publish(exchange, routing_key, mandatory, false, BasicPropertiesBuilder.build_properties_from(properties || Hash.new), body)
     end
 
     def basic_get(queue, auto_ack)
