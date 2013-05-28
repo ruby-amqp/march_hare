@@ -77,10 +77,9 @@ module HotBunnies
 
     def deliver(headers, message)
       unless @executor.shutdown?
-        r = Runnable.new do
+        @executor.submit do
           callback(headers, message)
         end
-        @executor.submit(r)
       end
     end
 

@@ -5,8 +5,6 @@ require 'ext/commons-io'
 require 'ext/rabbitmq-client'
 
 require 'hot_bunnies/version'
-
-require 'hot_bunnies/runnable'
 require 'hot_bunnies/session'
 
 module HotBunnies
