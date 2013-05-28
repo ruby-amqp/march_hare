@@ -3,10 +3,10 @@ module HotBunnies
     attr_reader :channel, :consumer_tag, :envelope, :properties
 
     def initialize(channel, consumer_tag, envelope, properties)
-      @channel = channel
+      @channel      = channel
       @consumer_tag = consumer_tag
-      @envelope = envelope
-      @properties = properties
+      @envelope     = envelope
+      @properties   = properties
     end
 
     def ack(options={})
@@ -49,11 +49,19 @@ module HotBunnies
         :cluster_id
       ].each do |properties_property|
         define_method(properties_property) { @properties.__send__(properties_property) }
-      end
+      end # each
+    end
 
-      def persistent?
-        delivery_mode == 2
-      end
+    def persistent?
+      delivery_mode == 2
+    end
+
+    def redelivered?
+      redeliver
+    end
+
+    def redelivery?
+      redeliver
     end
   end # Headers
 
