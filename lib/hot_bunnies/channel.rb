@@ -2,7 +2,6 @@
 
 module HotBunnies
   class Channel
-
     attr_reader :session
 
     def initialize(session, delegate)
@@ -217,7 +216,7 @@ module HotBunnies
 
 
     def on_return(&block)
-      self.set_return_listener(block)
+      self.add_return_listener(BlockReturnListener.from(block))
     end
 
     def method_missing(selector, *args)
@@ -228,6 +227,23 @@ module HotBunnies
     #
     # Implementation
     #
+
+    class BlockReturnListener
+      include com.rabbitmq.client.ReturnListener
+
+      def self.from(block)
+        new(block)
+      end
+
+      def initialize(block)
+        @block = block
+      end
+
+      def handleReturn(reply_code, reply_text, exchange, routing_key, basic_properties, payload)
+        # TODO: convert properties to a Ruby hash
+        @block.call(reply_code, reply_text, exchange, routing_key, basic_properties, String.from_java_bytes(payload))
+      end
+    end
 
     # @private
     def register_consumer(consumer_tag, consumer)
