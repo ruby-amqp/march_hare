@@ -78,7 +78,11 @@ module HotBunnies
     def deliver(headers, message)
       unless @executor.shutdown?
         @executor.submit do
-          callback(headers, message)
+          begin
+            callback(headers, message)
+          rescue Exception => e
+            $stderr.puts "Unhandled exception in consumer #{@consumer_tag}: #{e.message}"
+          end
         end
       end
     end
