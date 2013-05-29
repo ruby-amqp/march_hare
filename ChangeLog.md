@@ -2,6 +2,56 @@
 
 Hot Bunnies 2.0 has **breaking API changes**.
 
+## HotBunnies Operations Now Raise Ruby Exceptions
+
+HotBunnies used to expose RabbitMQ Java client's channel implementation
+directly to Ruby code. This means that whenever an exception was raised,
+it was a Java exception (commonly `java.io.IOException`, wrapping a shutdown
+signal).
+
+Not only this severely violates the Principle of Least Surprise, it also
+makes it much harder to inspect the exception and figure out how to get
+relevant information from it without reading the RabbitMQ Java client
+source.
+
+Hot Bunnies 2.0+ provides a Ruby implementation of `HotBunnies::Channel`
+which rescues Java exceptions and turns them into Ruby
+exceptions.
+
+For example, handling a `queue.bind` failure now can be demonstrated
+with the following straightforward test:
+
+``` ruby
+context "when the exchange does not exist" do
+  it "raises an exception" do
+    ch = connection.create_channel
+    q  = ch.queue("", :auto_delete => true)
+
+    raised = nil
+    begin
+      q.bind("asyd8a9d98sa73t78hd9as^&&(&@#(*^")
+    rescue HotBunnies::NotFound => e
+      raised = e
+    end
+
+    raised.channel_close.reply_text.should =~ /no exchange/
+  end
+end
+```
+
+HotBunnies Ruby exceptions follow AMQP 0.9.1 exception code names:
+
+ * `HotBunnies::NotFound`
+ * `HotBunnies::PreconditionFailed`
+ * `HotBunnies::ResourceLocked`
+ * `HotBunnies::AccessRefused`
+
+or have otherwise meaningful names that follow [Bunny](http://rubybunny.info) names closely:
+
+ * `HotBunnies::PossibleAuthenticationFailureError`
+ * `HotBunnies::ChannelAlreadyClosed`
+
+
 ## HotBunnies::Queue#subscribe Uses :block => false By Default
 
 **This is a breaking API change**
