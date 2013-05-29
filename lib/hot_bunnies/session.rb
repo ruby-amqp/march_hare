@@ -149,8 +149,22 @@ module HotBunnies
       !!(options[:connection_timeout_interval] || options[:connection_timeout])
     end
 
+    # Executes a block, catching Java exceptions RabbitMQ Java client throws and
+    # transforms them to Ruby exceptions that are then re-raised.
+    #
+    # @private
+    def converting_rjc_exceptions_to_ruby(&block)
+      begin
+        block.call
+      rescue com.rabbitmq.client.PossibleAuthenticationFailureException => e
+        raise PossibleAuthenticationFailureError.new(@cf.username, @cf.virtual_host, @cf.password.bytesize)
+      end
+    end
+
     def new_connection
-      @cf.new_connection
+      converting_rjc_exceptions_to_ruby do
+        @cf.new_connection
+      end
     end
   end
 end

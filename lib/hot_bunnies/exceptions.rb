@@ -128,9 +128,7 @@ module HotBunnies
                 raise "Unknown reply code: #{m.reply_code}, text: #{m.reply_text}"
               end
 
-      klass.new("Connection-level error: #{m.reply_text}", self, m)
-
-      klass.new(frame.reply_text, m)
+      klass.new("Connection-level error: #{m.reply_text}", m)
     end
 
     def self.exception_for_channel_close(m)
