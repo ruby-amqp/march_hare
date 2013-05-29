@@ -95,27 +95,39 @@ module HotBunnies
     end
 
     def queue_declare(name, durable, exclusive, auto_delete, arguments = {})
-      @delegate.queue_declare(name, durable, exclusive, auto_delete, arguments)
+      converting_rjc_exceptions_to_ruby do
+        @delegate.queue_declare(name, durable, exclusive, auto_delete, arguments)
+      end
     end
 
     def queue_declare_passive(name)
-      @delegate.queue_declare_passive(name)
+      converting_rjc_exceptions_to_ruby do
+        @delegate.queue_declare_passive(name)
+      end
     end
 
     def queue_delete(name, if_empty = false, if_unused = false)
-      @delegate.queue_delete(name, if_empty, if_unused)
+      converting_rjc_exceptions_to_ruby do
+        @delegate.queue_delete(name, if_empty, if_unused)
+      end
     end
 
     def queue_bind(queue, exchange, routing_key, arguments = nil)
-      @delegate.queue_bind(queue, exchange, routing_key, arguments)
+      converting_rjc_exceptions_to_ruby do
+        @delegate.queue_bind(queue, exchange, routing_key, arguments)
+      end
     end
 
     def queue_unbind(queue, exchange, routing_key, arguments = nil)
-      @delegate.queue_unbind(queue, exchange, routing_key, arguments)
+      converting_rjc_exceptions_to_ruby do
+        @delegate.queue_unbind(queue, exchange, routing_key, arguments)
+      end
     end
 
     def queue_purge(name)
-      @delegate.queue_purge(name)
+      converting_rjc_exceptions_to_ruby do
+        @delegate.queue_purge(name)
+      end
     end
 
     # @endgroup
@@ -124,19 +136,27 @@ module HotBunnies
     # @group basic.*
 
     def basic_publish(exchange, routing_key, mandatory, properties, body)
-      @delegate.basic_publish(exchange, routing_key, mandatory, false, BasicPropertiesBuilder.build_properties_from(properties || Hash.new), body)
+      converting_rjc_exceptions_to_ruby do
+        @delegate.basic_publish(exchange, routing_key, mandatory, false, BasicPropertiesBuilder.build_properties_from(properties || Hash.new), body)
+      end
     end
 
     def basic_get(queue, auto_ack)
-      @delegate.basic_get(queue, auto_ack)
+      converting_rjc_exceptions_to_ruby do
+        @delegate.basic_get(queue, auto_ack)
+      end
     end
 
     def basic_consume(queue, auto_ack, consumer)
-      @delegate.basic_consume(queue, auto_ack, consumer)
+      converting_rjc_exceptions_to_ruby do
+        @delegate.basic_consume(queue, auto_ack, consumer)
+      end
     end
 
     def basic_qos(prefetch_count)
-      @delegate.basic_qos(prefetch_count)
+      converting_rjc_exceptions_to_ruby do
+        @delegate.basic_qos(prefetch_count)
+      end
     end
 
     def qos(options={})
@@ -151,31 +171,43 @@ module HotBunnies
     end
 
     def ack(delivery_tag, multiple = false)
-      basic_ack(delivery_tag, multiple)
+      converting_rjc_exceptions_to_ruby do
+        basic_ack(delivery_tag, multiple)
+      end
     end
     alias acknowledge ack
 
     def reject(delivery_tag, requeue = false)
-      basic_reject(delivery_tag, requeue)
+      converting_rjc_exceptions_to_ruby do
+        basic_reject(delivery_tag, requeue)
+      end
     end
 
     def nack(delivery_tag, multiple = false, requeue = false)
-      basic_nack(delivery_tag, multiple, requeue)
+      converting_rjc_exceptions_to_ruby do
+        basic_nack(delivery_tag, multiple, requeue)
+      end
     end
 
     def basic_recover(requeue = true)
-      @delegate.basic_recover(requeue)
+      converting_rjc_exceptions_to_ruby do
+        @delegate.basic_recover(requeue)
+      end
     end
 
     def basic_recover_async(requeue = true)
-      @delegate.basic_recover_async(requeue)
+      converting_rjc_exceptions_to_ruby do
+        @delegate.basic_recover_async(requeue)
+      end
     end
 
     # @endgroup
 
 
     def confirm_select
-      @delegate.confirm_select
+      converting_rjc_exceptions_to_ruby do
+        @delegate.confirm_select
+      end
     end
 
     # Waits until all outstanding publisher confirms arrive.
@@ -188,7 +220,9 @@ module HotBunnies
     #                        false if some were negative
     def wait_for_confirms(timeout = nil)
       if timeout
-        @delegate.wait_for_confirms(timeout)
+        converting_rjc_exceptions_to_ruby do
+          @delegate.wait_for_confirms(timeout)
+        end
       else
         @delegate.wait_for_confirms
       end
@@ -199,19 +233,27 @@ module HotBunnies
     end
 
     def tx_select
-      @delegate.tx_select
+      converting_rjc_exceptions_to_ruby do
+        @delegate.tx_select
+      end
     end
 
     def tx_commit
-      @delegate.tx_commit
+      converting_rjc_exceptions_to_ruby do
+        @delegate.tx_commit
+      end
     end
 
     def tx_rollback
-      @delegate.tx_rollback
+      converting_rjc_exceptions_to_ruby do
+        @delegate.tx_rollback
+      end
     end
 
     def channel_flow(active)
-      @delegate.channel_flow(active)
+      converting_rjc_exceptions_to_ruby do
+        @delegate.channel_flow(active)
+      end
     end
 
 
@@ -255,5 +297,16 @@ module HotBunnies
       @consumers.delete(consumer_tag)
     end
 
+    # Executes a block, catching Java exceptions RabbitMQ Java client throws and
+    # transforms them to Ruby exceptions that are then re-raised.
+    #
+    # @private
+    def converting_rjc_exceptions_to_ruby(&block)
+      begin
+        block.call
+      rescue Exception, java.lang.Throwable => e
+        Exceptions.convert_and_reraise(e)
+      end
+    end
   end
 end

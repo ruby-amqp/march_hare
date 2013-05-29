@@ -59,7 +59,7 @@ module HotBunnies
     end
 
     def close
-      @channels.each do |_, ch|
+      @channels.select { |_, ch| ch.open? }.each do |_, ch|
         ch.close
       end
 
