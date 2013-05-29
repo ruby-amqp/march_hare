@@ -52,7 +52,7 @@ or have otherwise meaningful names that follow [Bunny](http://rubybunny.info) na
  * `HotBunnies::ChannelAlreadyClosed`
 
 
-## HotBunnies::Queue#subscribe Uses :block => false By Default
+## HotBunnies::Queue#subscribe Now Returns a Consumer
 
 **This is a breaking API change**
 
