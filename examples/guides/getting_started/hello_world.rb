@@ -7,7 +7,7 @@ require "hot_bunnies"
 conn = HotBunnies.connect
 
 ch = conn.create_channel
-q  = ch.queue("bunny.examples.hello_world", :auto_delete => true)
+q  = ch.queue("hot_bunnies.examples.hello_world", :auto_delete => true)
 
 c  = q.subscribe do |metadata, payload|
   puts "Received #{payload}"
