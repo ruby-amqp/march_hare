@@ -2,6 +2,13 @@
 
 Hot Bunnies 2.0 has **breaking API changes**.
 
+## Consumer Cancellation Support
+
+Passing a block for the `:on_cancellation` option to `HotBunnies::Queue#subscribe`
+lets you support [RabbitMQ consumer cancellation](http://www.rabbitmq.com/consumer-cancel.html). The block should take 3
+arguments: a channel, a consumer and a consumer tag.
+
+
 ## HotBunnies Operations Now Raise Ruby Exceptions
 
 HotBunnies used to expose RabbitMQ Java client's channel implementation
