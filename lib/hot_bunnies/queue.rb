@@ -49,9 +49,9 @@ module HotBunnies
 
     def subscribe(opts = {}, &block)
       consumer = if opts[:block] || opts[:blocking]
-                   BlockingCallbackConsumer.new(@channel, opts[:buffer_size], block)
+                   BlockingCallbackConsumer.new(@channel, opts[:buffer_size], opts, block)
                  else
-                   AsyncCallbackConsumer.new(@channel, block, opts.fetch(:executor, JavaConcurrent::Executors.new_single_thread_executor))
+                   AsyncCallbackConsumer.new(@channel, opts, block, opts.fetch(:executor, JavaConcurrent::Executors.new_single_thread_executor))
                  end
 
       @consumer_tag     = @channel.basic_consume(@name, !(opts[:ack] || opts[:manual_ack]), consumer)

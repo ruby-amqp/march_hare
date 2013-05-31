@@ -21,6 +21,22 @@ module HotBunnies
 
     def handleCancel(consumer_tag)
       @cancelled.set(true)
+      @channel.unregister_consumer(consumer_tag)
+
+      if f = @opts[:on_cancellation]
+        case f.arity
+        when 0 then
+          f.call
+        when 1 then
+          f.call(self)
+        when 2 then
+          f.call(@channel, self)
+        when 3 then
+          f.call(@channel, self, consumer_tag)
+        else
+          f.call(@channel, self, consumer_tag)
+        end
+      end
     end
 
     def handleCancelOk(consumer_tag)
@@ -70,9 +86,10 @@ module HotBunnies
   end
 
   class AsyncCallbackConsumer < CallbackConsumer
-    def initialize(channel, callback, executor)
+    def initialize(channel, opts, callback, executor)
       super(channel, callback)
       @executor = executor
+      @opts     = opts
     end
 
     def deliver(headers, message)
@@ -90,7 +107,13 @@ module HotBunnies
     def cancel
       super
 
-      maybe_shut_down_executor
+      gracefully_shutdown
+    end
+
+    def handleCancel(consumer_tag)
+      super(consumer_tag)
+
+      gracefully_shutdown
     end
 
     def shutdown!
@@ -100,6 +123,7 @@ module HotBunnies
 
     def gracefully_shut_down
       unless @executor.await_termination(1, JavaConcurrent::TimeUnit::SECONDS)
+        puts "Shutting down the executor.."
         @executor.shutdown_now
       end
     end
@@ -110,13 +134,15 @@ module HotBunnies
   class BlockingCallbackConsumer < CallbackConsumer
     include JavaConcurrent
 
-    def initialize(channel, buffer_size, callback)
+    def initialize(channel, buffer_size, opts, callback)
       super(channel, callback)
       if buffer_size
         @internal_queue = ArrayBlockingQueue.new(buffer_size)
       else
         @internal_queue = LinkedBlockingQueue.new
       end
+
+      @opts = opts
     end
 
     def start

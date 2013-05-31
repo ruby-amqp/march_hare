@@ -11,7 +11,7 @@ conn = HotBunnies.connect
 
 ch   = conn.create_channel
 q    = ch.queue("", :exclusive => true)
-c    = q.subscribe do |metadata, payload|
+c    = q.subscribe(:on_cancellation => Proc.new { |ch, consumer, consumer_tag| puts "Consumer w/ tag #{consumer_tag} was cancelled remotely" }) do |metadata, payload|
   # no-op
 end
 
