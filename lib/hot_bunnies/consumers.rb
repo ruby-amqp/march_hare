@@ -123,7 +123,6 @@ module HotBunnies
 
     def gracefully_shut_down
       unless @executor.await_termination(1, JavaConcurrent::TimeUnit::SECONDS)
-        puts "Shutting down the executor.."
         @executor.shutdown_now
       end
     end
