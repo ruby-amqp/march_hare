@@ -10,8 +10,8 @@ puts
 conn = HotBunnies.connect
 
 ch   = conn.create_channel
-x1   = ch.fanout("bunny.examples.e2e.exchange1", :auto_delete => true, :durable => false)
-x2   = ch.fanout("bunny.examples.e2e.exchange2", :auto_delete => true, :durable => false)
+x1   = ch.fanout("hot_bunnies.examples.e2e.exchange1", :auto_delete => true, :durable => false)
+x2   = ch.fanout("hot_bunnies.examples.e2e.exchange2", :auto_delete => true, :durable => false)
 # x1 will be the source
 x2.bind(x1)
 

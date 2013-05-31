@@ -10,7 +10,7 @@ puts
 conn = HotBunnies.connect
 
 ch   = conn.create_channel
-x    = ch.direct("bunny.examples.ssd.exchange")
+x    = ch.direct("hot_bunnies.examples.ssd.exchange")
 q1   = ch.queue("", :exclusive => true).bind(x, :routing_key => "one")
 q2   = ch.queue("", :exclusive => true).bind(x, :routing_key => "two")
 q3   = ch.queue("", :exclusive => true).bind(x, :routing_key => "three")
