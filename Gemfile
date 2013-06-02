@@ -10,4 +10,6 @@ end
 
 group :development do
   gem "yard"
+  # JRuby-friendly Markdown renderer
+  gem "kramdown"
 end
