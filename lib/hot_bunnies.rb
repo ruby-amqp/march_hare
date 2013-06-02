@@ -9,6 +9,7 @@ require 'hot_bunnies/exceptions'
 require 'hot_bunnies/session'
 
 module HotBunnies
+  # Delegates to {HotBunnies::Session.connect}
   def self.connect(*args)
     Session.connect(*args)
   end
