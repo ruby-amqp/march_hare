@@ -2,6 +2,20 @@
 
 Hot Bunnies 2.0 has **breaking API changes**.
 
+## HotBunnies::Queue#subscribe_with, HotBunnies::Queue#build_consumer
+
+`HotBunnies::Queue#subscribe_with` and `HotBunnies::Queue#build_consumer` are new method
+that allow using consumer objects, for example, to first instantiate a blocking consumer
+and pass the reference around so it can be cancelled from a different thread later.
+
+``` ruby
+consumer_object  = q.build_consumer(:blocking => false) do |metadata, payload|
+  # ...
+end
+consumer         = q.subscribe_with(consumer_object, :blocking => false)
+```
+
+
 ## Consumer Cancellation Support
 
 Passing a block for the `:on_cancellation` option to `HotBunnies::Queue#subscribe`

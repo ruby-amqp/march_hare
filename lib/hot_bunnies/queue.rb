@@ -47,13 +47,28 @@ module HotBunnies
     end
     alias pop get
 
-    def subscribe(opts = {}, &block)
-      consumer = if opts[:block] || opts[:blocking]
-                   BlockingCallbackConsumer.new(@channel, opts[:buffer_size], opts, block)
-                 else
-                   AsyncCallbackConsumer.new(@channel, opts, block, opts.fetch(:executor, JavaConcurrent::Executors.new_single_thread_executor))
-                 end
+    def build_consumer(opts, &block)
+      if opts[:block] || opts[:blocking]
+        BlockingCallbackConsumer.new(@channel, opts[:buffer_size], opts, block)
+      else
+        AsyncCallbackConsumer.new(@channel, opts, block, opts.fetch(:executor, JavaConcurrent::Executors.new_single_thread_executor))
+      end
+    end
 
+    def subscribe(opts = {}, &block)
+      consumer = build_consumer(opts, &block)
+
+      @consumer_tag     = @channel.basic_consume(@name, !(opts[:ack] || opts[:manual_ack]), consumer)
+      consumer.consumer_tag = @consumer_tag
+
+      @default_consumer = consumer
+      @channel.register_consumer(@consumer_tag, consumer)
+      consumer.start
+
+      consumer
+    end
+
+    def subscribe_with(consumer, opts = {})
       @consumer_tag     = @channel.basic_consume(@name, !(opts[:ack] || opts[:manual_ack]), consumer)
       consumer.consumer_tag = @consumer_tag
 
