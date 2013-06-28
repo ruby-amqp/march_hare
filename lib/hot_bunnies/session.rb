@@ -9,6 +9,9 @@ module HotBunnies
     # API
     #
 
+    # Connects to a RabbitMQ node.
+    #
+    # @api public
     def self.connect(options={})
       cf = ConnectionFactory.new
 
