@@ -40,11 +40,11 @@ and is considered to be a reference implementation.
 
 ### With Rubygems
 
-    gem install hot_bunnies
+    gem install hot_bunnies --pre
 
 ### With Bundler
 
-    gem "hot_bunnies", "~> 1.5.0"
+    gem "hot_bunnies", "~> 2.0.0.pre1"
 
 
 ## Documentation
