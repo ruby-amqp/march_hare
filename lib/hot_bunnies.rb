@@ -14,6 +14,7 @@ module HotBunnies
     Session.connect(*args)
   end
 end
+Hotbunnies = HotBunnies
 
 require 'hot_bunnies/channel'
 require 'hot_bunnies/queue'
