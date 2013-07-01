@@ -1,3 +1,5 @@
+require "hot_bunnies/shutdown_listener"
+
 module HotBunnies
   java_import com.rabbitmq.client.ConnectionFactory
   java_import com.rabbitmq.client.Connection
@@ -71,6 +73,14 @@ module HotBunnies
 
       @connection.close
     end
+
+    def on_shutdown(&block)
+      sh = ShutdownListener.new(t, &block)
+      @connection.add_shutdown_listener(sh)
+
+      sh
+    end
+
 
     def flush
       @connection.flush

@@ -42,7 +42,6 @@ module HotBunnies
       v
     end
 
-
     # @group Exchanges
 
     def exchange(name, options={})

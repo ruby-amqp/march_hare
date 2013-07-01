@@ -2,6 +2,14 @@ module HotBunnies
   class Exception < StandardError
   end
 
+  class ShutdownSignal < Exception
+    attr_reader :cause
+
+    def initialize(cause)
+      @cause = cause
+    end
+  end
+
   class NetworkException < Exception
   end
 
