@@ -2,6 +2,12 @@ module HotBunnies
   class Exception < StandardError
   end
 
+  class NetworkException < Exception
+  end
+
+  class ConnectionRefused < NetworkException
+  end
+
   class ChannelLevelException < Exception
     attr_reader :channel_close
 

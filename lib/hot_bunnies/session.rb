@@ -38,13 +38,16 @@ module HotBunnies
         end
       end
 
+
       new(cf)
     end
 
 
     def initialize(connection_factory)
       @cf         = connection_factory
-      @connection = self.new_connection
+      @connection = converting_rjc_exceptions_to_ruby do
+        self.new_connection
+      end
       @channels   = ConcurrentHashMap.new
     end
 
@@ -159,6 +162,8 @@ module HotBunnies
     def converting_rjc_exceptions_to_ruby(&block)
       begin
         block.call
+      rescue java.net.ConnectException => e
+        raise ConnectionRefused.new("Connection to #{@cf.host}:#{@cf.port} refused")
       rescue com.rabbitmq.client.PossibleAuthenticationFailureException => e
         raise PossibleAuthenticationFailureError.new(@cf.username, @cf.virtual_host, @cf.password.bytesize)
       end
