@@ -60,6 +60,9 @@ module HotBunnies
   class UnexpectedFrame < ConnectionLevelException
   end
 
+  class ChannelAlreadyClosed < Exception
+  end
+
 
 
   # Converts RabbitMQ Java client exceptions
@@ -77,9 +80,7 @@ module HotBunnies
           c
         end
       when com.rabbitmq.client.AlreadyClosedException then
-        cmd = e.reason
-
-        puts cmd.method.class.inspect
+        ChannelAlreadyClosed.new(e.reason)
       when com.rabbitmq.client.ShutdownSignalException then
         cmd = e.reason
 
