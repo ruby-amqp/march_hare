@@ -1,4 +1,5 @@
 # encoding: utf-8
+require "hot_bunnies/shutdown_listener"
 
 module HotBunnies
   class Channel
@@ -12,6 +13,10 @@ module HotBunnies
       # executors when the channel is closed. This frees library users
       # from having to worry about this. MK.
       @consumers  = ConcurrentHashMap.new
+
+      on_shutdown do |ch, cause|
+        ch.gracefully_shut_down_consumers
+      end
     end
 
     def client
@@ -40,6 +45,13 @@ module HotBunnies
       @connection.unregister_channel(self)
 
       v
+    end
+
+    def on_shutdown(&block)
+      sh = ShutdownListener.new(self, &block)
+      @connection.add_shutdown_listener(sh)
+
+      sh
     end
 
     # @group Exchanges
@@ -294,6 +306,13 @@ module HotBunnies
     # @private
     def unregister_consumer(consumer_tag)
       @consumers.delete(consumer_tag)
+    end
+
+    # @private
+    def gracefully_shut_down_consumers
+      @consumers.each do |tag, consumer|
+        consumer.gracefully_shut_down
+      end
     end
 
     # Executes a block, catching Java exceptions RabbitMQ Java client throws and

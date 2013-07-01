@@ -1,3 +1,4 @@
+# encoding: utf-8
 require "hot_bunnies/shutdown_listener"
 
 module HotBunnies
@@ -44,6 +45,8 @@ module HotBunnies
       new(cf)
     end
 
+    attr_reader :thread, :channels
+
 
     def initialize(connection_factory)
       @cf         = connection_factory
@@ -51,6 +54,8 @@ module HotBunnies
         self.new_connection
       end
       @channels   = ConcurrentHashMap.new
+
+      @thread     = Thread.current
     end
 
     def create_channel(n = nil)
@@ -75,7 +80,7 @@ module HotBunnies
     end
 
     def on_shutdown(&block)
-      sh = ShutdownListener.new(t, &block)
+      sh = ShutdownListener.new(self, &block)
       @connection.add_shutdown_listener(sh)
 
       sh
@@ -92,6 +97,12 @@ module HotBunnies
 
     def method_missing(selector, *args)
       @connection.__send__(selector, *args)
+    end
+
+    # @return [String]
+    # @api public
+    def to_s
+      "#<#{self.class.name}:#{object_id} #{@cf.username}@#{@cf.host}:#{@cf.port}, vhost=#{@cf.virtual_host}>"
     end
 
 

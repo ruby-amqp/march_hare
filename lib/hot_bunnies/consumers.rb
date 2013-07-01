@@ -175,5 +175,10 @@ module HotBunnies
         end
       end
     end
+
+    def gracefully_shut_down
+      @cancelling.set(true)
+    end
+
   end
 end
