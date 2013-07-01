@@ -71,6 +71,8 @@ module HotBunnies
 
   class CallbackConsumer < BaseConsumer
     def initialize(channel, callback)
+      raise ArgumentError, "callback must not be nil!" if callback.nil?
+
       super(channel)
       @callback = callback
       @callback_arity = @callback.arity
