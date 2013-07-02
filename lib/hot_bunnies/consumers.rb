@@ -10,6 +10,8 @@ module HotBunnies
 
       @cancelling = JavaConcurrent::AtomicBoolean.new
       @cancelled  = JavaConcurrent::AtomicBoolean.new
+
+      @terminated = JavaConcurrent::AtomicBoolean.new
     end
 
     def handleDelivery(consumer_tag, envelope, properties, body)
@@ -37,11 +39,15 @@ module HotBunnies
           f.call(@channel, self, consumer_tag)
         end
       end
+
+      @terminated.set(true)
     end
 
     def handleCancelOk(consumer_tag)
       @cancelled.set(true)
       @channel.unregister_consumer(consumer_tag)
+
+      @terminated.set(true)
     end
 
     def start
@@ -55,6 +61,7 @@ module HotBunnies
       @cancelling.set(true)
       response = channel.basic_cancel(consumer_tag)
       @cancelled.set(true)
+      @terminated.set(true)
 
       response
     end
@@ -64,7 +71,11 @@ module HotBunnies
     end
 
     def active?
-      !cancelled?
+      !terminated?
+    end
+
+    def terminated?
+      @terminated.get
     end
   end
 
@@ -127,6 +138,7 @@ module HotBunnies
       unless @executor.await_termination(1, JavaConcurrent::TimeUnit::SECONDS)
         @executor.shutdown_now
       end
+      @terminated.set(true)
     end
     alias maybe_shut_down_executor gracefully_shut_down
     alias gracefully_shutdown      gracefully_shut_down
@@ -167,6 +179,7 @@ module HotBunnies
       while (pair = @internal_queue.poll)
         callback(*pair)
       end
+      @terminated.set(true)
       if interrupted
         JavaConcurrent::Thread.current_thread.interrupt
       end
@@ -186,7 +199,9 @@ module HotBunnies
 
     def gracefully_shut_down
       @cancelling.set(true)
-      @internal_queue.offer(POISION)
+      @internal_queue.offer(POISON)
+
+      @terminated.set(true)
     end
 
   end
