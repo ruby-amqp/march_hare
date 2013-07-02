@@ -3,7 +3,7 @@ require "hot_bunnies/shutdown_listener"
 
 module HotBunnies
   class Channel
-    attr_reader :session
+    attr_reader :session, :consumers
 
     def initialize(session, delegate)
       @connection = session
