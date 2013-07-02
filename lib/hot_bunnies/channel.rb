@@ -23,6 +23,10 @@ module HotBunnies
       @connection
     end
 
+    def connection
+      @connection
+    end
+
     def id
       @delegate.channel_number
     end
