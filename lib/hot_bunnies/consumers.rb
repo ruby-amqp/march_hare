@@ -135,6 +135,8 @@ module HotBunnies
   class BlockingCallbackConsumer < CallbackConsumer
     include JavaConcurrent
 
+    POISON = :__poison__
+
     def initialize(channel, buffer_size, opts, callback)
       super(channel, callback)
       if buffer_size
@@ -151,7 +153,13 @@ module HotBunnies
       until (@cancelling.get || @cancelled.get) || JavaConcurrent::Thread.current_thread.interrupted?
         begin
           pair = @internal_queue.take
-          callback(*pair) if pair
+          if pair
+            if pair == POISON
+              @cancelling.set(true)
+            else
+              callback(*pair)
+            end
+          end
         rescue InterruptedException => e
           interrupted = true
         end
@@ -178,6 +186,7 @@ module HotBunnies
 
     def gracefully_shut_down
       @cancelling.set(true)
+      @internal_queue.offer(POISION)
     end
 
   end
