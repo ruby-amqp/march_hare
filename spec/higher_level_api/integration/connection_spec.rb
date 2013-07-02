@@ -28,7 +28,7 @@ describe "HotBunnies.connect" do
     it "raises an exception" do
       lambda {
         HotBunnies.connect(:hostname => "a8s878787s8d78sd78.lol")
-      }.should raise_error(java.net.UnknownHostException)
+      }.should raise_error(HotBunnies::ConnectionRefused)
     end
   end
 
@@ -36,7 +36,7 @@ describe "HotBunnies.connect" do
     it "raises an exception" do
       lambda {
         HotBunnies.connect(:hostname => "hotbunnies.info")
-      }.should raise_error(java.net.ConnectException)
+      }.should raise_error(HotBunnies::ConnectionRefused)
     end
   end
 
