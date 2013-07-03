@@ -33,7 +33,9 @@ describe "A consumer" do
     end
 
     exchange.publish(@payload,
-                     :properties => { :app_id      => "hotbunnies.tests",
+                     :properties => {
+                       :app_id      => "hotbunnies.tests",
+                       :persistent  => true,
                        :priority    => 8,
                        :type        => "kinda.checkin",
                        # headers table keys can be anything
@@ -80,6 +82,8 @@ describe "A consumer" do
     @meta.consumer_tag.should_not be_nil
     @meta.consumer_tag.should_not be_empty
     @meta.delivery_tag.should == 1
+    @meta.delivery_mode.should == 2
+    @meta.should be_persistent
     @meta.reply_to.should == "a.sender"
     @meta.correlation_id.should == "r-1"
     @meta.message_id.should == "m-1"
