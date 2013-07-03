@@ -22,7 +22,7 @@ describe "Any queue" do
 
   it "can be unbound from amq.fanout" do
     exchange = channel.exchange("amq.fanout", :type => :fanout, :durable => true, :auto_delete => false)
-    queue    = channel.queue("", :auto_delete => true)
+    queue    = channel.queue("", :exclusive => true)
 
     queue.bind(exchange)
 
@@ -38,7 +38,7 @@ describe "Any queue" do
 
   it "can be unbound from a client-declared exchange" do
     exchange = channel.exchange("hot.bunnies.fanout#{Time.now.to_i}", :type => :fanout, :durable => false)
-    queue    = channel.queue("", :auto_delete => true)
+    queue    = channel.queue("", :exclusive => true)
 
     queue.bind(exchange)
 

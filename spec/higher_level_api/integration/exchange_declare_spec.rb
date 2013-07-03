@@ -11,7 +11,7 @@ describe "Direct exchange" do
 
   it "can be declared" do
     exchange = channel.exchange("hot_bunnies.exchanges.direct1", :type => :direct)
-    queue    = channel.queue("", :auto_delete => true)
+    queue    = channel.queue("", :exclusive => true)
 
     queue.bind(exchange, :routing_key => "abc")
 
@@ -38,7 +38,7 @@ describe "Fanout exchange" do
 
   it "can be declared" do
     exchange = channel.exchange("hot_bunnies.exchanges.fanout1", :type => :fanout)
-    queue    = channel.queue("", :auto_delete => true)
+    queue    = channel.queue("", :exclusive => true)
 
     queue.bind(exchange)
 
@@ -66,7 +66,7 @@ describe "Topic exchange" do
 
   it "can be declared" do
     exchange = channel.exchange("hot_bunnies.exchanges.topic1", :type => :topic)
-    queue    = channel.queue("", :auto_delete => true)
+    queue    = channel.queue("", :exclusive => true)
 
     queue.bind(exchange, :routing_key => "log.*")
 
@@ -95,7 +95,7 @@ describe "Headers exchange" do
 
   it "can be declared" do
     exchange = channel.exchange("hot_bunnies.exchanges.headers1", :type => :headers)
-    queue    = channel.queue("", :auto_delete => true)
+    queue    = channel.queue("", :exclusive => true)
 
     queue.bind(exchange, :arguments => { 'x-match' => 'all', 'arch' => "x86_64", 'os' => "linux" })
 

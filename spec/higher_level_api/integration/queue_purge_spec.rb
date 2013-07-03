@@ -34,5 +34,6 @@ describe "Any queue" do
     queue.get.should_not be_nil
     queue.purge
     queue.get.should be_nil
+    queue.delete
   end
 end

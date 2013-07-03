@@ -11,7 +11,7 @@ describe "A consumer" do
 
   it "can access message metadata (both message properties and delivery information)" do
     latch    = java.util.concurrent.CountDownLatch.new(1)
-    queue    = channel.queue("", :auto_delete => true)
+    queue    = channel.queue("", :exclusive => true)
     exchange = channel.exchange("amq.fanout", :type => :fanout)
 
     queue.bind(exchange, :routing_key => "hotbunnies.key")
@@ -91,4 +91,3 @@ describe "A consumer" do
     consumer.shut_down!
   end
 end
-

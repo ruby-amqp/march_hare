@@ -12,19 +12,23 @@ describe "Queue" do
     end
 
     it "can be declared as auto-deleted" do
-      channel.queue("", :auto_delete => true)
+      q = channel.queue("", :auto_delete => true)
+      q.delete
     end
 
     it "can be declared as auto-deleted and non-durable" do
-      channel.queue("", :auto_delete => true, :durable => false)
+      q = channel.queue("", :auto_delete => true, :durable => false)
+      q.delete
     end
 
     it "can be declared as NON-auto-deleted" do
-      channel.queue("", :auto_delete => false)
+      q = channel.queue("", :auto_delete => false)
+      q.delete
     end
 
     it "can be declared as NON-durable" do
-      channel.queue("", :durable => false)
+      q = channel.queue("", :durable => false)
+      q.delete
     end
 
     it "can be declared with additional attributes like x-message-ttle" do
@@ -39,6 +43,7 @@ describe "Queue" do
       sleep(2.1)
 
       queue.get.should be_nil
+      queue.delete
     end
   end
 end

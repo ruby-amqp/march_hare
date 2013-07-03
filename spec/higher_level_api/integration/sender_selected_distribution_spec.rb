@@ -20,10 +20,10 @@ describe "Any AMQP 0.9.1 client using RabbitMQ" do
   #
 
   it "can have use CC and BCC headers for sender selected routing" do
-    queue1 = channel.queue("", :auto_delete => true)
-    queue2 = channel.queue("", :auto_delete => true)
-    queue3 = channel.queue("", :auto_delete => true)
-    queue4 = channel.queue("", :auto_delete => true)
+    queue1 = channel.queue("", :exclusive => true)
+    queue2 = channel.queue("", :exclusive => true)
+    queue3 = channel.queue("", :exclusive => true)
+    queue4 = channel.queue("", :exclusive => true)
 
     channel.default_exchange.publish("1010", :properties => {
                                        :headers => {

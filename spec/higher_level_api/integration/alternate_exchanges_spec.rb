@@ -14,7 +14,7 @@ describe "Any exchange" do
 
   it "can have an alternate exchange (a RabbitMQ-specific extension to AMQP 0.9.1)" do
     ch = connection.create_channel
-    q  = ch.queue("", :auto_delete => true)
+    q  = ch.queue("", :exclusive => true)
 
     fe = ch.fanout("hot_bunnies.extensions.alternate_xchanges.fanout1")
     de = ch.direct("hot_bunnies.extensions.alternate_xchanges.direct1", :arguments => {

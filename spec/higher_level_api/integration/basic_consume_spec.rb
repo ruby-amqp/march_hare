@@ -10,7 +10,7 @@ describe "A consumer" do
 
   it "provides predicates" do
     ch       = connection.create_channel
-    q        = ch.queue("", :auto_delete => true)
+    q        = ch.queue("", :exclusive => true)
 
     consumer = q.subscribe(:blocking => false) { |_, _| nil }
 
@@ -49,7 +49,7 @@ describe "Multiple non-exclusive consumers per queue" do
       all_received     = java.util.concurrent.CountDownLatch.new(n)
       consumer_channel = connection.create_channel
 
-      q                = ch.queue("", :auto_delete => true)
+      q                = ch.queue("", :exclusive => true)
 
       consumer1        = q.subscribe(:blocking => false) do |metadata, payload|
         mailbox1 << payload
@@ -103,7 +103,7 @@ describe "A consumer" do
       all_received     = java.util.concurrent.CountDownLatch.new(n)
       consumer_channel = connection.create_channel
 
-      q                = ch.queue("", :auto_delete => true)
+      q                = ch.queue("", :exclusive => true)
 
       fn               = lambda do |metadata, payload|
         mailbox1 << payload

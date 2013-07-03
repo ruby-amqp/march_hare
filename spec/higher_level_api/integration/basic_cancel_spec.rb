@@ -10,7 +10,7 @@ describe 'A consumer' do
   context "that does not block the caller" do
     it 'receives messages until cancelled' do
       x  = connection.create_channel.default_exchange
-      q  = connection.create_channel.queue("", :auto_delete => true)
+      q  = connection.create_channel.queue("", :exclusive => true)
 
       messages        = []
       consumer_exited = false
@@ -45,7 +45,7 @@ describe 'A consumer' do
   context "that DOES block the caller" do
     it 'receives messages until cancelled' do
       x  = connection.create_channel.default_exchange
-      q  = connection.create_channel.queue("", :auto_delete => true)
+      q  = connection.create_channel.queue("", :exclusive => true)
 
       messages        = []
       consumer_exited = false

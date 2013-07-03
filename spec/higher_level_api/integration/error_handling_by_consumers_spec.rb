@@ -12,7 +12,7 @@ describe "A consumer that catches exceptions" do
   it "stays up" do
     mailbox  = []
     exchange = channel.exchange("hot_bunnies.exchanges.fanout#{Time.now.to_i}", :type => :fanout, :auto_delete => true)
-    queue    = channel.queue("", :auto_delete => true)
+    queue    = channel.queue("", :exclusive => true)
 
     queue.bind(exchange)
     consumer = queue.subscribe(:blocking => false) do |meta, payload|
@@ -62,7 +62,7 @@ describe "A consumer that DOES NOT catch exceptions" do
   it "becomes inactive when the channels prefetch is filled with unacked messages" do
     mailbox  = []
     exchange = channel.exchange("hot_bunnies.exchanges.fanout#{Time.now.to_i}#{rand}", :type => :fanout, :auto_delete => true)
-    queue    = channel.queue("", :auto_delete => true)
+    queue    = channel.queue("", :exclusive => true)
 
     channel.prefetch = 5
 
