@@ -102,12 +102,13 @@ module HotBunnies
     def initialize(channel, opts, callback, executor)
       super(channel, callback)
       @executor = executor
-      @opts     = opts
+      @executor_submit = executor.java_method(:submit, [JavaConcurrent::Runnable.java_class])
+      @opts = opts
     end
 
     def deliver(headers, message)
       unless @executor.shutdown?
-        @executor.submit do
+        @executor_submit.call do
           begin
             callback(headers, message)
           rescue Exception => e
