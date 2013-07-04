@@ -95,6 +95,17 @@ module HotBunnies
       @connection.heartbeat = n
     end
 
+    def start
+      # no-op
+      #
+      # This method mimics Bunny::Session#start in Bunny 0.9.
+      # Without it, #method_missing will proxy the call to com.rabbitmq.client.AMQConnection,
+      # which happens to have a #start method which is not idempotent.
+      #
+      # So we stub out #start in case someone migrating from Bunny forgets to remove
+      # the call to #start. MK.
+    end
+
     def method_missing(selector, *args)
       @connection.__send__(selector, *args)
     end
