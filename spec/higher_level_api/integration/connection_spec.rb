@@ -48,3 +48,15 @@ describe "HotBunnies.connect" do
     end
   end
 end
+
+
+describe "HotBunnies::Session#start" do
+  it "is a no-op added for better compatibility with Bunny and to guard non-idempotent AMQConnection#start" do
+    c = HotBunnies.connect
+    100.times do
+      c.start
+    end
+
+    c.close
+  end
+end
