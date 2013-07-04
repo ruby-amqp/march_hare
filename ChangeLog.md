@@ -2,6 +2,36 @@
 
 Hot Bunnies 2.0 has **breaking API changes**.
 
+## Shutdown Callbacks
+
+`HotBunnies::Session#on_shutdown` and `HotBunnies::Channel#on_shutdown` are two
+new methods that register **shutdown hooks**. Those are executed when
+
+ * Network connectivity to RabbitMQ is lost
+ * RabbitMQ shuts down the connection (because of an error or management UI action)
+
+The callbacks take two arguments: the entity that's being shutdown
+(`HotBunnies::Session` or `HotBunnies::Channel`) and shutdown reason (an exception):
+
+``` ruby
+conn = HotBunnies.connect
+conn.on_shutdown |conn, reason|
+  # ...
+end
+```
+
+In addition, HotBunnies channels will make sure consumers are gracefully
+shutdown (thread pools stopped, blocking consumers unblocked).
+
+These are initial steps towards easier to use error handling and recovery,
+similar to what amqp gem and Bunny 0.9+ provide.
+
+
+## HotBunnies::Session#start
+
+`HotBunnies::Session#start` is a new no-op method that improves API
+compatibility with [Bunny 0.9](http://rubybunny.info).
+
 ## HotBunnies::Queue#subscribe_with, HotBunnies::Queue#build_consumer
 
 `HotBunnies::Queue#subscribe_with` and `HotBunnies::Queue#build_consumer` are new method
