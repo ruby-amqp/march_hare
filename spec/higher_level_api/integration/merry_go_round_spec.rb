@@ -1,0 +1,83 @@
+require "spec_helper"
+
+describe "A message that is proxied by multiple intermediate consumers" do
+  let(:c1) do
+    HotBunnies.connect
+  end
+
+  let(:c2) do
+    HotBunnies.connect
+  end
+
+  let(:c3) do
+    HotBunnies.connect
+  end
+
+  let(:c4) do
+    HotBunnies.connect
+  end
+
+  let(:c5) do
+    HotBunnies.connect
+  end
+
+  after :each do
+    [c1, c2, c3, c4, c5].each do |c|
+      c.close if c.open?
+    end
+  end
+
+  # message flow is as follows:
+  #
+  # x => q4 => q3 => q2 => q1 => xs (results)
+  it "reaches its final destination" do
+    n   = 10000
+    xs  = []
+
+    ch1 = c1.create_channel
+    q1  = ch1.queue("", :exclusive => true)
+    cn1 = q1.subscribe do |_, payload|
+      xs << payload
+    end
+
+    ch2 = c2.create_channel
+    q2  = ch2.queue("", :exclusive => true)
+    cn2 = q2.subscribe do |_, payload|
+      q1.publish(payload)
+    end
+
+    ch3 = c3.create_channel
+    q3  = ch2.queue("", :exclusive => true)
+    cn3 = q3.subscribe do |_, payload|
+      q2.publish(payload)
+    end
+
+    ch4 = c4.create_channel
+    q4  = ch2.queue("", :exclusive => true)
+    cn4 = q4.subscribe do |_, payload|
+      q3.publish(payload)
+    end
+
+    ch5 = c5.create_channel
+    x   = ch5.default_exchange
+
+    n.times do |i|
+      x.publish("msg #{i}", :routing_key => q4.name)
+    end
+
+    t = n / 1000 * 2.0
+    puts "About to sleep for #{t} seconds..."
+    sleep(t)
+
+    xs.size.should == n
+    xs.last.should == "msg #{n - 1}"
+
+    [cn1, cn2, cn3, cn4].each do |cons|
+      cons.cancel
+    end
+
+    [ch1, ch2, ch3, ch4, ch5].each do |ch|
+      ch.close
+    end
+  end
+end
