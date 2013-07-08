@@ -2,6 +2,115 @@
 require "hot_bunnies/shutdown_listener"
 
 module HotBunnies
+  # ## Channels in RabbitMQ
+  #
+  # To quote {http://www.rabbitmq.com/resources/specs/amqp0-9-1.pdf AMQP 0.9.1 specification}:
+  #
+  # AMQP 0.9.1 is a multi-channelled protocol. Channels provide a way to multiplex
+  # a heavyweight TCP/IP connection into several light weight connections.
+  # This makes the protocol more “firewall friendly” since port usage is predictable.
+  # It also means that traffic shaping and other network QoS features can be easily employed.
+  # Channels are independent of each other and can perform different functions simultaneously
+  # with other channels, the available bandwidth being shared between the concurrent activities.
+  #
+  #
+  # ## Opening Channels
+  #
+  # Channels can be opened either via `HotBunnies::Session#create_channel` (sufficient in the majority
+  # of cases) or by instantiating `HotBunnies::Channel` directly:
+  #
+  # @example Using {HotBunnies::Session#create_channel}:
+  #   conn = HotBunnies.new
+  #   conn.start
+  #
+  #   ch   = conn.create_channel
+  #
+  # This will automatically allocate a channel id.
+  #
+  # ## Closing Channels
+  #
+  # Channels are closed via {HotBunnies::Channel#close}. Channels that get a channel-level exception are
+  # closed, too. Closed channels can no longer be used. Attempts to use them will raise
+  # {HotBunnies::ChannelAlreadyClosed}.
+  #
+  # @example
+  #
+  #   ch  = conn.create_channel
+  #   ch.close
+  #
+  # ## Higher-level API
+  #
+  # HotBunnies offers two sets of methods on {HotBunnies::Channel}: known as higher-level and lower-level
+  # APIs, respectively. Higher-level API mimics {http://rubyamqp.info amqp gem} API where
+  # exchanges and queues are objects (instance of {HotBunnies::Exchange} and {HotBunnies::Queue}, respectively).
+  # Lower-level API is built around AMQP 0.9.1 methods (commands), where queues and exchanges are
+  # passed as strings (à la RabbitMQ Java client, {http://clojurerabbitmq.info Langohr} and Pika).
+  #
+  # ### Queue Operations In Higher-level API
+  #
+  # * {HotBunnies::Channel#queue} is used to declare queues. The rest of the API is in {HotBunnies::Queue}.
+  #
+  #
+  # ### Exchange Operations In Higher-level API
+  #
+  # * {HotBunnies::Channel#topic} declares a topic exchange. The rest of the API is in {HotBunnies::Exchange}.
+  # * {HotBunnies::Channel#direct} declares a direct exchange.
+  # * {HotBunnies::Channel#fanout} declares a fanout exchange.
+  # * {HotBunnies::Channel#headers} declares a headers exchange.
+  # * {HotBunnies::Channel#default_exchange}
+  # * {HotBunnies::Channel#exchange} is used to declare exchanges with type specified as a symbol or string.
+  #
+  #
+  # ## Channel Qos (Prefetch Level)
+  #
+  # It is possible to control how many messages at most a consumer will be given (before it acknowledges
+  # or rejects previously consumed ones). This setting is per channel and controlled via {HotBunnies::Channel#prefetch}.
+  #
+  #
+  # ## Channel IDs
+  #
+  # Channels are identified by their ids which are integers. HotBunnies takes care of allocating and
+  # releasing them as channels are opened and closed. It is almost never necessary to specify
+  # channel ids explicitly.
+  #
+  # There is a limit on the maximum number of channels per connection, usually 65536. Note
+  # that allocating channels is very cheap on both client and server so having tens, hundreds
+  # or even thousands of channels is possible.
+  #
+  # ## Channels and Error Handling
+  #
+  # Channel-level exceptions are more common than connection-level ones and often indicate
+  # issues applications can recover from (such as consuming from or trying to delete
+  # a queue that does not exist).
+  #
+  # With HotBunnies, channel-level exceptions are raised as Ruby exceptions, for example,
+  # {HotBunnies::NotFound}, that provide access to the underlying `channel.close` method
+  # information.
+  #
+  # @example Handling 404 NOT_FOUND
+  #   begin
+  #     ch.queue_delete("queue_that_should_not_exist#{rand}")
+  #   rescue HotBunnies::NotFound => e
+  #     puts "Channel-level exception! Code: #{e.channel_close.reply_code}, message: #{e.channel_close.reply_text}"
+  #   end
+  #
+  # @example Handling 406 PRECONDITION_FAILED
+  #   begin
+  #     ch2 = conn.create_channel
+  #     q   = "hotbunnies.examples.recovery.q#{rand}"
+  #
+  #     ch2.queue_declare(q, :durable => false)
+  #     ch2.queue_declare(q, :durable => true)
+  #   rescue HotBunnies::PreconditionFailed => e
+  #     puts "Channel-level exception! Code: #{e.channel_close.reply_code}, message: #{e.channel_close.reply_text}"
+  #   ensure
+  #     conn.create_channel.queue_delete(q)
+  #   end
+  #
+  # @see http://www.rabbitmq.com/tutorials/amqp-concepts.html AMQP 0.9.1 Model Concepts Guide
+  # @see http://hotbunnies.info/articles/getting_started.html Getting Started with RabbitMQ Using HotBunnies
+  # @see http://hotbunnies.info/articles/queues.html Queues and Consumers
+  # @see http://hotbunnies.info/articles/exchanges.html Exchanges and Publishing
   class Channel
     attr_reader :session, :consumers
 
