@@ -386,12 +386,36 @@ module HotBunnies
       end
     end
 
+    # Binds a queue to an exchange using queue.bind AMQP 0.9.1 method
+    #
+    # @param [String] name Queue name
+    # @param [String] exchange Exchange name
+    #
+    # @param [String] routing_key Routing key used for binding
+    # @param [Hash] arguments (nil) Optional arguments
+    #
+    # @return RabbitMQ response
+    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
+    # @see http://hotbunnies.info/articles/bindings.html Bindings guide
+    # @api public
     def queue_bind(queue, exchange, routing_key, arguments = nil)
       converting_rjc_exceptions_to_ruby do
         @delegate.queue_bind(queue, exchange, routing_key, arguments)
       end
     end
 
+    # Unbinds a queue from an exchange using queue.unbind AMQP 0.9.1 method
+    #
+    # @param [String] name Queue name
+    # @param [String] exchange Exchange name
+    #
+    # @param [String] routing_key Routing key used for binding
+    # @param [Hash] arguments ({}) Optional arguments
+    #
+    # @return RabbitMQ response
+    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
+    # @see http://hotbunnies.info/articles/bindings.html Bindings guide
+    # @api public
     def queue_unbind(queue, exchange, routing_key, arguments = nil)
       converting_rjc_exceptions_to_ruby do
         @delegate.queue_unbind(queue, exchange, routing_key, arguments)
