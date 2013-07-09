@@ -471,6 +471,13 @@ module HotBunnies
       end
     end
 
+    # Sets how many messages will be given to consumers on this channel before they
+    # have to acknowledge or reject one of the previously consumed messages
+    #
+    # @param [Integer] prefetch_count Prefetch (QoS setting) for this channel
+    # @see http://hotbunnies.info/articles/exchanges.html Exchanges and Publishing guide
+    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
+    # @api public
     def prefetch=(n)
       basic_qos(n)
     end
