@@ -107,13 +107,16 @@ module HotBunnies
   #     conn.create_channel.queue_delete(q)
   #   end
   #
+  # @see HotBunnies::Session#create_channel
   # @see http://www.rabbitmq.com/tutorials/amqp-concepts.html AMQP 0.9.1 Model Concepts Guide
   # @see http://hotbunnies.info/articles/getting_started.html Getting Started with RabbitMQ Using HotBunnies
   # @see http://hotbunnies.info/articles/queues.html Queues and Consumers
   # @see http://hotbunnies.info/articles/exchanges.html Exchanges and Publishing
   class Channel
-    attr_reader :session, :consumers
+    # @return [Array<HotBunnies::Consumer>] Consumers on this channel
+    attr_reader :consumers
 
+    # @private
     def initialize(session, delegate)
       @connection = session
       @delegate   = delegate
@@ -128,26 +131,41 @@ module HotBunnies
       end
     end
 
+    # @return [HotBunnies::Session] Connection this channel is on
     def client
       @connection
     end
 
+    # @return [HotBunnies::Session] Connection this channel is on
+    def session
+      @connection
+    end
+
+    # @return [HotBunnies::Session] Connection this channel is on
     def connection
       @connection
     end
 
+    # @return [Integer] Channel id
     def id
       @delegate.channel_number
     end
 
+    # @return [Integer] Channel id
     def number
       @delegate.channel_number
     end
 
+    # @return [Integer] Channel id
     def channel_number
       @delegate.channel_number
     end
 
+    # Closes the channel.
+    #
+    # Closed channels can no longer be used. Closed channel id is
+    # returned back to the pool of available ids and may be used by
+    # a different channel opened later.
     def close(code = 200, reason = "Goodbye")
       v = @delegate.close(code, reason)
 
