@@ -335,18 +335,51 @@ module HotBunnies
       end
     end
 
+    # Declares a queue using queue.declare AMQP 0.9.1 method.
+    #
+    # @param [String] name Queue name
+    #
+    # @param [Boolean] durable (false)     Should information about this queue be persisted to disk so that it
+    #                                      can survive broker restarts? Typically set to true for long-lived queues.
+    # @param [Boolean] auto_delete (false) Should this queue be deleted when the last consumer is cancelled?
+    # @param [Boolean] exclusive (false)   Should only this connection be able to use this queue?
+    #                                      If true, the queue will be automatically deleted when this
+    #                                      connection is closed
+    # @param [Boolean] passive (false)     If true, queue will be checked for existence. If it does not
+    #                                      exist, {Bunny::NotFound} will be raised.
+    #
+    # @return [AMQ::Protocol::Queue::DeclareOk] RabbitMQ response
+    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
+    # @api public
     def queue_declare(name, durable, exclusive, auto_delete, arguments = {})
       converting_rjc_exceptions_to_ruby do
         @delegate.queue_declare(name, durable, exclusive, auto_delete, arguments)
       end
     end
 
+    # Checks if a queue exists using queue.declare AMQP 0.9.1 method.
+    # If it does not, a channel exception will be raised.
+    #
+    # @param [String] name Queue name
+    #
+    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
+    # @api public
     def queue_declare_passive(name)
       converting_rjc_exceptions_to_ruby do
         @delegate.queue_declare_passive(name)
       end
     end
 
+    # Deletes a queue using queue.delete AMQP 0.9.1 method
+    #
+    # @param [String] name Queue name
+    #
+    # @param [Boolean] if_empty (false) Should this queue be deleted only if it has no messages?
+    # @param [Boolean] if_unused (false) Should this queue be deleted only if it has no consumers?
+    #
+    # @return [AMQ::Protocol::Queue::DeleteOk] RabbitMQ response
+    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
+    # @api public
     def queue_delete(name, if_empty = false, if_unused = false)
       converting_rjc_exceptions_to_ruby do
         @delegate.queue_delete(name, if_empty, if_unused)
