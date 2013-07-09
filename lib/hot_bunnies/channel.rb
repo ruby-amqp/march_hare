@@ -440,6 +440,30 @@ module HotBunnies
 
     # @group basic.*
 
+    # Publishes a message using basic.publish AMQP 0.9.1 method.
+    #
+    # @param [String] exchange Exchange to publish to
+    # @param [String] routing_key Routing key
+    # @param [String] body Message payload. It will never be modified by Bunny or RabbitMQ in any way.
+    # @option opts [Boolean] :mandatory Should the message be returned if it cannot be routed to any queue?
+    #
+    # @param [Hash] properties Message properties
+    #
+    # @option properties [Boolean] :persistent Should the message be persisted to disk?
+    # @option properties [Integer] :timestamp A timestamp associated with this message
+    # @option properties [Integer] :expiration Expiration time after which the message will be deleted
+    # @option properties [String] :type Message type, e.g. what type of event or command this message represents. Can be any string
+    # @option properties [String] :reply_to Queue name other apps should send the response to
+    # @option properties [String] :content_type Message content type (e.g. application/json)
+    # @option properties [String] :content_encoding Message content encoding (e.g. gzip)
+    # @option properties [String] :correlation_id Message correlated to this one, e.g. what request this message is a reply for
+    # @option properties [Integer] :priority Message priority, 0 to 9. Not used by RabbitMQ, only applications
+    # @option properties [String] :message_id Any message identifier
+    # @option properties [String] :user_id Optional user ID. Verified by RabbitMQ against the actual connection username
+    # @option properties [String] :app_id Optional application ID
+    #
+    # @return [HotBunnies::Channel] Self
+    # @api public
     def basic_publish(exchange, routing_key, mandatory, properties, body)
       converting_rjc_exceptions_to_ruby do
         @delegate.basic_publish(exchange, routing_key, mandatory, false, BasicPropertiesBuilder.build_properties_from(properties || Hash.new), body)
@@ -482,6 +506,13 @@ module HotBunnies
       basic_qos(n)
     end
 
+    # Acknowledges a message. Acknowledged messages are completely removed from the queue.
+    #
+    # @param [Integer] delivery_tag Delivery tag to acknowledge
+    # @param [Boolean] multiple (false) Should all unacknowledged messages up to this be acknowledged as well?
+    # @see #nack
+    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
+    # @api public
     def ack(delivery_tag, multiple = false)
       converting_rjc_exceptions_to_ruby do
         basic_ack(delivery_tag, multiple)
@@ -489,12 +520,31 @@ module HotBunnies
     end
     alias acknowledge ack
 
+    # Rejects a message. A rejected message can be requeued or
+    # dropped by RabbitMQ.
+    #
+    # @param [Integer] delivery_tag Delivery tag to reject
+    # @param [Boolean] requeue      Should this message be requeued instead of dropping it?
+    # @see #ack
+    # @see #nack
+    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
+    # @api public
     def reject(delivery_tag, requeue = false)
       converting_rjc_exceptions_to_ruby do
         basic_reject(delivery_tag, requeue)
       end
     end
 
+    # Rejects a message. A rejected message can be requeued or
+    # dropped by RabbitMQ. This method is similar to {Bunny::Channel#reject} but
+    # supports rejecting multiple messages at once, and is usually preferred.
+    #
+    # @param [Integer] delivery_tag Delivery tag to reject
+    # @param [Boolean] multiple (false) Should all unacknowledged messages up to this be rejected as well?
+    # @param [Boolean] requeue  (false) Should this message be requeued instead of dropping it?
+    # @see #ack
+    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
+    # @api public
     def nack(delivery_tag, multiple = false, requeue = false)
       converting_rjc_exceptions_to_ruby do
         basic_nack(delivery_tag, multiple, requeue)
