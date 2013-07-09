@@ -227,6 +227,20 @@ module HotBunnies
       end
     end
 
+    # Declares a direct exchange or looks it up in the cache of previously
+    # declared exchanges.
+    #
+    # @param [String] name Exchange name
+    # @param [Hash] opts Exchange parameters
+    #
+    # @option opts [Boolean] :durable (false) Should the exchange be durable?
+    # @option opts [Boolean] :auto_delete (false) Should the exchange be automatically deleted when no longer in use?
+    # @option opts [Hash] :arguments ({}) Optional exchange arguments (used by RabbitMQ extensions)
+    #
+    # @return [HotBunnies::Exchange] Exchange instance
+    # @see http://hotbunnies.info/articles/exchanges.html Exchanges and Publishing guide
+    # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions to AMQP 0.9.1 guide
+    # @api public
     def direct(name, opts = {})
       Exchange.new(self, name, opts.merge(:type => "direct")).tap do |x|
         x.declare!
