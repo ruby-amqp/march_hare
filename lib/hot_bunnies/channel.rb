@@ -315,6 +315,20 @@ module HotBunnies
 
     # @group Queues
 
+    # Declares a queue or looks it up in the per-channel cache.
+    #
+    # @param  [String] name  Queue name. Pass an empty string to declare a server-named queue (make RabbitMQ generate a unique name).
+    # @param  [Hash]   options  Queue properties and other options
+    #
+    # @option options [Boolean] :durable (false) Should this queue be durable?
+    # @option options [Boolean] :auto-delete (false) Should this queue be automatically deleted when the last consumer disconnects?
+    # @option options [Boolean] :exclusive (false) Should this queue be exclusive (only can be used by this connection, removed when the connection is closed)?
+    # @option options [Boolean] :arguments ({}) Additional optional arguments (typically used by RabbitMQ extensions and plugins)
+    #
+    # @return [Bunny::Queue] Queue that was declared or looked up in the cache
+    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
+    # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions guide
+    # @api public
     def queue(name, options={})
       Queue.new(self, name, options).tap do |q|
         q.declare!
