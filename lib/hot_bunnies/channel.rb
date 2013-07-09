@@ -303,7 +303,7 @@ module HotBunnies
     # @param [Boolean] passive (false)   If true, exchange will be checked for existence. If it does not
     #                                          exist, {Bunny::NotFound} will be raised.
     #
-    # @return [AMQ::Protocol::Exchange::DeclareOk] RabbitMQ response
+    # @return RabbitMQ response
     # @see http://hotbunnies.info/articles/echanges.html Exchanges and Publishing guide
     # @api public
     def exchange_declare(name, type, durable = false, auto_delete = false, arguments = nil)
@@ -325,7 +325,7 @@ module HotBunnies
     # @option options [Boolean] :exclusive (false) Should this queue be exclusive (only can be used by this connection, removed when the connection is closed)?
     # @option options [Boolean] :arguments ({}) Additional optional arguments (typically used by RabbitMQ extensions and plugins)
     #
-    # @return [Bunny::Queue] Queue that was declared or looked up in the cache
+    # @return [HotBunnies::Queue] Queue that was declared or looked up in the cache
     # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
     # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions guide
     # @api public
@@ -348,7 +348,7 @@ module HotBunnies
     # @param [Boolean] passive (false)     If true, queue will be checked for existence. If it does not
     #                                      exist, {Bunny::NotFound} will be raised.
     #
-    # @return [AMQ::Protocol::Queue::DeclareOk] RabbitMQ response
+    # @return RabbitMQ response
     # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
     # @api public
     def queue_declare(name, durable, exclusive, auto_delete, arguments = {})
@@ -377,7 +377,7 @@ module HotBunnies
     # @param [Boolean] if_empty (false) Should this queue be deleted only if it has no messages?
     # @param [Boolean] if_unused (false) Should this queue be deleted only if it has no consumers?
     #
-    # @return [AMQ::Protocol::Queue::DeleteOk] RabbitMQ response
+    # @return RabbitMQ response
     # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
     # @api public
     def queue_delete(name, if_empty = false, if_unused = false)
@@ -398,6 +398,13 @@ module HotBunnies
       end
     end
 
+    # Purges a queue (removes all messages from it) using queue.purge AMQP 0.9.1 method.
+    #
+    # @param [String] name Queue name
+    #
+    # @return RabbitMQ response
+    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
+    # @api public
     def queue_purge(name)
       converting_rjc_exceptions_to_ruby do
         @delegate.queue_purge(name)
