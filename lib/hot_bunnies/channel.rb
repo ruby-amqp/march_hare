@@ -187,6 +187,20 @@ module HotBunnies
 
     # @group Exchanges
 
+    # Declares a headers exchange or looks it up in the cache of previously
+    # declared exchanges.
+    #
+    # @param [String] name Exchange name
+    # @param [Hash] opts Exchange parameters
+    #
+    # @option options [String,Symbol] :type (:direct) Exchange type, e.g. :fanout or "x-consistent-hash"
+    # @option options [Boolean] :durable (false) Should the exchange be durable?
+    # @option options [Boolean] :auto_delete (false) Should the exchange be automatically deleted when no longer in use?
+    # @option options [Hash] :arguments ({}) Optional exchange arguments
+    #
+    # @return [HotBunnies::Exchange] Exchange instance
+    # @see http://hotbunnies.info/articles/exchanges.html Exchanges and Publishing guide
+    # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions to AMQP 0.9.1 guide
     def exchange(name, options={})
       Exchange.new(self, name, options).tap do |x|
         x.declare!
@@ -217,10 +231,25 @@ module HotBunnies
       end
     end
 
+    # Provides access to the default exchange
+    # @see http://hotbunnies.info/articles/exchanges.html Exchanges and Publishing guide
+    # @api public
     def default_exchange
       @default_exchange ||= self.exchange("", :durable => true, :auto_delete => false, :type => "direct")
     end
 
+    # Declares a echange using echange.declare AMQP 0.9.1 method.
+    #
+    # @param [String] name Exchange name
+    # @param [Boolean] durable (false)     Should information about this echange be persisted to disk so that it
+    #                                            can survive broker restarts? Typically set to true for long-lived exchanges.
+    # @param [Boolean] auto_delete (false) Should this echange be deleted when it is no longer used?
+    # @param [Boolean] passive (false)   If true, exchange will be checked for existence. If it does not
+    #                                          exist, {Bunny::NotFound} will be raised.
+    #
+    # @return [AMQ::Protocol::Exchange::DeclareOk] RabbitMQ response
+    # @see http://hotbunnies.info/articles/echanges.html Exchanges and Publishing guide
+    # @api public
     def exchange_declare(name, type, durable = false, auto_delete = false, arguments = nil)
       @delegate.exchange_declare(name, type, durable, auto_delete, arguments)
     end
