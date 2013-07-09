@@ -6,6 +6,14 @@ module HotBunnies
   java_import com.rabbitmq.client.Connection
   java_import java.util.concurrent.ConcurrentHashMap
 
+  # Connection to a RabbitMQ node.
+  #
+  # Used to open and close connections and open (create) new channels.
+  #
+  # @see .connect
+  # @see #create_channel
+  # @see #close
+  # @api public
   class Session
 
     #
@@ -13,6 +21,19 @@ module HotBunnies
     #
 
     # Connects to a RabbitMQ node.
+    #
+    # @param [Hash] options Connection options
+    #
+    # @option options [String] :host ("127.0.0.1") Hostname or IP address to connect to
+    # @option options [Integer] :port (5672) Port RabbitMQ listens on
+    # @option options [String] :username ("guest") Username
+    # @option options [String] :password ("guest") Password
+    # @option options [String] :vhost ("/") Virtual host to use
+    # @option options [Integer] :heartbeat (600) Heartbeat interval. 0 means no heartbeat.
+    # @option options [Boolean] :tls (false) Set to true to use TLS/SSL connection. This will switch port to 5671 by default.
+    #
+    # @see http://hotbunnies.info/articles/connecting.html Connecting to RabbitMQ guide
+    #
     #
     # @api public
     def self.connect(options={})
@@ -45,9 +66,13 @@ module HotBunnies
       new(cf)
     end
 
-    attr_reader :thread, :channels
+    # @private
+    attr_reader :thread
+    # @return [Array<HotBunnies::Channel>] Channels opened on this connection
+    attr_reader :channels
 
 
+    # @private
     def initialize(connection_factory)
       @cf         = connection_factory
       @connection = converting_rjc_exceptions_to_ruby do
@@ -58,6 +83,15 @@ module HotBunnies
       @thread     = Thread.current
     end
 
+    # Opens a new channel.
+    #
+    # @param [Integer] (nil): Channel number. Pass nil to let HotBunnies allocate an available number
+    #                         in a safe way.
+    #
+    # @return [HotBunnies::Channel] Newly created channel
+    # @see HotBunnies::Channel
+    # @see http://hotbunnies.info/articles/getting_started.html Getting Started guide
+    # @api public
     def create_channel(n = nil)
       jc = if n
              @connection.create_channel(n)
