@@ -120,7 +120,7 @@ module HotBunnies
       sh
     end
 
-
+    # Flushes the socket used by this connection.
     def flush
       @connection.flush
     end
@@ -129,6 +129,7 @@ module HotBunnies
       @connection.heartbeat = n
     end
 
+    # No-op, exists for better API compatibility with Bunny.
     def start
       # no-op
       #
