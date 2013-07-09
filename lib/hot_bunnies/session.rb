@@ -14,6 +14,8 @@ module HotBunnies
   # @see #create_channel
   # @see #close
   # @api public
+  # @see http://hotbunnies.info/articles/getting_started.html Getting Started guide
+  # @see http://hotbunnies.info/articles/connecting.html Connecting to RabbitMQ guide
   class Session
 
     #
@@ -160,64 +162,79 @@ module HotBunnies
       @channels[ch.channel_number] = ch
     end
 
+    # @private
     def unregister_channel(ch)
       @channels.delete(ch.channel_number)
     end
 
     protected
 
+    # @private
     def self.hostname_from(options)
       options[:host] || options[:hostname] || ConnectionFactory.DEFAULT_HOST
     end
 
+    # @private
     def self.include_host?(options)
       !!(options[:host] || options[:hostname])
     end
 
+    # @private
     def self.vhost_from(options)
       options[:virtual_host] || options[:vhost] || ConnectionFactory.DEFAULT_VHOST
     end
 
+    # @private
     def self.include_vhost?(options)
       !!(options[:virtual_host] || options[:vhost])
     end
 
+    # @private
     def self.timeout_from(options)
       options[:connection_timeout] || options[:timeout]
     end
 
+    # @private
     def self.include_timeout?(options)
       !!(options[:connection_timeout] || options[:timeout])
     end
 
+    # @private
     def self.username_from(options)
       options[:username] || options[:user] || ConnectionFactory.DEFAULT_USER
     end
 
+    # @private
     def self.heartbeat_from(options)
       options[:heartbeat_interval] || options[:requested_heartbeat] || ConnectionFactory.DEFAULT_HEARTBEAT
     end
 
+    # @private
     def self.connection_timeout_from(options)
       options[:connection_timeout_interval] || options[:connection_timeout] || ConnectionFactory.DEFAULT_CONNECTION_TIMEOUT
     end
 
+    # @private
     def self.include_username?(options)
       !!(options[:username] || options[:user])
     end
 
+    # @private
     def self.password_from(options)
       options[:password] || options[:pass] || ConnectionFactory.DEFAULT_PASS
     end
 
+    # @private
     def self.include_password?(options)
       !!(options[:password] || options[:pass])
     end
 
+    # @private
     def self.include_heartbeat?(options)
       !!(options[:heartbeat_interval] || options[:requested_heartbeat] || options[:heartbeat])
     end
 
+    # @private
     def self.include_connection_timeout?(options)
       !!(options[:connection_timeout_interval] || options[:connection_timeout])
     end
@@ -238,6 +255,7 @@ module HotBunnies
       end
     end
 
+    # @private
     def new_connection
       converting_rjc_exceptions_to_ruby do
         @cf.new_connection
