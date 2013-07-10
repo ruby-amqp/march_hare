@@ -551,12 +551,83 @@ module HotBunnies
       end
     end
 
+        # Rejects or requeues a message.
+    #
+    # @param [Integer] delivery_tag Delivery tag obtained from delivery info
+    # @param [Boolean] requeue Should the message be requeued?
+    # @return [NilClass] nil
+    #
+    # @example Requeue a message
+    #   conn  = Bunny.new
+    #   conn.start
+    #
+    #   ch    = conn.create_channel
+    #   q.subscribe do |delivery_info, properties, payload|
+    #     # requeue the message
+    #     ch.basic_reject(delivery_info.delivery_tag, true)
+    #   end
+    #
+    # @example Reject a message
+    #   conn  = Bunny.new
+    #   conn.start
+    #
+    #   ch    = conn.create_channel
+    #   q.subscribe do |delivery_info, properties, payload|
+    #     # requeue the message
+    #     ch.basic_reject(delivery_info.delivery_tag, false)
+    #   end
+    #
+    # @example Requeue a message fetched via basic.get
+    #   conn  = Bunny.new
+    #   conn.start
+    #
+    #   ch    = conn.create_channel
+    #   # we assume the queue exists and has messages
+    #   delivery_info, properties, payload = ch.basic_get("bunny.examples.queue3", :ack => true)
+    #   ch.basic_reject(delivery_info.delivery_tag, true)
+    #
+    # @see #basic_nack
+    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
+    # @api public
+    def basic_reject(delivery_tag, requeue)
+    end
+
+    def basic_ack(delivery_tag, multiple)
+    end
+
+    # Rejects or requeues messages just like {Bunny::Channel#basic_reject} but can do so
+    # with multiple messages at once.
+    #
+    # @param [Integer] delivery_tag Delivery tag obtained from delivery info
+    # @param [Boolean] requeue Should the message be requeued?
+    # @param [Boolean] multiple Should all deliveries up to this one be rejected/requeued?
+    # @return [NilClass] nil
+    #
+    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
+    # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions guide
+    # @api public
+    def basic_nack(delivery_tag, multiple = false, requeue = false)
+      converting_rjc_exceptions_to_ruby do
+        @delegate.basic_nack(delivery_tag, multiple, requeue)
+      end
+    end
+
+    # Redeliver unacknowledged messages
+    #
+    # @param [Boolean] requeue Should messages be requeued?
+    # @return RabbitMQ response
+    # @api public
     def basic_recover(requeue = true)
       converting_rjc_exceptions_to_ruby do
         @delegate.basic_recover(requeue)
       end
     end
 
+    # Redeliver unacknowledged messages
+    #
+    # @param [Boolean] requeue Should messages be requeued?
+    # @return RabbitMQ response
+    # @api public
     def basic_recover_async(requeue = true)
       converting_rjc_exceptions_to_ruby do
         @delegate.basic_recover_async(requeue)
