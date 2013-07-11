@@ -551,7 +551,7 @@ module HotBunnies
       end
     end
 
-        # Rejects or requeues a message.
+    # Rejects or requeues a message.
     #
     # @param [Integer] delivery_tag Delivery tag obtained from delivery info
     # @param [Boolean] requeue Should the message be requeued?
@@ -590,9 +590,15 @@ module HotBunnies
     # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
     # @api public
     def basic_reject(delivery_tag, requeue)
+      converting_rjc_exceptions_to_ruby do
+        @delegate.basic_reject(delivery_tag, requeue)
+      end
     end
 
     def basic_ack(delivery_tag, multiple)
+      converting_rjc_exceptions_to_ruby do
+        @delegate.basic_ack(delivery_tag, multiple)
+      end
     end
 
     # Rejects or requeues messages just like {Bunny::Channel#basic_reject} but can do so
