@@ -7,3 +7,4 @@ pkg/*
 bin/*
 doc/*
 .yardoc/*
+debug/*
