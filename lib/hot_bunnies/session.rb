@@ -43,7 +43,7 @@ module HotBunnies
 
       cf.uri                = options[:uri]          if options[:uri]
       cf.host               = hostname_from(options) if include_host?(options)
-      cf.port               = options[:port]         if options[:port]
+      cf.port               = options[:port].to_i    if options[:port]
       cf.virtual_host       = vhost_from(options)    if include_vhost?(options)
       cf.connection_timeout = timeout_from(options)  if include_timeout?(options)
       cf.username           = username_from(options) if include_username?(options)
