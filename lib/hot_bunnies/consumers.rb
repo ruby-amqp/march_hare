@@ -57,15 +57,6 @@ module HotBunnies
       raise NotImplementedError, 'To be implemented by a subclass'
     end
 
-    def cancel
-      @cancelling.set(true)
-      response = channel.basic_cancel(consumer_tag)
-      @cancelled.set(true)
-      @terminated.set(true)
-
-      response
-    end
-
     def cancelled?
       @cancelling.get || @cancelled.get
     end
@@ -119,9 +110,14 @@ module HotBunnies
     end
 
     def cancel
-      super
+      @cancelling.set(true)
+      response = channel.basic_cancel(consumer_tag)
+      @cancelled.set(true)
+      @terminated.set(true)
 
       gracefully_shutdown
+
+      response
     end
 
     def handleCancel(consumer_tag)
@@ -161,6 +157,17 @@ module HotBunnies
       @opts = opts
     end
 
+    def cancel
+      @cancelling.set(true)
+      response = channel.basic_cancel(consumer_tag)
+      @cancelled.set(true)
+
+      @internal_queue.offer(POISON)
+      @terminated.set(true)
+
+      response
+    end
+
     def start
       interrupted = false
       until (@cancelling.get || @cancelled.get) || JavaConcurrent::Thread.current_thread.interrupted?
@@ -178,7 +185,13 @@ module HotBunnies
         end
       end
       while (pair = @internal_queue.poll)
-        callback(*pair)
+        if pair
+          if pair == POISON
+            @cancelling.set(true)
+          else
+            callback(*pair)
+          end
+        end
       end
       @terminated.set(true)
       if interrupted
