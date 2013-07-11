@@ -126,6 +126,34 @@ This is also how Bunny 0.9 works and we've seen this default to be
 a better idea.
 
 
+## More Convenient Way of Creating Thread Pools
+
+HotBunnies allows you to pass your own thread pool to `HotBunnies::Queue#subscribe` via
+the `:executor` option. Choosing the right thread pool size can make a huge difference
+in throughput for applications that use non-blocking consumers.
+
+Previously to 2.0, HotBunnies required using Java interop and being familiar
+with JDK executors API to instantiate them.
+
+HotBunnies 2.0 introduces `HotBunnies::ThreadPools` that has convenience methods
+that make it easier:
+
+``` ruby
+# fixed size thread pool of size 1
+HotBunnies::ThreadPools.single_threaded
+# fixed size thread pool of size 16
+HotBunnies::ThreadPools.fixed_of_size(16)
+# dynamically growing thread pool, will allocate new threads
+# as needed
+HotBunnies::ThreadPools.dynamically_growing
+
+# in context
+subscribe(:blocking => false, :executor => HotBunnies::ThreadPools.single_threaded) do |metadata, payload|
+ # ...
+end
+```
+
+
 ## RabbitMQ Java Client Upgrade
 
 Hot Bunnies now uses RabbitMQ Java client 3.1.
