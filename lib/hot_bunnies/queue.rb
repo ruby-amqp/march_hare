@@ -5,15 +5,46 @@ require "hot_bunnies/metadata"
 require "hot_bunnies/consumers"
 
 module HotBunnies
+  # Represents AMQP 0.9.1 queue.
+  #
+  # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
+  # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions guide
   class Queue
-    attr_reader :name, :channel
+    # @return [HotBunnies::Channel] Channel this queue uses
+    attr_reader :channel
+    # @return [String] Queue name
+    attr_reader :name
 
+    # @param [HotBunnies::Channel] channel_or_connection Channel this queue will use.
+    # @param [String] name                          Queue name. Pass an empty string to make RabbitMQ generate a unique one.
+    # @param [Hash] opts                            Queue properties
+    #
+    # @option opts [Boolean] :durable (false)      Should this queue be durable?
+    # @option opts [Boolean] :auto_delete (false)  Should this queue be automatically deleted when the last consumer disconnects?
+    # @option opts [Boolean] :exclusive (false)    Should this queue be exclusive (only can be used by this connection, removed when the connection is closed)?
+    # @option opts [Boolean] :arguments ({})       Additional optional arguments (typically used by RabbitMQ extensions and plugins)
+    #
+    # @see HotBunnies::Channel#queue
+    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
+    # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions guide
+    # @api public
     def initialize(channel, name, options={})
       @channel = channel
       @name = name
       @options = {:durable => false, :exclusive => false, :auto_delete => false, :passive => false, :arguments => Hash.new}.merge(options)
     end
 
+    # Binds queue to an exchange
+    #
+    # @param [HotBunnies::Exchange,String] exchange Exchange to bind to
+    # @param [Hash] opts Binding properties
+    #
+    # @option opts [String] :routing_key  Routing key
+    # @option opts [Hash] :arguments ({}) Additional optional binding arguments
+    #
+    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
+    # @see http://hotbunnies.info/articles/bindings.html Bindings guide
+    # @api public
     def bind(exchange, options={})
       exchange_name = if exchange.respond_to?(:name) then exchange.name else exchange.to_s end
       @channel.queue_bind(@name, exchange_name, options.fetch(:routing_key, ''), options[:arguments])
