@@ -52,6 +52,17 @@ module HotBunnies
       self
     end
 
+    # Unbinds queue from an exchange
+    #
+    # @param [HotBunnies::Exchange,String] exchange Exchange to unbind from
+    # @param [Hash] opts                       Binding properties
+    #
+    # @option opts [String] :routing_key  Routing key
+    # @option opts [Hash] :arguments ({}) Additional optional binding arguments
+    #
+    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
+    # @see http://hotbunnies.info/articles/bindings.html Bindings guide
+    # @api public
     def unbind(exchange, options={})
       exchange_name = if exchange.respond_to?(:name) then exchange.name else exchange.to_s end
       @channel.queue_unbind(@name, exchange_name, options.fetch(:routing_key, ''))
