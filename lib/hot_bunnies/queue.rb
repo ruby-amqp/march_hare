@@ -113,8 +113,15 @@ module HotBunnies
       self
     end
 
-    def delete
-      @channel.queue_delete(@name)
+    # Deletes the queue
+    #
+    # @option [Boolean] if_unused (false) Should this queue be deleted only if it has no consumers?
+    # @option [Boolean] if_empty (false) Should this queue be deleted only if it has no messages?
+    #
+    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
+    # @api public
+    def delete(if_unused = false, if_empty = false)
+      @channel.queue_delete(@name, if_unused, if_empty)
     end
 
     def purge

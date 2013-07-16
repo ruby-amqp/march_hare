@@ -1,7 +1,7 @@
 require "spec_helper"
 
 
-describe "Client-defined queue" do
+describe "Queue" do
 
   #
   # Environment
@@ -16,8 +16,22 @@ describe "Client-defined queue" do
   end
 
 
-  it "can be deleted" do
-    queue    = channel.queue("", :auto_delete => true)
-    queue.delete
+  context "that exists" do
+    it "can be deleted" do
+      q    = channel.queue("")
+      q.delete
+    end
+  end
+
+  context "that DOES NOT exist" do
+    it "cannot be deleted" do
+      ch = connection.create_channel
+      q  = ch.queue("")
+
+      q.delete(true, true)
+      lambda do
+        q.delete(true, true)
+      end.should raise_error(HotBunnies::NotFound)
+    end
   end
 end
