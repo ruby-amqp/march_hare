@@ -159,6 +159,17 @@ end
 Hot Bunnies now uses RabbitMQ Java client 3.1.
 
 
+## Queue Predicates
+
+`HotBunnies::Queue` now provides several predicate methods:
+
+ * `#server_named?`
+ * `#auto_delete?`
+ * `#durable?`
+ * `#exclusive?`
+
+for better [Bunny 0.9](http://rubybunny.info)+ compatibility.
+
 
 # Changes Between 1.4.0 and 1.5.0
 

@@ -32,7 +32,50 @@ module HotBunnies
       @channel = channel
       @name = name
       @options = {:durable => false, :exclusive => false, :auto_delete => false, :passive => false, :arguments => Hash.new}.merge(options)
+
+      @durable      = @options[:durable]
+      @exclusive    = @options[:exclusive]
+      @server_named = @name.empty?
+      @auto_delete  = @options[:auto_delete]
+      @arguments    = @options[:arguments]
     end
+
+
+    # @return [Boolean] true if this queue was declared as durable (will survive broker restart).
+    # @api public
+    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
+    def durable?
+      @durable
+    end # durable?
+
+    # @return [Boolean] true if this queue was declared as exclusive (limited to just one consumer)
+    # @api public
+    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
+    def exclusive?
+      @exclusive
+    end # exclusive?
+
+    # @return [Boolean] true if this queue was declared as automatically deleted (deleted as soon as last consumer unbinds).
+    # @api public
+    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
+    def auto_delete?
+      @auto_delete
+    end # auto_delete?
+
+    # @return [Boolean] true if this queue was declared as server named.
+    # @api public
+    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
+    def server_named?
+      @server_named
+    end # server_named?
+
+    # @return [Hash] Additional optional arguments (typically used by RabbitMQ extensions and plugins)
+    # @api public
+    def arguments
+      @arguments
+    end
+
+
 
     # Binds queue to an exchange
     #

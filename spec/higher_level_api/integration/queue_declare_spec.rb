@@ -13,37 +13,43 @@ describe "Queue" do
 
     it "can be declared as auto-deleted" do
       q = channel.queue("", :auto_delete => true)
+      q.should be_auto_delete
       q.delete
     end
 
     it "can be declared as auto-deleted and non-durable" do
       q = channel.queue("", :auto_delete => true, :durable => false)
+      q.should be_auto_delete
+      q.should_not be_durable
       q.delete
     end
 
     it "can be declared as NON-auto-deleted" do
       q = channel.queue("", :auto_delete => false)
+      q.should_not be_auto_delete
+      q.should_not be_durable
       q.delete
     end
 
     it "can be declared as NON-durable" do
       q = channel.queue("", :durable => false)
+      q.should_not be_durable
       q.delete
     end
 
     it "can be declared with additional attributes like x-message-ttle" do
-      queue    = channel.queue("", :durable => false, :arguments => { 'x-message-ttl' => 2000 })
-      exchange = channel.exchange("", :type => :direct)
+      q = channel.queue("", :durable => false, :arguments => { 'x-message-ttl' => 2000 })
+      x = channel.exchange("", :type => :direct)
 
       100.times do |i|
-        exchange.publish("Message #{i}", :routing_key => queue.name)
+        x.publish("Message #{i}", :routing_key => q.name)
       end
 
-      queue.get.should_not be_nil
+      q.get.should_not be_nil
       sleep(2.1)
 
-      queue.get.should be_nil
-      queue.delete
+      q.get.should be_nil
+      q.delete
     end
   end
 end
