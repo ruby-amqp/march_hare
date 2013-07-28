@@ -1,5 +1,6 @@
 # encoding: utf-8
 require "hot_bunnies/shutdown_listener"
+require "set"
 
 module HotBunnies
   java_import com.rabbitmq.client.ConnectionFactory
@@ -21,6 +22,9 @@ module HotBunnies
     #
     # API
     #
+
+    # Default reconnection interval for TCP connection failures
+    DEFAULT_NETWORK_RECOVERY_INTERVAL = 5.0
 
     # Connects to a RabbitMQ node.
     #
@@ -65,7 +69,7 @@ module HotBunnies
       end
 
 
-      new(cf)
+      new(cf, options)
     end
 
     # @private
@@ -75,14 +79,25 @@ module HotBunnies
 
 
     # @private
-    def initialize(connection_factory)
+    def initialize(connection_factory, opts = {})
       @cf         = connection_factory
       @connection = converting_rjc_exceptions_to_ruby do
         self.new_connection
       end
       @channels   = ConcurrentHashMap.new
-
       @thread     = Thread.current
+
+      # should automatic recovery from network failures be used?
+      @automatically_recover = if opts[:automatically_recover].nil? && opts[:automatic_recovery].nil?
+                                 true
+                               else
+                                 opts[:automatically_recover] || opts[:automatic_recovery]
+                               end
+      @network_recovery_interval = opts.fetch(:network_recovery_interval, DEFAULT_NETWORK_RECOVERY_INTERVAL)
+
+      @shutdown_hooks = Set.new
+
+      self.add_automatic_recovery_hook if @automatically_recover
     end
 
     # Opens a new channel.
@@ -115,11 +130,55 @@ module HotBunnies
       @connection.close
     end
 
+    def open?
+      @connection.open?
+    end
+    alias connected? open?
+
     def on_shutdown(&block)
       sh = ShutdownListener.new(self, &block)
+      @shutdown_hooks << sh
+
       @connection.add_shutdown_listener(sh)
 
       sh
+    end
+
+    # @private
+    def add_automatic_recovery_hook
+      fn = Proc.new do |_, signal|
+        if !signal.initiated_by_application
+          conn.automatically_recover
+        end
+      end
+
+      @automatic_recovery_hook = self.on_shutdown(&fn)
+    end
+
+    # @private
+    def disable_automatic_recovery
+      @connetion.remove_shutdown_listener(@automatic_recovery_hook) if @automatic_recovery_hook
+    end
+
+    def automatically_recover
+      # recovering immediately makes little sense. Wait a bit first. MK.
+      sleep @network_recovery_interval
+
+      @connection = converting_rjc_exceptions_to_ruby do
+        self.new_connection
+      end
+      self.recover_shutdown_hooks
+
+      @channels.each do |id, ch|
+        ch.automatically_recover(self, @connection)
+      end
+    end
+
+    # @private
+    def recover_shutdown_hooks
+      @shutdown_hooks.each do |sh|
+        @connection.add_shutdown_listener(sh)
+      end
     end
 
     # Flushes the socket used by this connection.

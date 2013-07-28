@@ -185,6 +185,18 @@ module HotBunnies
       sh
     end
 
+    # @private
+    def automatically_recover(session, java_connection)
+      jch = java_connection.create_channel(id)
+
+      self.revive_with(jch)
+    end
+
+    # @private
+    def revive_with(java_ch)
+      @delegate = java_ch
+    end
+
     # @group Exchanges
 
     # Declares a headers exchange or looks it up in the cache of previously
