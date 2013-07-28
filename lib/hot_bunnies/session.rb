@@ -6,6 +6,7 @@ module HotBunnies
   java_import com.rabbitmq.client.ConnectionFactory
   java_import com.rabbitmq.client.Connection
   java_import java.util.concurrent.ConcurrentHashMap
+  java_import java.util.concurrent.ConcurrentSkipListSet
 
   # Connection to a RabbitMQ node.
   #
@@ -94,7 +95,7 @@ module HotBunnies
                                  opts[:automatically_recover] || opts[:automatic_recovery]
                                end
       @network_recovery_interval = opts.fetch(:network_recovery_interval, DEFAULT_NETWORK_RECOVERY_INTERVAL)
-      @shutdown_hooks            = Set.new
+      @shutdown_hooks            = ConcurrentSkipListSet.new
 
       if @automatically_recover
         self.add_automatic_recovery_hook
