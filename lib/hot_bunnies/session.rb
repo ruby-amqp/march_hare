@@ -94,10 +94,11 @@ module HotBunnies
                                  opts[:automatically_recover] || opts[:automatic_recovery]
                                end
       @network_recovery_interval = opts.fetch(:network_recovery_interval, DEFAULT_NETWORK_RECOVERY_INTERVAL)
+      @shutdown_hooks            = Set.new
 
-      @shutdown_hooks = Set.new
-
-      self.add_automatic_recovery_hook if @automatically_recover
+      if @automatically_recover
+        self.add_automatic_recovery_hook
+      end
     end
 
     # Opens a new channel.
@@ -148,7 +149,7 @@ module HotBunnies
     def add_automatic_recovery_hook
       fn = Proc.new do |_, signal|
         if !signal.initiated_by_application
-          conn.automatically_recover
+          self.automatically_recover
         end
       end
 
