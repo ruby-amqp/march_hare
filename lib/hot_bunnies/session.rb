@@ -164,7 +164,7 @@ module HotBunnies
 
     def automatically_recover
       # recovering immediately makes little sense. Wait a bit first. MK.
-      sleep @network_recovery_interval
+      java.lang.Thread.sleep(@network_recovery_interval * 1000)
 
       @connection = converting_rjc_exceptions_to_ruby do
         self.new_connection
