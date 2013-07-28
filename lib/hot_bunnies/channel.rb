@@ -124,7 +124,8 @@ module HotBunnies
       # we keep track of consumers to gracefully shut down their
       # executors when the channel is closed. This frees library users
       # from having to worry about this. MK.
-      @consumers  = ConcurrentHashMap.new
+      @consumers      = ConcurrentHashMap.new
+      @shutdown_hooks = ConcurrentSkipListSet.new
 
       on_shutdown do |ch, cause|
         ch.gracefully_shut_down_consumers
@@ -180,7 +181,9 @@ module HotBunnies
 
     def on_shutdown(&block)
       sh = ShutdownListener.new(self, &block)
-      @connection.add_shutdown_listener(sh)
+
+      @shutdown_hooks << sh
+      @delegate.add_shutdown_listener(sh)
 
       sh
     end
@@ -190,11 +193,19 @@ module HotBunnies
       jch = java_connection.create_channel(id)
 
       self.revive_with(jch)
+      self.recover_shutdown_hooks
     end
 
     # @private
     def revive_with(java_ch)
       @delegate = java_ch
+    end
+
+    # @private
+    def recover_shutdown_hooks
+      @shutdown_hooks.each do |sh|
+        @delegate.add_shutdown_listener(sh)
+      end
     end
 
     # @group Exchanges
