@@ -6,8 +6,8 @@ module HotBunnies
 
     POISON = :__poison__
 
-    def initialize(channel, buffer_size, opts, callback)
-      super(channel, callback)
+    def initialize(channel, queue, buffer_size, opts, callback)
+      super(channel, queue, callback)
       if buffer_size
         @internal_queue = ArrayBlockingQueue.new(buffer_size)
       else

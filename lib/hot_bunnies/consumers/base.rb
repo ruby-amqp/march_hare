@@ -4,9 +4,10 @@ module HotBunnies
   class BaseConsumer < DefaultConsumer
     attr_accessor :consumer_tag
 
-    def initialize(channel)
+    def initialize(channel, queue)
       super(channel)
       @channel    = channel
+      @queue      = queue
 
       @cancelling = JavaConcurrent::AtomicBoolean.new
       @cancelled  = JavaConcurrent::AtomicBoolean.new
@@ -67,6 +68,11 @@ module HotBunnies
 
     def terminated?
       @terminated.get
+    end
+
+    # @private
+    def recover_from_network_failure
+      @consumer_tag = @channel.basic_consume(@queue.name, !(opts[:ack] || opts[:manual_ack]), consumer)
     end
   end
 end

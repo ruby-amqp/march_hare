@@ -7,4 +7,5 @@ module JavaConcurrent
   java_import 'java.util.concurrent.ArrayBlockingQueue'
   java_import 'java.util.concurrent.TimeUnit'
   java_import 'java.util.concurrent.atomic.AtomicBoolean'
+  java_import 'java.util.concurrent.atomic.AtomicInteger'
 end

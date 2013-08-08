@@ -2,10 +2,10 @@ require "hot_bunnies/consumers/base"
 
 module HotBunnies
   class CallbackConsumer < BaseConsumer
-    def initialize(channel, callback)
+    def initialize(channel, queue, callback)
       raise ArgumentError, "callback must not be nil!" if callback.nil?
 
-      super(channel)
+      super(channel, queue)
       @callback = callback
       @callback_arity = @callback.arity
     end
@@ -20,8 +20,8 @@ module HotBunnies
   end
 
   class AsyncCallbackConsumer < CallbackConsumer
-    def initialize(channel, opts, callback, executor)
-      super(channel, callback)
+    def initialize(channel, queue, opts, callback, executor)
+      super(channel, queue, callback)
       @executor = executor
       @executor_submit = executor.java_method(:submit, [JavaConcurrent::Runnable.java_class])
       @opts = opts

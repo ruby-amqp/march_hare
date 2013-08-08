@@ -1,5 +1,6 @@
 # encoding: utf-8
 require "hot_bunnies/shutdown_listener"
+require "hot_bunnies/juc"
 
 module HotBunnies
   # ## Channels in RabbitMQ
@@ -126,6 +127,7 @@ module HotBunnies
       # from having to worry about this. MK.
       @consumers      = ConcurrentHashMap.new
       @shutdown_hooks = ConcurrentSkipListSet.new
+      @recoveries_counter = JavaConcurrent::AtomicInteger.new(0)
 
       on_shutdown do |ch, cause|
         ch.gracefully_shut_down_consumers
@@ -194,6 +196,13 @@ module HotBunnies
 
       self.revive_with(jch)
       self.recover_shutdown_hooks
+
+      self.recover_prefetch_setting
+      self.recover_exchanges
+      # this includes recovering bindings
+      # self.recover_queues
+      # self.recover_consumers
+      self.increment_recoveries_counter
     end
 
     # @private
@@ -206,6 +215,50 @@ module HotBunnies
       @shutdown_hooks.each do |sh|
         @delegate.add_shutdown_listener(sh)
       end
+    end
+
+    # Recovers basic.qos setting. Used by the Automatic Network Failure
+    # Recovery feature.
+    #
+    # @api plugin
+    def recover_prefetch_setting
+      basic_qos(@prefetch_count) if @prefetch_count
+    end
+
+    # Recovers exchanges. Used by the Automatic Network Failure
+    # Recovery feature.
+    #
+    # @api plugin
+    def recover_exchanges
+      @exchanges.values.dup.each do |x|
+        x.recover_from_network_failure
+      end
+    end
+
+    # Recovers queues and bindings. Used by the Automatic Network Failure
+    # Recovery feature.
+    #
+    # @api private
+    def recover_queues
+      @queues.values.dup.each do |q|
+        # puts "Recovering queue #{q.name}"
+        q.recover_from_network_failure
+      end
+    end
+
+    # Recovers consumers. Used by the Automatic Network Failure
+    # Recovery feature.
+    #
+    # @api private
+    def recover_consumers
+      @consumers.values.dup.each do |c|
+        c.recover_from_network_failure
+      end
+    end
+
+    # @private
+    def increment_recoveries_counter
+      @recoveries_counter.increment
     end
 
     # @group Exchanges
@@ -506,9 +559,12 @@ module HotBunnies
     end
 
     def basic_qos(prefetch_count)
-      converting_rjc_exceptions_to_ruby do
+      r = converting_rjc_exceptions_to_ruby do
         @delegate.basic_qos(prefetch_count)
       end
+      @prefetch_count = prefetch_count
+
+      r
     end
 
     def qos(options={})

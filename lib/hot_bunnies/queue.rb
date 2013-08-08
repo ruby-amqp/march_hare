@@ -141,9 +141,9 @@ module HotBunnies
 
     def build_consumer(opts, &block)
       if opts[:block] || opts[:blocking]
-        BlockingCallbackConsumer.new(@channel, opts[:buffer_size], opts, block)
+        BlockingCallbackConsumer.new(@channel, self, opts[:buffer_size], opts, block)
       else
-        AsyncCallbackConsumer.new(@channel, opts, block, opts.fetch(:executor, JavaConcurrent::Executors.new_single_thread_executor))
+        AsyncCallbackConsumer.new(@channel, self, opts, block, opts.fetch(:executor, JavaConcurrent::Executors.new_single_thread_executor))
       end
     end
 
@@ -208,6 +208,36 @@ module HotBunnies
                  else @channel.queue_declare(@name, @options[:durable], @options[:exclusive], @options[:auto_delete], @options[:arguments])
                  end
       @name = response.queue
+    end
+
+    # @private
+    def recover_from_network_failure
+      if self.server_named?
+        old_name = @name.dup
+        @name    = ""
+
+        @channel.deregister_queue_named(old_name)
+      end
+
+      # puts "Recovering queue #{@name}"
+      begin
+        declare!
+
+        @channel.register_queue(self)
+      rescue Exception => e
+        # TODO: use a logger
+        puts "Caught #{e.inspect} while redeclaring and registering #{@name}!"
+      end
+      recover_bindings
+    end
+
+    # @private
+    def recover_bindings
+      @bindings.each do |b|
+        # TODO: use a logger
+        # puts "Recovering binding #{b.inspect}"
+        self.bind(b[:exchange], b)
+      end
     end
   end # Queue
 end # HotBunnies
