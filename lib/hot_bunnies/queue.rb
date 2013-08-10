@@ -118,8 +118,15 @@ module HotBunnies
     # @see http://hotbunnies.info/articles/bindings.html Bindings guide
     # @api public
     def unbind(exchange, options={})
-      exchange_name = if exchange.respond_to?(:name) then exchange.name else exchange.to_s end
+      exchange_name = if exchange.respond_to?(:name) then
+                        exchange.name
+                      else
+                        exchange.to_s
+                      end
       @channel.queue_unbind(@name, exchange_name, options.fetch(:routing_key, ''))
+
+      binding = { :exchange => exchange_name, :routing_key => (options[:routing_key] || options[:key]), :arguments => options[:arguments] }
+      @bindings.delete(binding) unless @bindings.include?(binding)
 
       self
     end
