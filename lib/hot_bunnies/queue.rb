@@ -98,7 +98,7 @@ module HotBunnies
                       end
       @channel.queue_bind(@name, exchange_name, options.fetch(:routing_key, ''), options[:arguments])
 
-# store bindings for automatic recovery. We need to be very careful to
+      # store bindings for automatic recovery. We need to be very careful to
       # not cause an infinite rebinding loop here when we recover. MK.
       binding = { :exchange => exchange_name, :routing_key => (options[:routing_key] || options[:key]), :arguments => options[:arguments] }
       @bindings << (binding) unless @bindings.include?(binding)
