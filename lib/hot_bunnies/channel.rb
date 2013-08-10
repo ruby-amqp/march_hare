@@ -122,7 +122,9 @@ module HotBunnies
       @connection = session
       @delegate   = delegate
 
-      # we keep track of consumers to gracefully shut down their
+      @exchanges      = ConcurrentHashMap.new
+      @queues         = ConcurrentHashMap.new
+      # we keep track of consumers in part to gracefully shut down their
       # executors when the channel is closed. This frees library users
       # from having to worry about this. MK.
       @consumers      = ConcurrentHashMap.new
@@ -241,7 +243,7 @@ module HotBunnies
     # @api private
     def recover_queues
       @queues.values.dup.each do |q|
-        # puts "Recovering queue #{q.name}"
+        puts "Recovering queue #{q.name}"
         q.recover_from_network_failure
       end
     end
@@ -278,9 +280,11 @@ module HotBunnies
     # @see http://hotbunnies.info/articles/exchanges.html Exchanges and Publishing guide
     # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions to AMQP 0.9.1 guide
     def exchange(name, options={})
-      Exchange.new(self, name, options).tap do |x|
+      dx = Exchange.new(self, name, options).tap do |x|
         x.declare!
       end
+
+      self.register_exchange(dx)
     end
 
     # Declares a fanout exchange or looks it up in the cache of previously
@@ -298,9 +302,11 @@ module HotBunnies
     # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions to AMQP 0.9.1 guide
     # @api public
     def fanout(name, opts = {})
-      Exchange.new(self, name, opts.merge(:type => "fanout")).tap do |x|
+      dx = Exchange.new(self, name, opts.merge(:type => "fanout")).tap do |x|
         x.declare!
       end
+
+      self.register_exchange(dx)
     end
 
     # Declares a direct exchange or looks it up in the cache of previously
@@ -318,9 +324,11 @@ module HotBunnies
     # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions to AMQP 0.9.1 guide
     # @api public
     def direct(name, opts = {})
-      Exchange.new(self, name, opts.merge(:type => "direct")).tap do |x|
+      dx = Exchange.new(self, name, opts.merge(:type => "direct")).tap do |x|
         x.declare!
       end
+
+      self.register_exchange(dx)
     end
 
     # Declares a topic exchange or looks it up in the cache of previously
@@ -338,9 +346,11 @@ module HotBunnies
     # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions to AMQP 0.9.1 guide
     # @api public
     def topic(name, opts = {})
-      Exchange.new(self, name, opts.merge(:type => "topic")).tap do |x|
+      dx = Exchange.new(self, name, opts.merge(:type => "topic")).tap do |x|
         x.declare!
       end
+
+      self.register_exchange(dx)
     end
 
     # Declares a headers exchange or looks it up in the cache of previously
@@ -358,9 +368,11 @@ module HotBunnies
     # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions to AMQP 0.9.1 guide
     # @api public
     def headers(name, opts = {})
-      Exchange.new(self, name, opts.merge(:type => "headers")).tap do |x|
+      dx = Exchange.new(self, name, opts.merge(:type => "headers")).tap do |x|
         x.declare!
       end
+
+      self.register_exchange(dx)
     end
 
     # Provides access to the default exchange
@@ -406,9 +418,11 @@ module HotBunnies
     # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions guide
     # @api public
     def queue(name, options={})
-      Queue.new(self, name, options).tap do |q|
+      dq = Queue.new(self, name, options).tap do |q|
         q.declare!
       end
+
+      self.register_queue(dq)
     end
 
     # Declares a queue using queue.declare AMQP 0.9.1 method.
@@ -803,6 +817,36 @@ module HotBunnies
         # TODO: convert properties to a Ruby hash
         @block.call(reply_code, reply_text, exchange, routing_key, basic_properties, String.from_java_bytes(payload))
       end
+    end
+
+    # @private
+    def deregister_queue(queue)
+      @queues.delete(queue.name)
+    end
+
+    # @private
+    def deregister_queue_named(name)
+      @queues.delete(name)
+    end
+
+    # @private
+    def register_queue(queue)
+      @queues[queue.name] = queue
+    end
+
+    # @private
+    def find_queue(name)
+      @queues[name]
+    end
+
+    # @private
+    def deregister_exchange(exchange)
+      @exchanges.delete(exchange.name)
+    end
+
+    # @private
+    def register_exchange(exchange)
+      @exchanges[exchange.name] = exchange
     end
 
     # @private
