@@ -68,7 +68,7 @@ describe 'A consumer' do
         end
       end
 
-      sleep 0.2
+      sleep 0.5
 
       consumer.cancel
 
