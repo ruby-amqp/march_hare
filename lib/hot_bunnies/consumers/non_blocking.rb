@@ -41,7 +41,7 @@ module HotBunnies
         @executor_submit.call do
           begin
             callback(headers, message)
-          rescue Exception, java.lang.Throwable => e
+          rescue Exception => e
             # TODO: logging
             $stderr.puts "Unhandled exception in consumer #{@consumer_tag}: #{e}"
           end
