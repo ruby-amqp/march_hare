@@ -202,8 +202,8 @@ module HotBunnies
       self.recover_prefetch_setting
       self.recover_exchanges
       # this includes recovering bindings
-      # self.recover_queues
-      # self.recover_consumers
+      self.recover_queues
+      self.recover_consumers
       self.increment_recoveries_counter
     end
 
@@ -232,7 +232,7 @@ module HotBunnies
     #
     # @api plugin
     def recover_exchanges
-      @exchanges.values.dup.each do |x|
+      @exchanges.values.each do |x|
         x.recover_from_network_failure
       end
     end
@@ -242,8 +242,7 @@ module HotBunnies
     #
     # @api private
     def recover_queues
-      @queues.values.dup.each do |q|
-        puts "Recovering queue #{q.name}"
+      @queues.values.each do |q|
         q.recover_from_network_failure
       end
     end
@@ -253,7 +252,8 @@ module HotBunnies
     #
     # @api private
     def recover_consumers
-      @consumers.values.dup.each do |c|
+      @consumers.values.each do |c|
+        self.unregister_consumer(c)
         c.recover_from_network_failure
       end
     end
@@ -567,9 +567,13 @@ module HotBunnies
     end
 
     def basic_consume(queue, auto_ack, consumer)
-      converting_rjc_exceptions_to_ruby do
+      consumer.auto_ack = auto_ack
+      tag = converting_rjc_exceptions_to_ruby do
         @delegate.basic_consume(queue, auto_ack, consumer)
       end
+      self.register_consumer(tag, consumer)
+
+      tag
     end
 
     def basic_qos(prefetch_count)

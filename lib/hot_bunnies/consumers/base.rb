@@ -3,11 +3,13 @@ module HotBunnies
 
   class BaseConsumer < DefaultConsumer
     attr_accessor :consumer_tag
+    attr_accessor :auto_ack
 
     def initialize(channel, queue)
       super(channel)
       @channel    = channel
       @queue      = queue
+      @auto_ack   = true
 
       @cancelling = JavaConcurrent::AtomicBoolean.new
       @cancelled  = JavaConcurrent::AtomicBoolean.new
@@ -15,8 +17,8 @@ module HotBunnies
       @terminated = JavaConcurrent::AtomicBoolean.new
     end
 
-    def handleDelivery(consumer_tag, envelope, properties, body)
-      body    = String.from_java_bytes(body)
+    def handleDelivery(consumer_tag, envelope, properties, bytes)
+      body    = String.from_java_bytes(bytes)
       headers = Headers.new(channel, consumer_tag, envelope, properties)
 
       deliver(headers, body)
@@ -72,7 +74,12 @@ module HotBunnies
 
     # @private
     def recover_from_network_failure
-      @consumer_tag = @channel.basic_consume(@queue.name, !(opts[:ack] || opts[:manual_ack]), consumer)
+      @consumer_tag = @channel.basic_consume(@queue.name, @auto_ack, self)
+
+      @terminated.set(false)
+      @cancelled.set(false)
+
+      @consumer_tag
     end
   end
 end

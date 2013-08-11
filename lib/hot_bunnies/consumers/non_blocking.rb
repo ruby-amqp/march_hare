@@ -20,11 +20,20 @@ module HotBunnies
   end
 
   class AsyncCallbackConsumer < CallbackConsumer
-    def initialize(channel, queue, opts, callback, executor)
+    def initialize(channel, queue, opts, callback)
       super(channel, queue, callback)
-      @executor = executor
-      @executor_submit = executor.java_method(:submit, [JavaConcurrent::Runnable.java_class])
-      @opts = opts
+
+      # during connection recovery, the executor may be shut down, e.g. due to
+      # an exception. So we need a way to create a duplicate. Unfortunately, since
+      # the executor can be passed as an argument, we cannot know how it was
+      # instantiated. Instead we require a lambda to produce instance of an executor
+      # as a workaround. MK.
+      @executor_factory = opts.fetch(:executor_factory, Proc.new {
+        JavaConcurrent::Executors.new_single_thread_executor
+      })
+      @executor         = opts.fetch(:executor, @executor_factory.call)
+      @executor_submit  = @executor.java_method(:submit, [JavaConcurrent::Runnable.java_class])
+      @opts             = opts
     end
 
     def deliver(headers, message)
@@ -32,8 +41,9 @@ module HotBunnies
         @executor_submit.call do
           begin
             callback(headers, message)
-          rescue Exception => e
-            $stderr.puts "Unhandled exception in consumer #{@consumer_tag}: #{e.message}"
+          rescue Exception, java.lang.Throwable => e
+            # TODO: logging
+            $stderr.puts "Unhandled exception in consumer #{@consumer_tag}: #{e}"
           end
         end
       end
@@ -69,5 +79,15 @@ module HotBunnies
     end
     alias maybe_shut_down_executor gracefully_shut_down
     alias gracefully_shutdown      gracefully_shut_down
+
+
+    # @private
+    def recover_from_network_failure
+      # ensure we have a functioning executor. MK.
+      @executor        = @executor_factory.call
+      @executor_submit = @executor.java_method(:submit, [JavaConcurrent::Runnable.java_class])
+
+      super
+    end
   end
 end

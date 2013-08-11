@@ -3,6 +3,7 @@
 require "hot_bunnies/juc"
 require "hot_bunnies/metadata"
 require "hot_bunnies/consumers"
+require "set"
 
 module HotBunnies
   # Represents AMQP 0.9.1 queue.
@@ -39,7 +40,7 @@ module HotBunnies
       @auto_delete  = @options[:auto_delete]
       @arguments    = @options[:arguments]
 
-      @bindings     = ConcurrentSkipListSet.new
+      @bindings     = Set.new
     end
 
 
@@ -161,7 +162,11 @@ module HotBunnies
       if opts[:block] || opts[:blocking]
         BlockingCallbackConsumer.new(@channel, self, opts[:buffer_size], opts, block)
       else
-        AsyncCallbackConsumer.new(@channel, self, opts, block, opts.fetch(:executor, JavaConcurrent::Executors.new_single_thread_executor))
+        esf = opts.fetch(:executor_factory, Proc.new {
+          JavaConcurrent::Executors.new_single_thread_executor
+        })
+        es  = opts.fetch(:executor, esf.call)
+        AsyncCallbackConsumer.new(@channel, self, opts.merge(:executor => es, :executor_factory => esf), block)
       end
     end
 
