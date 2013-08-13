@@ -8,3 +8,4 @@ bin/*
 doc/*
 .yardoc/*
 debug/*
+deploy.docs.sh
