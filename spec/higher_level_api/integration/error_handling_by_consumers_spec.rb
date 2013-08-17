@@ -43,7 +43,6 @@ describe "A consumer that catches exceptions" do
     mc.should == 0
 
     mailbox.size.should == 13
-    consumer.shutdown!
   end
 end
 
@@ -61,7 +60,7 @@ describe "A consumer that DOES NOT catch exceptions" do
 
   it "becomes inactive when the channels prefetch is filled with unacked messages" do
     mailbox  = []
-    exchange = channel.exchange("hot_bunnies.exchanges.fanout#{Time.now.to_i}#{rand}", :type => :fanout, :auto_delete => true)
+    exchange = connection.create_channel.exchange("hot_bunnies.exchanges.fanout#{Time.now.to_i}#{rand}", :type => :fanout, :auto_delete => true)
     queue    = channel.queue("", :exclusive => true)
 
     channel.prefetch = 5
@@ -92,6 +91,5 @@ describe "A consumer that DOES NOT catch exceptions" do
     message_count.should == 15
 
     mailbox.size.should == 5
-    consumer.shutdown!
   end
 end

@@ -24,8 +24,6 @@ describe "A consumer" do
     sleep(1.0)
     consumer.should_not be_active
     consumer.should be_cancelled
-
-    consumer.shutdown!
   end
 end
 

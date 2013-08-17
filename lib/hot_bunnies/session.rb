@@ -82,6 +82,7 @@ module HotBunnies
         self.new_connection
       end
       @channels   = JavaConcurrent::ConcurrentHashMap.new
+      @thread_pool = ThreadPools.dynamically_growing
 
       # should automatic recovery from network failures be used?
       @automatically_recover = if opts[:automatically_recover].nil? && opts[:automatic_recovery].nil?
@@ -113,7 +114,7 @@ module HotBunnies
              @connection.create_channel
            end
 
-      ch = Channel.new(self, jc)
+      ch = Channel.new(self, jc, @thread_pool)
       register_channel(ch)
 
       ch
@@ -122,6 +123,11 @@ module HotBunnies
     def close
       @channels.select { |_, ch| ch.open? }.each do |_, ch|
         ch.close
+      end
+
+      @thread_pool.shutdown
+      unless @thread_pool.await_termination(5, JavaConcurrent::TimeUnit::SECONDS)
+        @thread_pool.shutdown_now
       end
 
       @connection.close

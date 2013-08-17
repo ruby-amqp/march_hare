@@ -118,9 +118,10 @@ module HotBunnies
     attr_reader :consumers
 
     # @private
-    def initialize(session, delegate)
+    def initialize(session, delegate, thread_pool)
       @connection = session
       @delegate   = delegate
+      @thread_pool = thread_pool
 
       @exchanges      = JavaConcurrent::ConcurrentHashMap.new
       @queues         = JavaConcurrent::ConcurrentHashMap.new
@@ -418,7 +419,7 @@ module HotBunnies
     # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions guide
     # @api public
     def queue(name, options={})
-      dq = Queue.new(self, name, options).tap do |q|
+      dq = Queue.new(self, name, @thread_pool, options).tap do |q|
         q.declare!
       end
 

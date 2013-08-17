@@ -29,9 +29,10 @@ module HotBunnies
     # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
     # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions guide
     # @api public
-    def initialize(channel, name, options={})
+    def initialize(channel, name, thread_pool, options={})
       @channel = channel
       @name = name
+      @thread_pool = thread_pool
       @options = {:durable => false, :exclusive => false, :auto_delete => false, :passive => false, :arguments => Hash.new}.merge(options)
 
       @durable      = @options[:durable]
@@ -158,29 +159,12 @@ module HotBunnies
     end
     alias pop get
 
-    def build_consumer(opts, &block)
-      if opts[:block] || opts[:blocking]
-        BlockingCallbackConsumer.new(@channel, self, opts[:buffer_size], opts, block)
-      else
-        esf = opts.fetch(:executor_factory, Proc.new {
-          JavaConcurrent::Executors.new_single_thread_executor
-        })
-        es  = opts.fetch(:executor, esf.call)
-        AsyncCallbackConsumer.new(@channel, self, opts.merge(:executor => es, :executor_factory => esf), block)
-      end
+    def build_consumer(opts = {}, &block)
+      BlockingCallbackConsumer.new(@channel, self, opts[:buffer_size], opts, block)
     end
 
     def subscribe(opts = {}, &block)
-      consumer = build_consumer(opts, &block)
-
-      @consumer_tag     = @channel.basic_consume(@name, !(opts[:ack] || opts[:manual_ack]), consumer)
-      consumer.consumer_tag = @consumer_tag
-
-      @default_consumer = consumer
-      @channel.register_consumer(@consumer_tag, consumer)
-      consumer.start
-
-      consumer
+      subscribe_with(build_consumer(opts, &block))
     end
 
     def subscribe_with(consumer, opts = {})
@@ -189,7 +173,12 @@ module HotBunnies
 
       @default_consumer = consumer
       @channel.register_consumer(@consumer_tag, consumer)
-      consumer.start
+
+      if opts[:block] || opts[:blocking]
+        consumer.start
+      else
+        @thread_pool.java_send(:submit, [JavaConcurrent::Runnable.java_class], consumer.method(:start).to_proc)
+      end
 
       consumer
     end
