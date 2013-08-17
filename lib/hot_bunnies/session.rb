@@ -71,8 +71,6 @@ module HotBunnies
       new(cf, options)
     end
 
-    # @private
-    attr_reader :thread
     # @return [Array<HotBunnies::Channel>] Channels opened on this connection
     attr_reader :channels
 
@@ -84,7 +82,6 @@ module HotBunnies
         self.new_connection
       end
       @channels   = JavaConcurrent::ConcurrentHashMap.new
-      @thread     = Thread.current
 
       # should automatic recovery from network failures be used?
       @automatically_recover = if opts[:automatically_recover].nil? && opts[:automatic_recovery].nil?
