@@ -122,13 +122,13 @@ module HotBunnies
       @connection = session
       @delegate   = delegate
 
-      @exchanges      = ConcurrentHashMap.new
-      @queues         = ConcurrentHashMap.new
+      @exchanges      = JavaConcurrent::ConcurrentHashMap.new
+      @queues         = JavaConcurrent::ConcurrentHashMap.new
       # we keep track of consumers in part to gracefully shut down their
       # executors when the channel is closed. This frees library users
       # from having to worry about this. MK.
-      @consumers      = ConcurrentHashMap.new
-      @shutdown_hooks = ConcurrentSkipListSet.new
+      @consumers      = JavaConcurrent::ConcurrentHashMap.new
+      @shutdown_hooks = JavaConcurrent::ConcurrentSkipListSet.new
       @recoveries_counter = JavaConcurrent::AtomicInteger.new(0)
 
       on_shutdown do |ch, cause|

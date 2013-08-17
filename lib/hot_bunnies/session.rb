@@ -5,8 +5,6 @@ require "set"
 module HotBunnies
   java_import com.rabbitmq.client.ConnectionFactory
   java_import com.rabbitmq.client.Connection
-  java_import java.util.concurrent.ConcurrentHashMap
-  java_import java.util.concurrent.ConcurrentSkipListSet
 
   # Connection to a RabbitMQ node.
   #
@@ -85,7 +83,7 @@ module HotBunnies
       @connection = converting_rjc_exceptions_to_ruby do
         self.new_connection
       end
-      @channels   = ConcurrentHashMap.new
+      @channels   = JavaConcurrent::ConcurrentHashMap.new
       @thread     = Thread.current
 
       # should automatic recovery from network failures be used?
@@ -95,7 +93,7 @@ module HotBunnies
                                  opts[:automatically_recover] || opts[:automatic_recovery]
                                end
       @network_recovery_interval = opts.fetch(:network_recovery_interval, DEFAULT_NETWORK_RECOVERY_INTERVAL)
-      @shutdown_hooks            = ConcurrentSkipListSet.new
+      @shutdown_hooks            = JavaConcurrent::ConcurrentSkipListSet.new
 
       if @automatically_recover
         self.add_automatic_recovery_hook
