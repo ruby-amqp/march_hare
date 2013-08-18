@@ -138,34 +138,18 @@ module HotBunnies
     end
 
     # @return [HotBunnies::Session] Connection this channel is on
-    def client
-      @connection
-    end
-
-    # @return [HotBunnies::Session] Connection this channel is on
     def session
       @connection
     end
-
-    # @return [HotBunnies::Session] Connection this channel is on
-    def connection
-      @connection
-    end
-
-    # @return [Integer] Channel id
-    def id
-      @delegate.channel_number
-    end
-
-    # @return [Integer] Channel id
-    def number
-      @delegate.channel_number
-    end
+    alias client session
+    alias connection session
 
     # @return [Integer] Channel id
     def channel_number
       @delegate.channel_number
     end
+    alias id channel_number
+    alias number channel_number
 
     # Closes the channel.
     #
