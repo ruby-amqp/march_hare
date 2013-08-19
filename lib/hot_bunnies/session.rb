@@ -5,8 +5,6 @@ require "set"
 module HotBunnies
   java_import com.rabbitmq.client.ConnectionFactory
   java_import com.rabbitmq.client.Connection
-  java_import java.util.concurrent.ConcurrentHashMap
-  java_import java.util.concurrent.ConcurrentSkipListSet
 
   # Connection to a RabbitMQ node.
   #
@@ -73,8 +71,6 @@ module HotBunnies
       new(cf, options)
     end
 
-    # @private
-    attr_reader :thread
     # @return [Array<HotBunnies::Channel>] Channels opened on this connection
     attr_reader :channels
 
@@ -85,8 +81,8 @@ module HotBunnies
       @connection = converting_rjc_exceptions_to_ruby do
         self.new_connection
       end
-      @channels   = ConcurrentHashMap.new
-      @thread     = Thread.current
+      @channels    = JavaConcurrent::ConcurrentHashMap.new
+      @thread_pool = ThreadPools.dynamically_growing
 
       # should automatic recovery from network failures be used?
       @automatically_recover = if opts[:automatically_recover].nil? && opts[:automatic_recovery].nil?
@@ -95,7 +91,7 @@ module HotBunnies
                                  opts[:automatically_recover] || opts[:automatic_recovery]
                                end
       @network_recovery_interval = opts.fetch(:network_recovery_interval, DEFAULT_NETWORK_RECOVERY_INTERVAL)
-      @shutdown_hooks            = ConcurrentSkipListSet.new
+      @shutdown_hooks            = JavaConcurrent::ConcurrentSkipListSet.new
 
       if @automatically_recover
         self.add_automatic_recovery_hook
@@ -118,7 +114,7 @@ module HotBunnies
              @connection.create_channel
            end
 
-      ch = Channel.new(self, jc)
+      ch = Channel.new(self, jc, @thread_pool)
       register_channel(ch)
 
       ch
@@ -127,6 +123,11 @@ module HotBunnies
     def close
       @channels.select { |_, ch| ch.open? }.each do |_, ch|
         ch.close
+      end
+
+      @thread_pool.shutdown
+      unless @thread_pool.await_termination(5, JavaConcurrent::TimeUnit::SECONDS)
+        @thread_pool.shutdown_now
       end
 
       @connection.close
@@ -169,6 +170,7 @@ module HotBunnies
       @connection = converting_rjc_exceptions_to_ruby do
         self.new_connection
       end
+      @thread_pool = ThreadPools.dynamically_growing
       self.recover_shutdown_hooks
 
       @channels.each do |id, ch|

@@ -118,17 +118,18 @@ module HotBunnies
     attr_reader :consumers
 
     # @private
-    def initialize(session, delegate)
+    def initialize(session, delegate, thread_pool)
       @connection = session
       @delegate   = delegate
+      @thread_pool = thread_pool
 
-      @exchanges      = ConcurrentHashMap.new
-      @queues         = ConcurrentHashMap.new
+      @exchanges      = JavaConcurrent::ConcurrentHashMap.new
+      @queues         = JavaConcurrent::ConcurrentHashMap.new
       # we keep track of consumers in part to gracefully shut down their
       # executors when the channel is closed. This frees library users
       # from having to worry about this. MK.
-      @consumers      = ConcurrentHashMap.new
-      @shutdown_hooks = ConcurrentSkipListSet.new
+      @consumers      = JavaConcurrent::ConcurrentHashMap.new
+      @shutdown_hooks = JavaConcurrent::ConcurrentSkipListSet.new
       @recoveries_counter = JavaConcurrent::AtomicInteger.new(0)
 
       on_shutdown do |ch, cause|
@@ -137,34 +138,18 @@ module HotBunnies
     end
 
     # @return [HotBunnies::Session] Connection this channel is on
-    def client
-      @connection
-    end
-
-    # @return [HotBunnies::Session] Connection this channel is on
     def session
       @connection
     end
-
-    # @return [HotBunnies::Session] Connection this channel is on
-    def connection
-      @connection
-    end
-
-    # @return [Integer] Channel id
-    def id
-      @delegate.channel_number
-    end
-
-    # @return [Integer] Channel id
-    def number
-      @delegate.channel_number
-    end
+    alias client session
+    alias connection session
 
     # @return [Integer] Channel id
     def channel_number
       @delegate.channel_number
     end
+    alias id channel_number
+    alias number channel_number
 
     # Closes the channel.
     #
@@ -418,7 +403,7 @@ module HotBunnies
     # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions guide
     # @api public
     def queue(name, options={})
-      dq = Queue.new(self, name, options).tap do |q|
+      dq = Queue.new(self, name, @thread_pool, options).tap do |q|
         q.declare!
       end
 

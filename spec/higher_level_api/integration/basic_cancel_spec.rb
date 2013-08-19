@@ -52,13 +52,11 @@ describe 'A consumer' do
       consumer        = nil
 
       consumer_thread = Thread.new do
-        co       = q.build_consumer(:block => true) do |headers, message|
+        consumer = q.build_consumer do |headers, message|
           messages << message
           sleep 0.1
         end
-
-        consumer = co
-        q.subscribe_with(co, :block => true)
+        q.subscribe_with(consumer, :block => true)
         consumer_exited = true
       end
 

@@ -91,7 +91,5 @@ describe "A consumer" do
 
     @meta.app_id.should == "hotbunnies.tests"
     @meta.exchange.should == "amq.fanout"
-
-    consumer.shut_down!
   end
 end

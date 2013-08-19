@@ -2,19 +2,15 @@ require "hot_bunnies/consumers/base"
 
 module HotBunnies
   class BlockingCallbackConsumer < CallbackConsumer
-    include JavaConcurrent
-
     POISON = :__poison__
 
     def initialize(channel, queue, buffer_size, opts, callback)
-      super(channel, queue, callback)
+      super(channel, queue, opts, callback)
       if buffer_size
-        @internal_queue = ArrayBlockingQueue.new(buffer_size)
+        @internal_queue = JavaConcurrent::ArrayBlockingQueue.new(buffer_size)
       else
-        @internal_queue = LinkedBlockingQueue.new
+        @internal_queue = JavaConcurrent::LinkedBlockingQueue.new
       end
-
-      @opts = opts
     end
 
     def cancel
@@ -37,10 +33,10 @@ module HotBunnies
             if pair == POISON
               @cancelling.set(true)
             else
-              callback(*pair)
+              @callback.call(*pair)
             end
           end
-        rescue InterruptedException => e
+        rescue JavaConcurrent::InterruptedException => e
           interrupted = true
         end
       end
@@ -49,7 +45,7 @@ module HotBunnies
           if pair == POISON
             @cancelling.set(true)
           else
-            callback(*pair)
+            @callback.call(*pair)
           end
         end
       end
@@ -65,7 +61,7 @@ module HotBunnies
       else
         begin
           @internal_queue.put(pair)
-        rescue InterruptedException => e
+        rescue JavaConcurrent::InterruptedException => e
           JavaConcurrent::Thread.current_thread.interrupt
         end
       end
