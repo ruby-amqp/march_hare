@@ -5,14 +5,12 @@ module HotBunnies
     POISON = :__poison__
 
     def initialize(channel, queue, buffer_size, opts, callback)
-      super(channel, queue, callback)
+      super(channel, queue, opts, callback)
       if buffer_size
         @internal_queue = JavaConcurrent::ArrayBlockingQueue.new(buffer_size)
       else
         @internal_queue = JavaConcurrent::LinkedBlockingQueue.new
       end
-
-      @opts = opts
     end
 
     def cancel
@@ -35,7 +33,7 @@ module HotBunnies
             if pair == POISON
               @cancelling.set(true)
             else
-              callback(*pair)
+              @callback.call(*pair)
             end
           end
         rescue JavaConcurrent::InterruptedException => e
@@ -47,7 +45,7 @@ module HotBunnies
           if pair == POISON
             @cancelling.set(true)
           else
-            callback(*pair)
+            @callback.call(*pair)
           end
         end
       end

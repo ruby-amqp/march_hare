@@ -81,7 +81,7 @@ module HotBunnies
       @connection = converting_rjc_exceptions_to_ruby do
         self.new_connection
       end
-      @channels   = JavaConcurrent::ConcurrentHashMap.new
+      @channels    = JavaConcurrent::ConcurrentHashMap.new
       @thread_pool = ThreadPools.dynamically_growing
 
       # should automatic recovery from network failures be used?
@@ -170,6 +170,7 @@ module HotBunnies
       @connection = converting_rjc_exceptions_to_ruby do
         self.new_connection
       end
+      @thread_pool = ThreadPools.dynamically_growing
       self.recover_shutdown_hooks
 
       @channels.each do |id, ch|

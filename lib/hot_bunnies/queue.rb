@@ -160,7 +160,11 @@ module HotBunnies
     alias pop get
 
     def build_consumer(opts = {}, &block)
-      BlockingCallbackConsumer.new(@channel, self, opts[:buffer_size], opts, block)
+      if opts[:block] || opts[:blocking]
+        BlockingCallbackConsumer.new(@channel, self, opts[:buffer_size], opts, block)
+      else
+        CallbackConsumer.new(@channel, self, opts, block)
+      end
     end
 
     def subscribe(opts = {}, &block)
@@ -174,12 +178,7 @@ module HotBunnies
       @default_consumer = consumer
       @channel.register_consumer(@consumer_tag, consumer)
 
-      if opts[:block] || opts[:blocking]
-        consumer.start
-      else
-        @thread_pool.java_send(:submit, [JavaConcurrent::Runnable.java_class], consumer.method(:start).to_proc)
-      end
-
+      consumer.start
       consumer
     end
 

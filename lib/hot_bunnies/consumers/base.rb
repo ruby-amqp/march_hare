@@ -5,10 +5,11 @@ module HotBunnies
     attr_accessor :consumer_tag
     attr_accessor :auto_ack
 
-    def initialize(channel, queue)
+    def initialize(channel, queue, opts)
       super(channel)
       @channel    = channel
       @queue      = queue
+      @opts       = opts
       @auto_ack   = true
 
       @cancelling = JavaConcurrent::AtomicBoolean.new
@@ -54,6 +55,11 @@ module HotBunnies
     end
 
     def start
+      # no-op
+    end
+
+    def gracefully_shut_down
+      # no-op
     end
 
     def deliver(headers, message)
@@ -74,30 +80,33 @@ module HotBunnies
 
     # @private
     def recover_from_network_failure
-      @consumer_tag = @channel.basic_consume(@queue.name, @auto_ack, self)
-
       @terminated.set(false)
       @cancelled.set(false)
+      @consumer_tag = @channel.basic_consume(@queue.name, @auto_ack, self)
 
       @consumer_tag
     end
   end
 
   class CallbackConsumer < BaseConsumer
-    def initialize(channel, queue, callback)
+    def initialize(channel, queue, opts, callback)
       raise ArgumentError, "callback must not be nil!" if callback.nil?
 
-      super(channel, queue)
+      super(channel, queue, opts)
       @callback = callback
       @callback_arity = @callback.arity
     end
 
-    def callback(headers, message)
+    def deliver(headers, message)
       if @callback_arity == 2
         @callback.call(headers, message)
       else
         @callback.call(message)
       end
+    end
+
+    def cancel
+      @channel.basic_cancel(consumer_tag)
     end
   end
 end
