@@ -2,6 +2,19 @@
 
 Hot Bunnies 2.0 has **breaking API changes**.
 
+## Consumer Work Pool Changes
+
+HotBunnies 1.x used to maintain a separate executor (thread pool) per non-blocking
+consumer. This is not optimal and reimplements the wheel RabbitMQ Java client
+already has invented: it dispatches consumer methods in a thread pool maintained
+by every connection.
+
+Instead of maintaining its own executor, HotBunnies now relies on the Java client
+to do the job.
+
+It is still possible to override the executor when opening a connection.
+
+
 ## Shutdown Callbacks
 
 `HotBunnies::Session#on_shutdown` and `HotBunnies::Channel#on_shutdown` are two
