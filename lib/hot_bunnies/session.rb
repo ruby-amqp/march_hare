@@ -78,7 +78,9 @@ module HotBunnies
     # @private
     def initialize(connection_factory, opts = {})
       @cf         = connection_factory
-      @connection = self.new_connection
+      @connection = converting_rjc_exceptions_to_ruby do
+        self.new_connection
+      end
       @channels   = JavaConcurrent::ConcurrentHashMap.new
       @thread_pool = ThreadPools.dynamically_growing
 
@@ -165,7 +167,9 @@ module HotBunnies
       # recovering immediately makes little sense. Wait a bit first. MK.
       java.lang.Thread.sleep(@network_recovery_interval * 1000)
 
-      @connection = self.new_connection
+      @connection = converting_rjc_exceptions_to_ruby do
+        self.new_connection
+      end
       self.recover_shutdown_hooks
 
       @channels.each do |id, ch|
