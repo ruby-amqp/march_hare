@@ -28,6 +28,23 @@ By default HotBunnies will rely on the default RabbitMQ Java client's
 executor service, which has a fixed size of 5 threads.
 
 
+## Automatic Connection Recovery
+
+HotBunnies now supports automatic connection recovery from a network outage,
+similar to the version [in Bunny](http://rubybunny.info/articles/error_handling.html).
+
+It recovers
+
+ * Connections
+ * Shutdown hooks
+ * Channels
+ * Exchanges, queues and bindings declared on the connection
+ * Consumers
+
+and can be disabled by setting `:automatically_recover` connection option to `false`.
+
+
+
 ## Shutdown Callbacks
 
 `HotBunnies::Session#on_shutdown` and `HotBunnies::Channel#on_shutdown` are two
