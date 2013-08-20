@@ -12,7 +12,20 @@ by every connection.
 Instead of maintaining its own executor, HotBunnies now relies on the Java client
 to do the job.
 
-It is still possible to override the executor when opening a connection.
+It is still possible to override the executor when opening a connection by
+providing an executor factory (any Ruby callable):
+
+``` ruby
+HotBunnies.connect(:executor_factory => Proc.new {
+  HotBunnies::ThreadPools.fixed_of_size(16)
+})
+```
+
+It has to be a factory to make sure we can allocate a new pool upon connection
+recovery, since JVM executors cannot be cloned or restarted.
+
+By default HotBunnies will rely on the default RabbitMQ Java client's
+executor service, which has a fixed size of 5 threads.
 
 
 ## Shutdown Callbacks
