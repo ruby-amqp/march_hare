@@ -77,8 +77,9 @@ module HotBunnies
 
     # @private
     def initialize(connection_factory, opts = {})
-      @cf         = connection_factory
-      @connection = converting_rjc_exceptions_to_ruby do
+      @cf               = connection_factory
+      @executor_factory = opts[:executor_factory]
+      @connection       = converting_rjc_exceptions_to_ruby do
         self.new_connection
       end
       @channels    = JavaConcurrent::ConcurrentHashMap.new
@@ -321,7 +322,12 @@ module HotBunnies
     # @private
     def new_connection
       converting_rjc_exceptions_to_ruby do
-        @cf.new_connection
+        if @executor_factory
+          ex = @executor_factory.call
+          @cf.new_connection(ex)
+        else
+          @cf.new_connection
+        end
       end
     end
   end

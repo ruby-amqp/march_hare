@@ -47,6 +47,13 @@ describe "HotBunnies.connect" do
       }.should raise_error(HotBunnies::PossibleAuthenticationFailureError)
     end
   end
+
+  it "lets you specify executor (thread pool) factory" do
+    c1 = HotBunnies.connect(:executor_factory => Proc.new {
+      HotBunnies::ThreadPools.dynamically_growing
+    })
+    c1.close
+  end
 end
 
 
