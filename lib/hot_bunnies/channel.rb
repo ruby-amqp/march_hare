@@ -222,8 +222,6 @@ module HotBunnies
 
     # Recovers queues and bindings. Used by the Automatic Network Failure
     # Recovery feature.
-    #
-    # @api private
     def recover_queues
       @queues.values.each do |q|
         q.recover_from_network_failure
@@ -232,8 +230,6 @@ module HotBunnies
 
     # Recovers consumers. Used by the Automatic Network Failure
     # Recovery feature.
-    #
-    # @api private
     def recover_consumers
       @consumers.values.each do |c|
         self.unregister_consumer(c)
