@@ -28,7 +28,6 @@ module HotBunnies
     # @see HotBunnies::Channel#queue
     # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
     # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions guide
-    # @api public
     def initialize(channel, name, thread_pool, options={})
       @channel = channel
       @name = name
@@ -46,35 +45,30 @@ module HotBunnies
 
 
     # @return [Boolean] true if this queue was declared as durable (will survive broker restart).
-    # @api public
     # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
     def durable?
       @durable
     end # durable?
 
     # @return [Boolean] true if this queue was declared as exclusive (limited to just one consumer)
-    # @api public
     # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
     def exclusive?
       @exclusive
     end # exclusive?
 
     # @return [Boolean] true if this queue was declared as automatically deleted (deleted as soon as last consumer unbinds).
-    # @api public
     # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
     def auto_delete?
       @auto_delete
     end # auto_delete?
 
     # @return [Boolean] true if this queue was declared as server named.
-    # @api public
     # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
     def server_named?
       @server_named
     end # server_named?
 
     # @return [Hash] Additional optional arguments (typically used by RabbitMQ extensions and plugins)
-    # @api public
     def arguments
       @arguments
     end
@@ -91,7 +85,6 @@ module HotBunnies
     #
     # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
     # @see http://hotbunnies.info/articles/bindings.html Bindings guide
-    # @api public
     def bind(exchange, options={})
       exchange_name = if exchange.respond_to?(:name) then
                         exchange.name
@@ -118,7 +111,6 @@ module HotBunnies
     #
     # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
     # @see http://hotbunnies.info/articles/bindings.html Bindings guide
-    # @api public
     def unbind(exchange, options={})
       exchange_name = if exchange.respond_to?(:name) then
                         exchange.name
@@ -139,7 +131,6 @@ module HotBunnies
     # @option [Boolean] if_empty (false) Should this queue be deleted only if it has no messages?
     #
     # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
-    # @api public
     def delete(if_unused = false, if_empty = false)
       @channel.queue_delete(@name, if_unused, if_empty)
     end
