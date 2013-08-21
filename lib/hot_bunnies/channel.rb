@@ -207,7 +207,6 @@ module HotBunnies
     # Recovers basic.qos setting. Used by the Automatic Network Failure
     # Recovery feature.
     #
-    # @api plugin
     def recover_prefetch_setting
       basic_qos(@prefetch_count) if @prefetch_count
     end
@@ -215,7 +214,6 @@ module HotBunnies
     # Recovers exchanges. Used by the Automatic Network Failure
     # Recovery feature.
     #
-    # @api plugin
     def recover_exchanges
       @exchanges.values.each do |x|
         x.recover_from_network_failure
@@ -285,7 +283,6 @@ module HotBunnies
     # @return [HotBunnies::Exchange] Exchange instance
     # @see http://hotbunnies.info/articles/exchanges.html Exchanges and Publishing guide
     # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions to AMQP 0.9.1 guide
-    # @api public
     def fanout(name, opts = {})
       dx = Exchange.new(self, name, opts.merge(:type => "fanout")).tap do |x|
         x.declare!
@@ -307,7 +304,6 @@ module HotBunnies
     # @return [HotBunnies::Exchange] Exchange instance
     # @see http://hotbunnies.info/articles/exchanges.html Exchanges and Publishing guide
     # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions to AMQP 0.9.1 guide
-    # @api public
     def direct(name, opts = {})
       dx = Exchange.new(self, name, opts.merge(:type => "direct")).tap do |x|
         x.declare!
@@ -329,7 +325,6 @@ module HotBunnies
     # @return [HotBunnies::Exchange] Exchange instance
     # @see http://hotbunnies.info/articles/exchanges.html Exchanges and Publishing guide
     # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions to AMQP 0.9.1 guide
-    # @api public
     def topic(name, opts = {})
       dx = Exchange.new(self, name, opts.merge(:type => "topic")).tap do |x|
         x.declare!
@@ -351,7 +346,6 @@ module HotBunnies
     # @return [HotBunnies::Exchange] Exchange instance
     # @see http://hotbunnies.info/articles/exchanges.html Exchanges and Publishing guide
     # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions to AMQP 0.9.1 guide
-    # @api public
     def headers(name, opts = {})
       dx = Exchange.new(self, name, opts.merge(:type => "headers")).tap do |x|
         x.declare!
@@ -362,7 +356,6 @@ module HotBunnies
 
     # Provides access to the default exchange
     # @see http://hotbunnies.info/articles/exchanges.html Exchanges and Publishing guide
-    # @api public
     def default_exchange
       @default_exchange ||= self.exchange("", :durable => true, :auto_delete => false, :type => "direct")
     end
@@ -378,7 +371,6 @@ module HotBunnies
     #
     # @return RabbitMQ response
     # @see http://hotbunnies.info/articles/echanges.html Exchanges and Publishing guide
-    # @api public
     def exchange_declare(name, type, durable = false, auto_delete = false, arguments = nil)
       @delegate.exchange_declare(name, type, durable, auto_delete, arguments)
     end
@@ -401,7 +393,6 @@ module HotBunnies
     # @return [HotBunnies::Queue] Queue that was declared or looked up in the cache
     # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
     # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions guide
-    # @api public
     def queue(name, options={})
       dq = Queue.new(self, name, @thread_pool, options).tap do |q|
         q.declare!
@@ -425,7 +416,6 @@ module HotBunnies
     #
     # @return RabbitMQ response
     # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
-    # @api public
     def queue_declare(name, durable, exclusive, auto_delete, arguments = {})
       converting_rjc_exceptions_to_ruby do
         @delegate.queue_declare(name, durable, exclusive, auto_delete, arguments)
@@ -438,7 +428,6 @@ module HotBunnies
     # @param [String] name Queue name
     #
     # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
-    # @api public
     def queue_declare_passive(name)
       converting_rjc_exceptions_to_ruby do
         @delegate.queue_declare_passive(name)
@@ -454,7 +443,6 @@ module HotBunnies
     #
     # @return RabbitMQ response
     # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
-    # @api public
     def queue_delete(name, if_empty = false, if_unused = false)
       converting_rjc_exceptions_to_ruby do
         @delegate.queue_delete(name, if_empty, if_unused)
@@ -472,7 +460,6 @@ module HotBunnies
     # @return RabbitMQ response
     # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
     # @see http://hotbunnies.info/articles/bindings.html Bindings guide
-    # @api public
     def queue_bind(queue, exchange, routing_key, arguments = nil)
       converting_rjc_exceptions_to_ruby do
         @delegate.queue_bind(queue, exchange, routing_key, arguments)
@@ -490,7 +477,6 @@ module HotBunnies
     # @return RabbitMQ response
     # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
     # @see http://hotbunnies.info/articles/bindings.html Bindings guide
-    # @api public
     def queue_unbind(queue, exchange, routing_key, arguments = nil)
       converting_rjc_exceptions_to_ruby do
         @delegate.queue_unbind(queue, exchange, routing_key, arguments)
@@ -503,7 +489,6 @@ module HotBunnies
     #
     # @return RabbitMQ response
     # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
-    # @api public
     def queue_purge(name)
       converting_rjc_exceptions_to_ruby do
         @delegate.queue_purge(name)
@@ -538,7 +523,6 @@ module HotBunnies
     # @option properties [String] :app_id Optional application ID
     #
     # @return [HotBunnies::Channel] Self
-    # @api public
     def basic_publish(exchange, routing_key, mandatory, properties, body)
       converting_rjc_exceptions_to_ruby do
         @delegate.basic_publish(exchange, routing_key, mandatory, false, BasicPropertiesBuilder.build_properties_from(properties || Hash.new), body)
@@ -583,7 +567,6 @@ module HotBunnies
     # @param [Integer] prefetch_count Prefetch (QoS setting) for this channel
     # @see http://hotbunnies.info/articles/exchanges.html Exchanges and Publishing guide
     # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
-    # @api public
     def prefetch=(n)
       basic_qos(n)
     end
@@ -594,7 +577,6 @@ module HotBunnies
     # @param [Boolean] multiple (false) Should all unacknowledged messages up to this be acknowledged as well?
     # @see #nack
     # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
-    # @api public
     def ack(delivery_tag, multiple = false)
       converting_rjc_exceptions_to_ruby do
         basic_ack(delivery_tag, multiple)
@@ -610,7 +592,6 @@ module HotBunnies
     # @see #ack
     # @see #nack
     # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
-    # @api public
     def reject(delivery_tag, requeue = false)
       converting_rjc_exceptions_to_ruby do
         basic_reject(delivery_tag, requeue)
@@ -626,7 +607,6 @@ module HotBunnies
     # @param [Boolean] requeue  (false) Should this message be requeued instead of dropping it?
     # @see #ack
     # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
-    # @api public
     def nack(delivery_tag, multiple = false, requeue = false)
       converting_rjc_exceptions_to_ruby do
         basic_nack(delivery_tag, multiple, requeue)
@@ -670,7 +650,6 @@ module HotBunnies
     #
     # @see #basic_nack
     # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
-    # @api public
     def basic_reject(delivery_tag, requeue)
       converting_rjc_exceptions_to_ruby do
         @delegate.basic_reject(delivery_tag, requeue)
@@ -693,7 +672,6 @@ module HotBunnies
     #
     # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
     # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions guide
-    # @api public
     def basic_nack(delivery_tag, multiple = false, requeue = false)
       converting_rjc_exceptions_to_ruby do
         @delegate.basic_nack(delivery_tag, multiple, requeue)
@@ -704,7 +682,6 @@ module HotBunnies
     #
     # @param [Boolean] requeue Should messages be requeued?
     # @return RabbitMQ response
-    # @api public
     def basic_recover(requeue = true)
       converting_rjc_exceptions_to_ruby do
         @delegate.basic_recover(requeue)
@@ -715,7 +692,6 @@ module HotBunnies
     #
     # @param [Boolean] requeue Should messages be requeued?
     # @return RabbitMQ response
-    # @api public
     def basic_recover_async(requeue = true)
       converting_rjc_exceptions_to_ruby do
         @delegate.basic_recover_async(requeue)
