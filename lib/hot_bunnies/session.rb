@@ -13,7 +13,6 @@ module HotBunnies
   # @see .connect
   # @see #create_channel
   # @see #close
-  # @api public
   # @see http://hotbunnies.info/articles/getting_started.html Getting Started guide
   # @see http://hotbunnies.info/articles/connecting.html Connecting to RabbitMQ guide
   class Session
@@ -38,9 +37,6 @@ module HotBunnies
     # @option options [Boolean] :tls (false) Set to true to use TLS/SSL connection. This will switch port to 5671 by default.
     #
     # @see http://hotbunnies.info/articles/connecting.html Connecting to RabbitMQ guide
-    #
-    #
-    # @api public
     def self.connect(options={})
       cf = ConnectionFactory.new
 
@@ -107,7 +103,6 @@ module HotBunnies
     # @return [HotBunnies::Channel] Newly created channel
     # @see HotBunnies::Channel
     # @see http://hotbunnies.info/articles/getting_started.html Getting Started guide
-    # @api public
     def create_channel(n = nil)
       jc = if n
              @connection.create_channel(n)
@@ -212,7 +207,6 @@ module HotBunnies
     end
 
     # @return [String]
-    # @api public
     def to_s
       "#<#{self.class.name}:#{object_id} #{@cf.username}@#{@cf.host}:#{@cf.port}, vhost=#{@cf.virtual_host}>"
     end
