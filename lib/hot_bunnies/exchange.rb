@@ -43,7 +43,6 @@ module HotBunnies
     # Implementation
     #
 
-    # @api private
     def declare!
       unless predefined?
         if @options[:passive]
