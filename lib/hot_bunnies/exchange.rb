@@ -92,6 +92,24 @@ module HotBunnies
       @channel.exchange_bind(@name, exchange_name, options.fetch(:routing_key, ''))
     end
 
+    # Unbinds an exchange from another (source) exchange using exchange.unbind AMQP 0.9.1 extension
+    # that RabbitMQ provides.
+    #
+    # @param [String] source Source exchange name
+    # @param [Hash] opts Options
+    #
+    # @option opts [String] routing_key (nil) Routing key used for binding
+    # @option opts [Hash] arguments ({}) Optional arguments
+    #
+    # @return [Bunny::Exchange] Self
+    # @see http://rubybunny.info/articles/exchanges.html Exchanges and Publishing guide
+    # @see http://rubybunny.info/articles/bindings.html Bindings guide
+    # @see http://rubybunny.info/articles/extensions.html RabbitMQ Extensions guide
+    # @api public
+    def unbind(source, opts = {})
+      @channel.exchange_unbind(@name, source, opts.fetch(:routing_key, ''), opts[:arguments])
+    end
+
     # @return [Boolean] true if this exchange is a pre-defined one (amq.direct, amq.fanout, amq.match and so on)
     def predefined?
       @name.empty? || @name.start_with?("amq.")
