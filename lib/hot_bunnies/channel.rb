@@ -783,6 +783,7 @@ module HotBunnies
     # Implementation
     #
 
+    # @private
     class BlockReturnListener
       include com.rabbitmq.client.ReturnListener
 
