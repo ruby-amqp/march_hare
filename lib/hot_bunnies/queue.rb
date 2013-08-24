@@ -135,6 +135,9 @@ module HotBunnies
       @channel.queue_delete(@name, if_unused, if_empty)
     end
 
+    # Purges a queue (removes all messages from it)
+    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
+    # @api public
     def purge
       @channel.queue_purge(@name)
     end
