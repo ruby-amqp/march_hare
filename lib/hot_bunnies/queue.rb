@@ -190,6 +190,7 @@ module HotBunnies
       response.message_count
     end
 
+    # @return [Integer] How many active consumers the queue has
     def consumer_count
       response = @channel.queue_declare_passive(@name)
       response.consumer_count
