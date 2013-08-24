@@ -766,7 +766,8 @@ module HotBunnies
       end
     end
 
-
+    # Defines a returned message handler.
+    # @see http://hotbunnies.info/articles/exchanges.html Exchanges and Publishers guide
     def on_return(&block)
       self.add_return_listener(BlockReturnListener.from(block))
     end
