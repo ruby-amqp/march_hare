@@ -60,8 +60,17 @@ module HotBunnies
                              body.to_java_bytes)
     end
 
+    # Deletes the exchange unless it is predefined
+    #
+    # @param [Hash] opts Options
+    #
+    # @option opts [Boolean] if_unused (false) Should this exchange be deleted only if it is no longer used
+    #
+    # @see http://hotbunnies.info/articles/exchanges.html Exchanges and Publishing guide
+    # @api public
     def delete(options={})
-      @channel.exchange_delete(@name, options.fetch(:if_unused, false))
+      @channel.deregister_exchange(self)
+      @channel.exchange_delete(@name, options.fetch(:if_unused, false)) unless predefined?
     end
 
     def bind(exchange, options={})
