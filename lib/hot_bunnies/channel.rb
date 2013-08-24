@@ -739,18 +739,21 @@ module HotBunnies
       @delegate.next_publisher_seq_no
     end
 
+    # Enables transactions on the channel
     def tx_select
       converting_rjc_exceptions_to_ruby do
         @delegate.tx_select
       end
     end
 
+    # Commits a transaction
     def tx_commit
       converting_rjc_exceptions_to_ruby do
         @delegate.tx_commit
       end
     end
 
+    # Rolls back a transaction
     def tx_rollback
       converting_rjc_exceptions_to_ruby do
         @delegate.tx_rollback
