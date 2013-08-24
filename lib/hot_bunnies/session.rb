@@ -186,6 +186,7 @@ module HotBunnies
       @connection.flush
     end
 
+    # @private
     def heartbeat=(n)
       @connection.heartbeat = n
     end
