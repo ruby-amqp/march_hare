@@ -655,6 +655,13 @@ module HotBunnies
       end
     end
 
+    # Acknowledges one or more messages (deliveries).
+    #
+    # @param [Integer] delivery_tag Delivery tag obtained from delivery info
+    # @param [Boolean] multiple Should all deliveries up to this one be acknowledged?
+    # @return [NilClass] nil
+    #
+    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
     def basic_ack(delivery_tag, multiple)
       converting_rjc_exceptions_to_ruby do
         @delegate.basic_ack(delivery_tag, multiple)
