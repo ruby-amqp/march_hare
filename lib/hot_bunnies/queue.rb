@@ -176,6 +176,9 @@ module HotBunnies
       consumer
     end
 
+    # @return [Array<Integer>] A pair with information about the number of queue messages and consumers
+    # @see #message_count
+    # @see #consumer_count
     def status
       response = @channel.queue_declare_passive(@name)
       [response.message_count, response.consumer_count]
