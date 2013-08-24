@@ -168,6 +168,9 @@ module HotBunnies
       v
     end
 
+    # Defines a shutdown event callback. Shutdown events are
+    # broadcasted when a channel is closed, either explicitly
+    # or forcefully, or due to a network/peer failure.
     def on_shutdown(&block)
       sh = ShutdownListener.new(self, &block)
 
@@ -363,7 +366,7 @@ module HotBunnies
     #                                            can survive broker restarts? Typically set to true for long-lived exchanges.
     # @param [Boolean] auto_delete (false) Should this echange be deleted when it is no longer used?
     # @param [Boolean] passive (false)   If true, exchange will be checked for existence. If it does not
-    #                                          exist, {Bunny::NotFound} will be raised.
+    #                                          exist, {HotBunnies::NotFound} will be raised.
     #
     # @return RabbitMQ response
     # @see http://hotbunnies.info/articles/echanges.html Exchanges and Publishing guide
@@ -408,7 +411,7 @@ module HotBunnies
     #                                      If true, the queue will be automatically deleted when this
     #                                      connection is closed
     # @param [Boolean] passive (false)     If true, queue will be checked for existence. If it does not
-    #                                      exist, {Bunny::NotFound} will be raised.
+    #                                      exist, {HotBunnies::NotFound} will be raised.
     #
     # @return RabbitMQ response
     # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
@@ -500,7 +503,7 @@ module HotBunnies
     #
     # @param [String] exchange Exchange to publish to
     # @param [String] routing_key Routing key
-    # @param [String] body Message payload. It will never be modified by Bunny or RabbitMQ in any way.
+    # @param [String] body Message payload. It will never be modified by HotBunnies or RabbitMQ in any way.
     # @option opts [Boolean] :mandatory Should the message be returned if it cannot be routed to any queue?
     #
     # @param [Hash] properties Message properties
@@ -595,7 +598,7 @@ module HotBunnies
     end
 
     # Rejects a message. A rejected message can be requeued or
-    # dropped by RabbitMQ. This method is similar to {Bunny::Channel#reject} but
+    # dropped by RabbitMQ. This method is similar to {HotBunnies::Channel#reject} but
     # supports rejecting multiple messages at once, and is usually preferred.
     #
     # @param [Integer] delivery_tag Delivery tag to reject
@@ -616,7 +619,7 @@ module HotBunnies
     # @return [NilClass] nil
     #
     # @example Requeue a message
-    #   conn  = Bunny.new
+    #   conn  = HotBunnies.new
     #   conn.start
     #
     #   ch    = conn.create_channel
@@ -626,7 +629,7 @@ module HotBunnies
     #   end
     #
     # @example Reject a message
-    #   conn  = Bunny.new
+    #   conn  = HotBunnies.new
     #   conn.start
     #
     #   ch    = conn.create_channel
@@ -636,7 +639,7 @@ module HotBunnies
     #   end
     #
     # @example Requeue a message fetched via basic.get
-    #   conn  = Bunny.new
+    #   conn  = HotBunnies.new
     #   conn.start
     #
     #   ch    = conn.create_channel
@@ -658,7 +661,7 @@ module HotBunnies
       end
     end
 
-    # Rejects or requeues messages just like {Bunny::Channel#basic_reject} but can do so
+    # Rejects or requeues messages just like {HotBunnies::Channel#basic_reject} but can do so
     # with multiple messages at once.
     #
     # @param [Integer] delivery_tag Delivery tag obtained from delivery info
