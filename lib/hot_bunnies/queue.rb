@@ -161,6 +161,19 @@ module HotBunnies
       end
     end
 
+    # Adds a consumer to the queue (subscribes for message deliveries).
+    #
+    # @param [Hash] opts Options
+    #
+    # @option opts [Boolean] :manual_ack (false) Will this consumer use manual acknowledgements?
+    # @option opts [Boolean] :exclusive (false) Should this consumer be exclusive for this queue?
+    # @option opts [Boolean] :block (false) Should the call block calling thread?
+    # @option opts [#call] :on_cancellation Block to execute when this consumer is cancelled remotely (e.g. via the RabbitMQ Management plugin)
+    # @option opts [String] :consumer_tag Unique consumer identifier. It is usually recommended to let HotBunnies generate it for you.
+    # @option opts [Hash] :arguments ({}) Additional (optional) arguments, typically used by RabbitMQ extensions
+    #
+    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
+    # @api public
     def subscribe(opts = {}, &block)
       subscribe_with(build_consumer(opts, &block))
     end
@@ -197,7 +210,7 @@ module HotBunnies
     end
 
     # Publishes a message to the queue via default exchange. Takes the same arguments
-    # as {Bunny::Exchange#publish}
+    # as {HotBunnies::Exchange#publish}
     #
     # @see HotBunnies::Exchange#publish
     # @see HotBunnies::Channel#default_exchange
