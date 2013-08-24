@@ -96,6 +96,17 @@ module HotBunnies
       @name.empty? || @name.start_with?("amq.")
     end
 
+    # Waits until all outstanding publisher confirms on the channel
+    # arrive.
+    #
+    # This is a convenience method that delegates to {Channel#wait_for_confirms}
+    #
+    # @api public
+    def wait_for_confirms
+      @channel.wait_for_confirms
+    end
+
+
     #
     # Implementation
     #
