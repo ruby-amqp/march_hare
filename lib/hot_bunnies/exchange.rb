@@ -92,6 +92,7 @@ module HotBunnies
       @channel.exchange_bind(@name, exchange_name, options.fetch(:routing_key, ''))
     end
 
+    # @return [Boolean] true if this exchange is a pre-defined one (amq.direct, amq.fanout, amq.match and so on)
     def predefined?
       @name.empty? || @name.start_with?("amq.")
     end
