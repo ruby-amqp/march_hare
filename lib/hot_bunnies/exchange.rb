@@ -112,6 +112,7 @@ module HotBunnies
     # Implementation
     #
 
+    # @private
     def declare!
       unless predefined?
         if @options[:passive]
