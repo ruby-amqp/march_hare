@@ -3,8 +3,19 @@
 module HotBunnies
   import com.rabbitmq.client.AMQP
 
+  # Represents AMQP 0.9.1 exchanges.
+  #
+  # @see http://hotbunnies.info/articles/exchanges.html Exchanges and Publishing guide
+  # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions guide
   class Exchange
-    attr_reader :name, :channel
+    # @return [String] Exchange name
+    attr_reader :name
+    # @return [HotBunnies::Channel] Channel this exchange object uses
+    attr_reader :channel
+
+    # Type of this exchange (one of: :direct, :fanout, :topic, :headers).
+    # @return [Symbol]
+    attr_reader :type
 
     def initialize(channel, name, options = {})
       raise ArgumentError, "exchange channel cannot be nil" if channel.nil?
