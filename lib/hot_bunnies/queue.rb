@@ -212,6 +212,7 @@ module HotBunnies
     # Implementation
     #
 
+    # @private
     def declare!
       response = if @options[:passive]
                  then @channel.queue_declare_passive(@name)
