@@ -62,7 +62,7 @@ module HotBunnies
 
     # Deletes the exchange unless it is predefined
     #
-    # @param [Hash] opts Options
+    # @param [Hash] options Options
     #
     # @option opts [Boolean] if_unused (false) Should this exchange be deleted only if it is no longer used
     #
@@ -73,6 +73,20 @@ module HotBunnies
       @channel.exchange_delete(@name, options.fetch(:if_unused, false)) unless predefined?
     end
 
+    # Binds an exchange to another (source) exchange using exchange.bind AMQP 0.9.1 extension
+    # that RabbitMQ provides.
+    #
+    # @param [String] exchange Source exchange name
+    # @param [Hash] options Options
+    #
+    # @option opts [String] routing_key (nil) Routing key used for binding
+    # @option opts [Hash] arguments ({}) Optional arguments
+    #
+    # @return [HotBunnies::Exchange] Self
+    # @see http://hotbunnies.info/articles/exchanges.html Exchanges and Publishing guide
+    # @see http://hotbunnies.info/articles/bindings.html Bindings guide
+    # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions guide
+    # @api public
     def bind(exchange, options={})
       exchange_name = if exchange.respond_to?(:name) then exchange.name else exchange.to_s end
       @channel.exchange_bind(@name, exchange_name, options.fetch(:routing_key, ''))
