@@ -706,7 +706,11 @@ module HotBunnies
 
     # @endgroup
 
-
+    # Enables publisher confirms on the channel.
+    # @return [NilClass] nil
+    #
+    # @see http://hotbunnies.info/articles/exchanges.html Exchanges and Publishers guide
+    # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions guide
     def confirm_select
       converting_rjc_exceptions_to_ruby do
         @delegate.confirm_select
