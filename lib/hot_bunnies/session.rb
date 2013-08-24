@@ -116,6 +116,11 @@ module HotBunnies
       ch
     end
 
+    # Closes connection gracefully.
+    #
+    # This includes shutting down consumer work pool gracefully,
+    # waiting up to 5 seconds for all consumer deliveries to be
+    # processed.
     def close
       @channels.select { |_, ch| ch.open? }.each do |_, ch|
         ch.close
