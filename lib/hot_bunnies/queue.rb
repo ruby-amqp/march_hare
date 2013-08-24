@@ -184,6 +184,7 @@ module HotBunnies
       [response.message_count, response.consumer_count]
     end
 
+    # @return [Integer] How many messages the queue has ready (e.g. not delivered but not unacknowledged)
     def message_count
       response = @channel.queue_declare_passive(@name)
       response.message_count
