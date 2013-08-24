@@ -129,11 +129,15 @@ module HotBunnies
       @connection.close
     end
 
+    # @return [Boolean] true if connection is open, false otherwise
     def open?
       @connection.open?
     end
     alias connected? open?
 
+    # Defines a shutdown event callback. Shutdown events are
+    # broadcasted when a connection is closed, either explicitly
+    # or forcefully, or due to a network/peer failure.
     def on_shutdown(&block)
       sh = ShutdownListener.new(self, &block)
       @shutdown_hooks << sh
