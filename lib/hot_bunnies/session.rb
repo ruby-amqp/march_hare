@@ -159,6 +159,8 @@ module HotBunnies
       @connetion.remove_shutdown_listener(@automatic_recovery_hook) if @automatic_recovery_hook
     end
 
+    # Begins automatic connection recovery (typically only used internally
+    # to recover from network failures)
     def automatically_recover
       # recovering immediately makes little sense. Wait a bit first. MK.
       java.lang.Thread.sleep(@network_recovery_interval * 1000)
