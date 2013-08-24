@@ -21,6 +21,8 @@ module HotBunnies
     Session.connect(*args)
   end
 end
+
+# @see HotBunnies
 Hotbunnies = HotBunnies
 
 require 'hot_bunnies/channel'
