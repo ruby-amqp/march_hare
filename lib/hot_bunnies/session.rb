@@ -216,6 +216,7 @@ module HotBunnies
     # Implementation
     #
 
+    # @private
     def register_channel(ch)
       @channels[ch.channel_number] = ch
     end
