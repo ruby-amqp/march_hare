@@ -106,8 +106,9 @@ module HotBunnies
     # @see http://rubybunny.info/articles/bindings.html Bindings guide
     # @see http://rubybunny.info/articles/extensions.html RabbitMQ Extensions guide
     # @api public
-    def unbind(source, opts = {})
-      @channel.exchange_unbind(@name, source, opts.fetch(:routing_key, ''), opts[:arguments])
+    def unbind(exchange, opts = {})
+      exchange_name = if exchange.respond_to?(:name) then exchange.name else exchange.to_s end
+      @channel.exchange_unbind(@name, exchange_name, opts.fetch(:routing_key, ''), opts[:arguments])
     end
 
     # @return [Boolean] true if this exchange is a pre-defined one (amq.direct, amq.fanout, amq.match and so on)

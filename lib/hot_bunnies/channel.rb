@@ -376,6 +376,14 @@ module HotBunnies
       @delegate.exchange_declare(name, type, durable, auto_delete, arguments)
     end
 
+    def exchange_bind(destination, source, routing_key, arguments = nil)
+      @delegate.exchange_bind(destination, source, routing_key, arguments)
+    end
+
+    def exchange_unbind(destination, source, routing_key, arguments = nil)
+      @delegate.exchange_unbind(destination, source, routing_key, arguments)
+    end
+
     # @endgroup
 
 
