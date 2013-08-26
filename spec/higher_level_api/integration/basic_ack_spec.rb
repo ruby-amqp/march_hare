@@ -20,7 +20,7 @@ describe HotBunnies::Channel, "#ack" do
       meta, content = q.pop(:ack => true)
 
       ch.ack(meta.delivery_tag, true)
-      meta.delivery_tag.should == 1
+      meta.delivery_tag.to_i.should == 1
 
       sleep(0.25)
       q.message_count.should == 0

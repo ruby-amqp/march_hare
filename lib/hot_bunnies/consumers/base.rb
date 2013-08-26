@@ -1,3 +1,5 @@
+require "hot_bunnies/versioned_delivery_tag"
+
 module HotBunnies
   import com.rabbitmq.client.DefaultConsumer
 

@@ -245,6 +245,8 @@ module HotBunnies
       @recoveries_counter.increment
     end
 
+    attr_reader :recoveries_counter
+
     # @group Exchanges
 
     # Declares a headers exchange or looks it up in the cache of previously
@@ -577,8 +579,8 @@ module HotBunnies
     # @see #nack
     # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
     def ack(delivery_tag, multiple = false)
-      converting_rjc_exceptions_to_ruby do
-        basic_ack(delivery_tag, multiple)
+      guarding_against_stale_delivery_tags(delivery_tag) do
+        basic_ack(delivery_tag.to_i, multiple)
       end
     end
     alias acknowledge ack
@@ -592,8 +594,8 @@ module HotBunnies
     # @see #nack
     # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
     def reject(delivery_tag, requeue = false)
-      converting_rjc_exceptions_to_ruby do
-        basic_reject(delivery_tag, requeue)
+      guarding_against_stale_delivery_tags(delivery_tag) do
+        basic_reject(delivery_tag.to_i, requeue)
       end
     end
 
@@ -607,8 +609,8 @@ module HotBunnies
     # @see #ack
     # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
     def nack(delivery_tag, multiple = false, requeue = false)
-      converting_rjc_exceptions_to_ruby do
-        basic_nack(delivery_tag, multiple, requeue)
+      guarding_against_stale_delivery_tags(delivery_tag) do
+        basic_nack(delivery_tag.to_i, multiple, requeue)
       end
     end
 
@@ -651,7 +653,7 @@ module HotBunnies
     # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
     def basic_reject(delivery_tag, requeue)
       converting_rjc_exceptions_to_ruby do
-        @delegate.basic_reject(delivery_tag, requeue)
+        @delegate.basic_reject(delivery_tag.to_i, requeue)
       end
     end
 
@@ -664,7 +666,7 @@ module HotBunnies
     # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
     def basic_ack(delivery_tag, multiple)
       converting_rjc_exceptions_to_ruby do
-        @delegate.basic_ack(delivery_tag, multiple)
+        @delegate.basic_ack(delivery_tag.to_i, multiple)
       end
     end
 
@@ -680,7 +682,7 @@ module HotBunnies
     # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions guide
     def basic_nack(delivery_tag, multiple = false, requeue = false)
       converting_rjc_exceptions_to_ruby do
-        @delegate.basic_nack(delivery_tag, multiple, requeue)
+        @delegate.basic_nack(delivery_tag.to_i, multiple, requeue)
       end
     end
 
@@ -857,6 +859,22 @@ module HotBunnies
         block.call
       rescue Exception, java.lang.Throwable => e
         Exceptions.convert_and_reraise(e)
+      end
+    end
+
+    # @private
+    def guarding_against_stale_delivery_tags(tag, &block)
+      case tag
+      # if a fixnum was passed, execute unconditionally. MK.
+      when Fixnum then
+        block.call
+        # versioned delivery tags should be checked to avoid
+        # sending out stale (invalid) tags after channel was reopened
+        # during network failure recovery. MK.
+      when VersionedDeliveryTag then
+        if !tag.stale?(@recoveries_counter.get)
+          block.call
+        end
       end
     end
   end

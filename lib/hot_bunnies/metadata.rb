@@ -19,7 +19,6 @@ module HotBunnies
 
     begin :envelope_delegation
       [
-        :delivery_tag,
         :routing_key,
         :redeliver,
         :exchange
@@ -28,6 +27,10 @@ module HotBunnies
       end
 
       alias_method :redelivered?, :redeliver
+    end
+
+    def delivery_tag
+      @delivery_tag ||= VersionedDeliveryTag.new(@envelope.delivery_tag, @channel.recoveries_counter.get)
     end
 
     begin :message_properties_delegation

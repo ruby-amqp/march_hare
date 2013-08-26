@@ -81,7 +81,7 @@ describe "A consumer" do
     @meta.type.should == "kinda.checkin"
     @meta.consumer_tag.should_not be_nil
     @meta.consumer_tag.should_not be_empty
-    @meta.delivery_tag.should == 1
+    @meta.delivery_tag.to_i.should == 1
     @meta.delivery_mode.should == 2
     @meta.should be_persistent
     @meta.reply_to.should == "a.sender"
