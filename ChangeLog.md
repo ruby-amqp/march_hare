@@ -2,6 +2,11 @@
 
 Hot Bunnies 2.0 has **breaking API changes**.
 
+### exchange.unbind Support
+
+`HotBunnies::Exchange#unbind` is now provided to compliment
+`HotBunnies::Exchange#bind`.
+
 ### Safe[r] basic.ack, basic.nack and basic.reject implementation
 
 Previously if a channel was recovered (reopened) by automatic connection
