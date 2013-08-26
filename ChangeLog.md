@@ -2,6 +2,25 @@
 
 Hot Bunnies 2.0 has **breaking API changes**.
 
+### Safe[r] basic.ack, basic.nack and basic.reject implementation
+
+Previously if a channel was recovered (reopened) by automatic connection
+recovery before a message was acknowledged or rejected, it would cause
+any operation on the channel that uses delivery tags to fail and
+cause the channel to be closed.
+
+To avoid this issue, every channel keeps a counter of how many times
+it has been reopened and marks delivery tags with them. Using a stale
+tag to ack or reject a message will produce no method sent to RabbitMQ.
+Note that unacknowledged messages will be requeued by RabbitMQ when connection
+goes down anyway.
+
+This involves an API change: `HotBunnies::Headers#delivery_tag` is now
+and instance of a class that responds to `#tag` and `#to_i` and is accepted
+by `HotBunnies::Channel#ack` and related methods.
+
+Integers are still accepted by the same methods.
+
 ## Consumer Work Pool Changes
 
 HotBunnies 1.x used to maintain a separate executor (thread pool) per non-blocking
