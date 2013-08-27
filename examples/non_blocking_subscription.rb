@@ -13,7 +13,7 @@ queue = channel.queue('hello.world')
 queue.bind(exchange, :routing_key => 'xyz')
 queue.purge
 
-subscription = queue.subscribe(:ack => true, :blocking => false) do |headers, msg|
+consumer = queue.subscribe(:ack => true, :blocking => false) do |headers, msg|
   puts msg
   headers.ack
 end
@@ -25,7 +25,7 @@ end
 # make sure all messages are processed before we cancel
 # to avoid confusing exceptions from the [already shutdown] executor. MK.
 sleep 1.0
-subscription.cancel
+consumer.cancel
 
 puts "Disconnecting now..."
 
