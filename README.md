@@ -44,7 +44,7 @@ and is considered to be a reference implementation.
 
 ### With Bundler
 
-    gem "hot_bunnies", "~> 2.0.0.pre8"
+    gem "hot_bunnies", "~> 2.0.0.pre12"
 
 
 ## Documentation
