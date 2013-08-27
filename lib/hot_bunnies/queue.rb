@@ -175,7 +175,7 @@ module HotBunnies
     # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
     # @api public
     def subscribe(opts = {}, &block)
-      subscribe_with(build_consumer(opts, &block))
+      subscribe_with(build_consumer(opts, &block), opts)
     end
 
     def subscribe_with(consumer, opts = {})
