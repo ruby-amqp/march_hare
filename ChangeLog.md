@@ -21,7 +21,7 @@ Note that unacknowledged messages will be requeued by RabbitMQ when connection
 goes down anyway.
 
 This involves an API change: `HotBunnies::Headers#delivery_tag` is now
-and instance of a class that responds to `#tag` and `#to_i` and is accepted
+and instance of a class that responds to `#to_i` and is accepted
 by `HotBunnies::Channel#ack` and related methods.
 
 Integers are still accepted by the same methods.
