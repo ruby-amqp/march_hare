@@ -26,7 +26,7 @@ consumer = queue.build_consumer(:block => true) do |headers, msg|
   headers.ack
   consumer.cancel if msg == "POISON!"
 end
-queue.subscribe_with(consumer, :block => true, :manual_ack => true)
+queue.subscribe_with(consumer, :manual_ack => true)
 
 puts "Disconnecting now..."
 
