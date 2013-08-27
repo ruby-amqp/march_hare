@@ -19,12 +19,14 @@ end
 
 exchange.publish("POISON!", :routing_key => 'xyz')
 
-subscription = queue.subscribe(:ack => true)
-subscription.each(:blocking => true) do |headers, msg|
+puts "Registering a consumer"
+
+consumer = queue.build_consumer(:block => true) do |headers, msg|
   puts msg
   headers.ack
-  subscription.cancel if msg == "POISON!"
+  consumer.cancel if msg == "POISON!"
 end
+queue.subscribe_with(consumer, :block => true, :manual_ack => true)
 
 puts "Disconnecting now..."
 
