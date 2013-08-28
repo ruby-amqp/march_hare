@@ -28,10 +28,9 @@ module HotBunnies
     # @see HotBunnies::Channel#queue
     # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
     # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions guide
-    def initialize(channel, name, thread_pool, options={})
+    def initialize(channel, name, options={})
       @channel = channel
       @name = name
-      @thread_pool = thread_pool
       @options = {:durable => false, :exclusive => false, :auto_delete => false, :passive => false, :arguments => Hash.new}.merge(options)
 
       @durable      = @options[:durable]
