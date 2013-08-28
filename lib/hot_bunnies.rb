@@ -6,7 +6,6 @@ require 'ext/rabbitmq-client'
 
 require 'hot_bunnies/version'
 require 'hot_bunnies/exceptions'
-require 'hot_bunnies/thread_pools'
 require 'hot_bunnies/session'
 
 # HotBunnies is a JRuby client for RabbitMQ built on top of the official Java client.

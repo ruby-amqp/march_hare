@@ -73,13 +73,10 @@ module HotBunnies
 
     # @private
     def initialize(connection_factory, opts = {})
-      @cf               = connection_factory
+      @cf = connection_factory
       @executor_factory = opts[:executor_factory]
-      @connection       = converting_rjc_exceptions_to_ruby do
-        self.new_connection
-      end
-      @channels    = JavaConcurrent::ConcurrentHashMap.new
-      @thread_pool = ThreadPools.dynamically_growing
+      @connection = self.new_connection
+      @channels = JavaConcurrent::ConcurrentHashMap.new
 
       # should automatic recovery from network failures be used?
       @automatically_recover = if opts[:automatically_recover].nil? && opts[:automatic_recovery].nil?
@@ -110,7 +107,7 @@ module HotBunnies
              @connection.create_channel
            end
 
-      ch = Channel.new(self, jc, @thread_pool)
+      ch = Channel.new(self, jc)
       register_channel(ch)
 
       ch
@@ -124,11 +121,6 @@ module HotBunnies
     def close
       @channels.select { |_, ch| ch.open? }.each do |_, ch|
         ch.close
-      end
-
-      @thread_pool.shutdown
-      unless @thread_pool.await_termination(5, JavaConcurrent::TimeUnit::SECONDS)
-        @thread_pool.shutdown_now
       end
 
       @connection.close
@@ -174,10 +166,7 @@ module HotBunnies
       # recovering immediately makes little sense. Wait a bit first. MK.
       java.lang.Thread.sleep(@network_recovery_interval * 1000)
 
-      @connection = converting_rjc_exceptions_to_ruby do
-        self.new_connection
-      end
-      @thread_pool = ThreadPools.dynamically_growing
+      @connection = self.new_connection
       self.recover_shutdown_hooks
 
       @channels.each do |id, ch|
@@ -330,8 +319,7 @@ module HotBunnies
     def new_connection
       converting_rjc_exceptions_to_ruby do
         if @executor_factory
-          ex = @executor_factory.call
-          @cf.new_connection(ex)
+          @cf.new_connection(@executor_factory.call)
         else
           @cf.new_connection
         end
