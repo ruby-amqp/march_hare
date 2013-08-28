@@ -75,9 +75,7 @@ module HotBunnies
     def initialize(connection_factory, opts = {})
       @cf = connection_factory
       @executor_factory = opts[:executor_factory]
-      @connection = converting_rjc_exceptions_to_ruby do
-        self.new_connection
-      end
+      @connection = self.new_connection
       @channels = JavaConcurrent::ConcurrentHashMap.new
 
       # should automatic recovery from network failures be used?
@@ -168,9 +166,7 @@ module HotBunnies
       # recovering immediately makes little sense. Wait a bit first. MK.
       java.lang.Thread.sleep(@network_recovery_interval * 1000)
 
-      @connection = converting_rjc_exceptions_to_ruby do
-        self.new_connection
-      end
+      @connection = self.new_connection
       self.recover_shutdown_hooks
 
       @channels.each do |id, ch|
