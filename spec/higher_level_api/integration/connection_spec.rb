@@ -47,6 +47,20 @@ describe "HotBunnies.connect" do
       }.should raise_error(HotBunnies::PossibleAuthenticationFailureError)
     end
   end
+
+  it "lets you specify executor (thread pool) factory" do
+    calls = 0
+    factory = double(:executor_factory)
+    factory.stub(:call) do
+      calls += 1
+      HotBunnies::JavaConcurrent::Executors.new_cached_thread_pool
+    end
+    c1 = HotBunnies.connect(:executor_factory => factory)
+    c1.close
+    c1.automatically_recover
+    c1.close
+    calls.should == 2
+  end
 end
 
 
