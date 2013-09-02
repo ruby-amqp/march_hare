@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+require "hot_bunnies/juc"
+
+>>>>>>> 0c5e47a... Bring back HotBunnies::ThreadPools
 module HotBunnies
   # A slighly more Ruby developer-friendly way of instantiating various
   # JDK executors (thread pools).

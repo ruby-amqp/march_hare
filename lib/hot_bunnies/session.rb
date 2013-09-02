@@ -1,6 +1,7 @@
 # encoding: utf-8
 require "hot_bunnies/shutdown_listener"
 require "set"
+require "hot_bunnies/thread_pools"
 
 module HotBunnies
   java_import com.rabbitmq.client.ConnectionFactory
