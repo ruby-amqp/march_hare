@@ -171,11 +171,14 @@ module HotBunnies
     # Begins automatic connection recovery (typically only used internally
     # to recover from network failures)
     def automatically_recover
+      ms = @network_recovery_interval * 1000
       # recovering immediately makes little sense. Wait a bit first. MK.
-      java.lang.Thread.sleep(@network_recovery_interval * 1000)
+      java.lang.Thread.sleep(ms)
 
       @connection = converting_rjc_exceptions_to_ruby do
-        self.new_connection
+        reconnecting_on_network_failures(ms) do
+          self.new_connection
+        end
       end
       @thread_pool = ThreadPools.dynamically_growing
       self.recover_shutdown_hooks
@@ -323,6 +326,17 @@ module HotBunnies
         raise ConnectionRefused.new("Connection to #{@cf.host}:#{@cf.port} refused: host unknown")
       rescue com.rabbitmq.client.PossibleAuthenticationFailureException => e
         raise PossibleAuthenticationFailureError.new(@cf.username, @cf.virtual_host, @cf.password.bytesize)
+      end
+    end
+
+    # @private
+    def reconnecting_on_network_failures(interval_in_ms, &fn)
+      begin
+        fn.call
+      rescue IOError, HotBunnies::ConnectionRefused, java.io.IOException => e
+        java.lang.Thread.sleep(interval_in_ms)
+
+        retry
       end
     end
 
