@@ -49,10 +49,17 @@ describe "HotBunnies.connect" do
   end
 
   it "lets you specify executor (thread pool) factory" do
-    c1 = HotBunnies.connect(:executor_factory => Proc.new {
-      HotBunnies::ThreadPools.dynamically_growing
-    })
+    calls = 0
+    factory = double(:executor_factory)
+    factory.stub(:call) do
+      calls += 1
+      HotBunnies::JavaConcurrent::Executors.new_cached_thread_pool
+    end
+    c1 = HotBunnies.connect(:executor_factory => factory)
     c1.close
+    c1.automatically_recover
+    c1.close
+    calls.should == 2
   end
 end
 
