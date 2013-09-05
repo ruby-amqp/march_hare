@@ -375,10 +375,32 @@ module HotBunnies
       @delegate.exchange_declare(name, type, durable, auto_delete, arguments)
     end
 
+    # Binds an exchange to another exchange using exchange.bind method (RabbitMQ extension)
+    #
+    # @param [String] desitnation Destination exchange name
+    # @param [String] source Source exchange name
+    #
+    # @param [String] routing_key Routing key used for binding
+    # @param [Hash] arguments (nil) Optional arguments
+    #
+    # @return RabbitMQ response
+    # @see http://hotbunnies.info/articles/extensions.html RabbitMQ extensions guide
+    # @see http://hotbunnies.info/articles/bindings.html Bindings guide
     def exchange_bind(destination, source, routing_key, arguments = nil)
       @delegate.exchange_bind(destination, source, routing_key, arguments)
     end
 
+    # Unbinds an exchange from another exchange using exchange.unbind method (RabbitMQ extension)
+    #
+    # @param [String] destination Destination exchange name
+    # @param [String] source Source exchange name
+    #
+    # @param [String] routing_key Routing key used for binding
+    # @param [Hash] arguments ({}) Optional arguments
+    #
+    # @return RabbitMQ response
+    # @see http://hotbunnies.info/articles/extensions.html RabbitMQ extensions guide
+    # @see http://hotbunnies.info/articles/bindings.html Bindings guide
     def exchange_unbind(destination, source, routing_key, arguments = nil)
       @delegate.exchange_unbind(destination, source, routing_key, arguments)
     end
