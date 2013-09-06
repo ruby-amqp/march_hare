@@ -13,7 +13,6 @@ and [Bunny](http://rubybunny.info).
    only use one or the other.
  * [amqp gem](https://github.com/ruby-amqp/amqp) has certain amount of baggage it cannot drop because of backwards compatibility concerns. Hot Bunnies is a
    clean room design, much more open to radical new ideas.
- * Someone just *had* to come up with a library called Hot Bunnies. Are your bunnies hot?
 
 
 ## What Hot Bunnies is not
@@ -84,6 +83,15 @@ See [ChangeLog.md](ChangeLog.md).
 [![Continuous Integration status](https://secure.travis-ci.org/ruby-amqp/hot_bunnies.png)](http://travis-ci.org/ruby-amqp/hot_bunnies)
 
 CI is hosted by [travis-ci.org](http://travis-ci.org)
+
+
+## FAQ
+
+### What's with the name?
+
+HotBunnies is a pun on [Bunny](http://rubybunny.info) and like 4 RabbitMQ clients named
+Carrot. We did not intend to offend anyone with this name. Consider it to be
+an unfortunate joke.
 
 
 ## License
