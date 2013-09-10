@@ -1,7 +1,7 @@
 require "spec_helper"
 
 describe "Any exchange" do
-  let(:connection) { HotBunnies.connect }
+  let(:connection) { CarrotCake.connect }
 
   after :each do
     connection.close

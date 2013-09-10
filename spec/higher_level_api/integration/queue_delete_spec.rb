@@ -7,7 +7,7 @@ describe "Queue" do
   # Environment
   #
 
-  let(:connection) { HotBunnies.connect }
+  let(:connection) { CarrotCake.connect }
   let(:channel)    { connection.create_channel }
 
   after :each do
@@ -31,7 +31,7 @@ describe "Queue" do
       q.delete(true, true)
       lambda do
         q.delete(true, true)
-      end.should raise_error(HotBunnies::NotFound)
+      end.should raise_error(CarrotCake::NotFound)
     end
   end
 end

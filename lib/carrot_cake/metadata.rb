@@ -1,4 +1,4 @@
-module HotBunnies
+module CarrotCake
   class Headers
     attr_reader :channel, :consumer_tag, :envelope, :properties
 
@@ -90,4 +90,4 @@ module HotBunnies
         build
     end
   end
-end # HotBunnies
+end # CarrotCake

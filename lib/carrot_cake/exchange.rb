@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-module HotBunnies
+module CarrotCake
   import com.rabbitmq.client.AMQP
 
   # Represents AMQP 0.9.1 exchanges.
@@ -10,7 +10,7 @@ module HotBunnies
   class Exchange
     # @return [String] Exchange name
     attr_reader :name
-    # @return [HotBunnies::Channel] Channel this exchange object uses
+    # @return [CarrotCake::Channel] Channel this exchange object uses
     attr_reader :channel
 
     # Type of this exchange (one of: :direct, :fanout, :topic, :headers).
@@ -30,7 +30,7 @@ module HotBunnies
 
     # Publishes a message
     #
-    # @param [String] payload Message payload. It will never be modified by HotBunnies or RabbitMQ in any way.
+    # @param [String] payload Message payload. It will never be modified by CarrotCake or RabbitMQ in any way.
     # @param [Hash] opts Message properties (metadata) and delivery settings
     #
     # @option opts [String] :routing_key Routing key
@@ -48,7 +48,7 @@ module HotBunnies
     # @option opts [String] :user_id Optional user ID. Verified by RabbitMQ against the actual connection username
     # @option opts [String] :app_id Optional application ID
     #
-    # @return [HotBunnies::Exchange] Self
+    # @return [CarrotCake::Exchange] Self
     # @see http://hotbunnies.info/articles/exchanges.html Exchanges and Publishing guide
     # @api public
     def publish(body, opts = {})
@@ -82,7 +82,7 @@ module HotBunnies
     # @option opts [String] routing_key (nil) Routing key used for binding
     # @option opts [Hash] arguments ({}) Optional arguments
     #
-    # @return [HotBunnies::Exchange] Self
+    # @return [CarrotCake::Exchange] Self
     # @see http://hotbunnies.info/articles/exchanges.html Exchanges and Publishing guide
     # @see http://hotbunnies.info/articles/bindings.html Bindings guide
     # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions guide

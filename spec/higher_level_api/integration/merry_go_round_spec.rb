@@ -2,23 +2,23 @@ require "spec_helper"
 
 describe "A message that is proxied by multiple intermediate consumers" do
   let(:c1) do
-    HotBunnies.connect
+    CarrotCake.connect
   end
 
   let(:c2) do
-    HotBunnies.connect
+    CarrotCake.connect
   end
 
   let(:c3) do
-    HotBunnies.connect
+    CarrotCake.connect
   end
 
   let(:c4) do
-    HotBunnies.connect
+    CarrotCake.connect
   end
 
   let(:c5) do
-    HotBunnies.connect
+    CarrotCake.connect
   end
 
   after :each do

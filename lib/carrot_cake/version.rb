@@ -1,5 +1,5 @@
 # encoding: utf-8
 
-module HotBunnies
+module CarrotCake
   VERSION = "2.0.0.pre14wip"
 end

@@ -1,4 +1,4 @@
-module HotBunnies
+module CarrotCake
   class Exception < StandardError
   end
 
@@ -159,4 +159,4 @@ module HotBunnies
       klass.new(m.reply_text, m)
     end
   end
-end # HotBunnies
+end # CarrotCake

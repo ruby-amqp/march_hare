@@ -1,4 +1,4 @@
-module HotBunnies
+module CarrotCake
   module JavaConcurrent
     java_import 'java.lang.Thread'
     java_import 'java.lang.Runnable'

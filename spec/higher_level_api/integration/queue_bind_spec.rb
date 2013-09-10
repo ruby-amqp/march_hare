@@ -7,7 +7,7 @@ describe "A queue" do
   # Environment
   #
 
-  let(:connection) { HotBunnies.connect }
+  let(:connection) { CarrotCake.connect }
 
   after :each do
     connection.close
@@ -82,7 +82,7 @@ describe "A queue" do
       raised = nil
       begin
         q.bind("asyd8a9d98sa73t78hd9as^&&(&@#(*^")
-      rescue HotBunnies::NotFound => e
+      rescue CarrotCake::NotFound => e
         raised = e
       end
 

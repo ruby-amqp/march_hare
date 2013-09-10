@@ -1,7 +1,7 @@
 require "spec_helper"
 
-describe HotBunnies::Exchange do
-  let(:connection) { HotBunnies.connect }
+describe CarrotCake::Exchange do
+  let(:connection) { CarrotCake.connect }
 
   after :each do
     connection.close

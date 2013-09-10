@@ -3,7 +3,7 @@ require "spec_helper"
 
 describe "Queue" do
   context "with a server-generated name" do
-    let(:connection) { HotBunnies.connect }
+    let(:connection) { CarrotCake.connect }
     let(:channel)    { connection.create_channel }
 
     after :each do

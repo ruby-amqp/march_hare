@@ -13,6 +13,6 @@ when "1.8.7" then
 end
 
 
-require "hot_bunnies"
+require "carrot_cake"
 
 puts "Running on Ruby #{RUBY_VERSION}."

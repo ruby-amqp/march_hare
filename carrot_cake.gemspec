@@ -2,20 +2,20 @@
 
 $: << File.expand_path('../lib', __FILE__)
 
-require 'hot_bunnies/version'
+require 'carrot_cake/version'
 
 
 Gem::Specification.new do |s|
-  s.name        = 'hot_bunnies'
-  s.version     = HotBunnies::VERSION
+  s.name        = 'carrot_cake'
+  s.version     = CarrotCake::VERSION
   s.platform    = 'java'
   s.authors     = ['Theo Hultberg', 'Michael S. Klishin']
-  s.email       = ['theo@burtcorp.com']
-  s.homepage    = 'http://hotbunnies.info'
+  s.email       = ['theo@burtcorp.com', 'michael@rabbitmq.com']
+  s.homepage    = 'http://rubycarrotcake.info'
   s.summary     = %q{RabbitMQ client for JRuby built around the official RabbitMQ Java client}
   s.description = %q{RabbitMQ client for JRuby built around the official RabbitMQ Java client}
 
-  s.rubyforge_project = 'hot_bunnies'
+  s.rubyforge_project = 'cottontail'
 
   s.files         = `git ls-files -- lib`.split("\n")
   s.test_files    = `git ls-files -- {spec}/*`.split("\n")

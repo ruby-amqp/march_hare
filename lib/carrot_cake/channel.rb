@@ -1,8 +1,8 @@
 # encoding: utf-8
-require "hot_bunnies/shutdown_listener"
-require "hot_bunnies/juc"
+require "carrot_cake/shutdown_listener"
+require "carrot_cake/juc"
 
-module HotBunnies
+module CarrotCake
   # ## Channels in RabbitMQ
   #
   # To quote {http://www.rabbitmq.com/resources/specs/amqp0-9-1.pdf AMQP 0.9.1 specification}:
@@ -17,11 +17,11 @@ module HotBunnies
   #
   # ## Opening Channels
   #
-  # Channels can be opened either via `HotBunnies::Session#create_channel` (sufficient in the majority
-  # of cases) or by instantiating `HotBunnies::Channel` directly:
+  # Channels can be opened either via `CarrotCake::Session#create_channel` (sufficient in the majority
+  # of cases) or by instantiating `CarrotCake::Channel` directly:
   #
-  # @example Using {HotBunnies::Session#create_channel}:
-  #   conn = HotBunnies.new
+  # @example Using {CarrotCake::Session#create_channel}:
+  #   conn = CarrotCake.new
   #   conn.start
   #
   #   ch   = conn.create_channel
@@ -30,9 +30,9 @@ module HotBunnies
   #
   # ## Closing Channels
   #
-  # Channels are closed via {HotBunnies::Channel#close}. Channels that get a channel-level exception are
+  # Channels are closed via {CarrotCake::Channel#close}. Channels that get a channel-level exception are
   # closed, too. Closed channels can no longer be used. Attempts to use them will raise
-  # {HotBunnies::ChannelAlreadyClosed}.
+  # {CarrotCake::ChannelAlreadyClosed}.
   #
   # @example
   #
@@ -41,36 +41,36 @@ module HotBunnies
   #
   # ## Higher-level API
   #
-  # HotBunnies offers two sets of methods on {HotBunnies::Channel}: known as higher-level and lower-level
+  # CarrotCake offers two sets of methods on {CarrotCake::Channel}: known as higher-level and lower-level
   # APIs, respectively. Higher-level API mimics {http://rubyamqp.info amqp gem} API where
-  # exchanges and queues are objects (instance of {HotBunnies::Exchange} and {HotBunnies::Queue}, respectively).
+  # exchanges and queues are objects (instance of {CarrotCake::Exchange} and {CarrotCake::Queue}, respectively).
   # Lower-level API is built around AMQP 0.9.1 methods (commands), where queues and exchanges are
   # passed as strings (à la RabbitMQ Java client, {http://clojurerabbitmq.info Langohr} and Pika).
   #
   # ### Queue Operations In Higher-level API
   #
-  # * {HotBunnies::Channel#queue} is used to declare queues. The rest of the API is in {HotBunnies::Queue}.
+  # * {CarrotCake::Channel#queue} is used to declare queues. The rest of the API is in {CarrotCake::Queue}.
   #
   #
   # ### Exchange Operations In Higher-level API
   #
-  # * {HotBunnies::Channel#topic} declares a topic exchange. The rest of the API is in {HotBunnies::Exchange}.
-  # * {HotBunnies::Channel#direct} declares a direct exchange.
-  # * {HotBunnies::Channel#fanout} declares a fanout exchange.
-  # * {HotBunnies::Channel#headers} declares a headers exchange.
-  # * {HotBunnies::Channel#default_exchange}
-  # * {HotBunnies::Channel#exchange} is used to declare exchanges with type specified as a symbol or string.
+  # * {CarrotCake::Channel#topic} declares a topic exchange. The rest of the API is in {CarrotCake::Exchange}.
+  # * {CarrotCake::Channel#direct} declares a direct exchange.
+  # * {CarrotCake::Channel#fanout} declares a fanout exchange.
+  # * {CarrotCake::Channel#headers} declares a headers exchange.
+  # * {CarrotCake::Channel#default_exchange}
+  # * {CarrotCake::Channel#exchange} is used to declare exchanges with type specified as a symbol or string.
   #
   #
   # ## Channel Qos (Prefetch Level)
   #
   # It is possible to control how many messages at most a consumer will be given (before it acknowledges
-  # or rejects previously consumed ones). This setting is per channel and controlled via {HotBunnies::Channel#prefetch}.
+  # or rejects previously consumed ones). This setting is per channel and controlled via {CarrotCake::Channel#prefetch}.
   #
   #
   # ## Channel IDs
   #
-  # Channels are identified by their ids which are integers. HotBunnies takes care of allocating and
+  # Channels are identified by their ids which are integers. CarrotCake takes care of allocating and
   # releasing them as channels are opened and closed. It is almost never necessary to specify
   # channel ids explicitly.
   #
@@ -84,14 +84,14 @@ module HotBunnies
   # issues applications can recover from (such as consuming from or trying to delete
   # a queue that does not exist).
   #
-  # With HotBunnies, channel-level exceptions are raised as Ruby exceptions, for example,
-  # {HotBunnies::NotFound}, that provide access to the underlying `channel.close` method
+  # With CarrotCake, channel-level exceptions are raised as Ruby exceptions, for example,
+  # {CarrotCake::NotFound}, that provide access to the underlying `channel.close` method
   # information.
   #
   # @example Handling 404 NOT_FOUND
   #   begin
   #     ch.queue_delete("queue_that_should_not_exist#{rand}")
-  #   rescue HotBunnies::NotFound => e
+  #   rescue CarrotCake::NotFound => e
   #     puts "Channel-level exception! Code: #{e.channel_close.reply_code}, message: #{e.channel_close.reply_text}"
   #   end
   #
@@ -102,19 +102,19 @@ module HotBunnies
   #
   #     ch2.queue_declare(q, :durable => false)
   #     ch2.queue_declare(q, :durable => true)
-  #   rescue HotBunnies::PreconditionFailed => e
+  #   rescue CarrotCake::PreconditionFailed => e
   #     puts "Channel-level exception! Code: #{e.channel_close.reply_code}, message: #{e.channel_close.reply_text}"
   #   ensure
   #     conn.create_channel.queue_delete(q)
   #   end
   #
-  # @see HotBunnies::Session#create_channel
+  # @see CarrotCake::Session#create_channel
   # @see http://www.rabbitmq.com/tutorials/amqp-concepts.html AMQP 0.9.1 Model Concepts Guide
-  # @see http://hotbunnies.info/articles/getting_started.html Getting Started with RabbitMQ Using HotBunnies
+  # @see http://hotbunnies.info/articles/getting_started.html Getting Started with RabbitMQ Using CarrotCake
   # @see http://hotbunnies.info/articles/queues.html Queues and Consumers
   # @see http://hotbunnies.info/articles/exchanges.html Exchanges and Publishing
   class Channel
-    # @return [Array<HotBunnies::Consumer>] Consumers on this channel
+    # @return [Array<CarrotCake::Consumer>] Consumers on this channel
     attr_reader :consumers
 
     # @private
@@ -136,7 +136,7 @@ module HotBunnies
       end
     end
 
-    # @return [HotBunnies::Session] Connection this channel is on
+    # @return [CarrotCake::Session] Connection this channel is on
     def session
       @connection
     end
@@ -259,7 +259,7 @@ module HotBunnies
     # @option options [Boolean] :auto_delete (false) Should the exchange be automatically deleted when no longer in use?
     # @option options [Hash] :arguments ({}) Optional exchange arguments
     #
-    # @return [HotBunnies::Exchange] Exchange instance
+    # @return [CarrotCake::Exchange] Exchange instance
     # @see http://hotbunnies.info/articles/exchanges.html Exchanges and Publishing guide
     # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions to AMQP 0.9.1 guide
     def exchange(name, options={})
@@ -280,7 +280,7 @@ module HotBunnies
     # @option opts [Boolean] :auto_delete (false) Should the exchange be automatically deleted when no longer in use?
     # @option opts [Hash] :arguments ({}) Optional exchange arguments (used by RabbitMQ extensions)
     #
-    # @return [HotBunnies::Exchange] Exchange instance
+    # @return [CarrotCake::Exchange] Exchange instance
     # @see http://hotbunnies.info/articles/exchanges.html Exchanges and Publishing guide
     # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions to AMQP 0.9.1 guide
     def fanout(name, opts = {})
@@ -301,7 +301,7 @@ module HotBunnies
     # @option opts [Boolean] :auto_delete (false) Should the exchange be automatically deleted when no longer in use?
     # @option opts [Hash] :arguments ({}) Optional exchange arguments (used by RabbitMQ extensions)
     #
-    # @return [HotBunnies::Exchange] Exchange instance
+    # @return [CarrotCake::Exchange] Exchange instance
     # @see http://hotbunnies.info/articles/exchanges.html Exchanges and Publishing guide
     # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions to AMQP 0.9.1 guide
     def direct(name, opts = {})
@@ -322,7 +322,7 @@ module HotBunnies
     # @option opts [Boolean] :auto_delete (false) Should the exchange be automatically deleted when no longer in use?
     # @option opts [Hash] :arguments ({}) Optional exchange arguments (used by RabbitMQ extensions)
     #
-    # @return [HotBunnies::Exchange] Exchange instance
+    # @return [CarrotCake::Exchange] Exchange instance
     # @see http://hotbunnies.info/articles/exchanges.html Exchanges and Publishing guide
     # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions to AMQP 0.9.1 guide
     def topic(name, opts = {})
@@ -343,7 +343,7 @@ module HotBunnies
     # @option opts [Boolean] :auto_delete (false) Should the exchange be automatically deleted when no longer in use?
     # @option opts [Hash] :arguments ({}) Optional exchange arguments
     #
-    # @return [HotBunnies::Exchange] Exchange instance
+    # @return [CarrotCake::Exchange] Exchange instance
     # @see http://hotbunnies.info/articles/exchanges.html Exchanges and Publishing guide
     # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions to AMQP 0.9.1 guide
     def headers(name, opts = {})
@@ -367,7 +367,7 @@ module HotBunnies
     #                                            can survive broker restarts? Typically set to true for long-lived exchanges.
     # @param [Boolean] auto_delete (false) Should this echange be deleted when it is no longer used?
     # @param [Boolean] passive (false)   If true, exchange will be checked for existence. If it does not
-    #                                          exist, {HotBunnies::NotFound} will be raised.
+    #                                          exist, {CarrotCake::NotFound} will be raised.
     #
     # @return RabbitMQ response
     # @see http://hotbunnies.info/articles/echanges.html Exchanges and Publishing guide
@@ -420,7 +420,7 @@ module HotBunnies
     # @option options [Boolean] :exclusive (false) Should this queue be exclusive (only can be used by this connection, removed when the connection is closed)?
     # @option options [Boolean] :arguments ({}) Additional optional arguments (typically used by RabbitMQ extensions and plugins)
     #
-    # @return [HotBunnies::Queue] Queue that was declared or looked up in the cache
+    # @return [CarrotCake::Queue] Queue that was declared or looked up in the cache
     # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
     # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions guide
     def queue(name, options={})
@@ -442,7 +442,7 @@ module HotBunnies
     #                                      If true, the queue will be automatically deleted when this
     #                                      connection is closed
     # @param [Boolean] passive (false)     If true, queue will be checked for existence. If it does not
-    #                                      exist, {HotBunnies::NotFound} will be raised.
+    #                                      exist, {CarrotCake::NotFound} will be raised.
     #
     # @return RabbitMQ response
     # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
@@ -534,7 +534,7 @@ module HotBunnies
     #
     # @param [String] exchange Exchange to publish to
     # @param [String] routing_key Routing key
-    # @param [String] body Message payload. It will never be modified by HotBunnies or RabbitMQ in any way.
+    # @param [String] body Message payload. It will never be modified by CarrotCake or RabbitMQ in any way.
     # @option opts [Boolean] :mandatory Should the message be returned if it cannot be routed to any queue?
     #
     # @param [Hash] properties Message properties
@@ -552,7 +552,7 @@ module HotBunnies
     # @option properties [String] :user_id Optional user ID. Verified by RabbitMQ against the actual connection username
     # @option properties [String] :app_id Optional application ID
     #
-    # @return [HotBunnies::Channel] Self
+    # @return [CarrotCake::Channel] Self
     def basic_publish(exchange, routing_key, mandatory, properties, body)
       converting_rjc_exceptions_to_ruby do
         @delegate.basic_publish(exchange, routing_key, mandatory, false, BasicPropertiesBuilder.build_properties_from(properties || Hash.new), body)
@@ -629,7 +629,7 @@ module HotBunnies
     end
 
     # Rejects a message. A rejected message can be requeued or
-    # dropped by RabbitMQ. This method is similar to {HotBunnies::Channel#reject} but
+    # dropped by RabbitMQ. This method is similar to {CarrotCake::Channel#reject} but
     # supports rejecting multiple messages at once, and is usually preferred.
     #
     # @param [Integer] delivery_tag Delivery tag to reject
@@ -650,7 +650,7 @@ module HotBunnies
     # @return [NilClass] nil
     #
     # @example Requeue a message
-    #   conn  = HotBunnies.new
+    #   conn  = CarrotCake.new
     #   conn.start
     #
     #   ch    = conn.create_channel
@@ -660,7 +660,7 @@ module HotBunnies
     #   end
     #
     # @example Reject a message
-    #   conn  = HotBunnies.new
+    #   conn  = CarrotCake.new
     #   conn.start
     #
     #   ch    = conn.create_channel
@@ -670,7 +670,7 @@ module HotBunnies
     #   end
     #
     # @example Requeue a message fetched via basic.get
-    #   conn  = HotBunnies.new
+    #   conn  = CarrotCake.new
     #   conn.start
     #
     #   ch    = conn.create_channel
@@ -699,7 +699,7 @@ module HotBunnies
       end
     end
 
-    # Rejects or requeues messages just like {HotBunnies::Channel#basic_reject} but can do so
+    # Rejects or requeues messages just like {CarrotCake::Channel#basic_reject} but can do so
     # with multiple messages at once.
     #
     # @param [Integer] delivery_tag Delivery tag obtained from delivery info

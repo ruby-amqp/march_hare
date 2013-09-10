@@ -6,7 +6,7 @@ describe "Any channel" do
   # Environment
   #
 
-  let(:connection) { HotBunnies.connect }
+  let(:connection) { CarrotCake.connect }
 
   after :each do
     connection.close

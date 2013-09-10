@@ -1,7 +1,7 @@
 require "spec_helper"
 
 describe "Direct exchange" do
-  let(:connection) { HotBunnies.connect }
+  let(:connection) { CarrotCake.connect }
   let(:channel)    { connection.create_channel }
 
   after :each do
@@ -28,7 +28,7 @@ end
 
 
 describe "Fanout exchange" do
-  let(:connection) { HotBunnies.connect }
+  let(:connection) { CarrotCake.connect }
   let(:channel)    { connection.create_channel }
 
   after :each do
@@ -56,7 +56,7 @@ end
 
 
 describe "Topic exchange" do
-  let(:connection) { HotBunnies.connect }
+  let(:connection) { CarrotCake.connect }
   let(:channel)    { connection.create_channel }
 
   after :each do
@@ -85,7 +85,7 @@ end
 
 
 describe "Headers exchange" do
-  let(:connection) { HotBunnies.connect }
+  let(:connection) { CarrotCake.connect }
   let(:channel)    { connection.create_channel }
 
   after :each do

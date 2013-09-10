@@ -1,4 +1,4 @@
-module HotBunnies
+module CarrotCake
   class ShutdownListener
     include com.rabbitmq.client.ShutdownListener
 

@@ -1,22 +1,22 @@
 # encoding: utf-8
 
-require "hot_bunnies/juc"
-require "hot_bunnies/metadata"
-require "hot_bunnies/consumers"
+require "carrot_cake/juc"
+require "carrot_cake/metadata"
+require "carrot_cake/consumers"
 require "set"
 
-module HotBunnies
+module CarrotCake
   # Represents AMQP 0.9.1 queue.
   #
   # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
   # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions guide
   class Queue
-    # @return [HotBunnies::Channel] Channel this queue uses
+    # @return [CarrotCake::Channel] Channel this queue uses
     attr_reader :channel
     # @return [String] Queue name
     attr_reader :name
 
-    # @param [HotBunnies::Channel] channel_or_connection Channel this queue will use.
+    # @param [CarrotCake::Channel] channel_or_connection Channel this queue will use.
     # @param [String] name                          Queue name. Pass an empty string to make RabbitMQ generate a unique one.
     # @param [Hash] opts                            Queue properties
     #
@@ -25,7 +25,7 @@ module HotBunnies
     # @option opts [Boolean] :exclusive (false)    Should this queue be exclusive (only can be used by this connection, removed when the connection is closed)?
     # @option opts [Boolean] :arguments ({})       Additional optional arguments (typically used by RabbitMQ extensions and plugins)
     #
-    # @see HotBunnies::Channel#queue
+    # @see CarrotCake::Channel#queue
     # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
     # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions guide
     def initialize(channel, name, options={})
@@ -76,7 +76,7 @@ module HotBunnies
 
     # Binds queue to an exchange
     #
-    # @param [HotBunnies::Exchange,String] exchange Exchange to bind to
+    # @param [CarrotCake::Exchange,String] exchange Exchange to bind to
     # @param [Hash] options Binding properties
     #
     # @option options [String] :routing_key  Routing key
@@ -102,7 +102,7 @@ module HotBunnies
 
     # Unbinds queue from an exchange
     #
-    # @param [HotBunnies::Exchange,String] exchange Exchange to unbind from
+    # @param [CarrotCake::Exchange,String] exchange Exchange to unbind from
     # @param [Hash] options                       Binding properties
     #
     # @option options [String] :routing_key  Routing key
@@ -168,7 +168,7 @@ module HotBunnies
     # @option opts [Boolean] :exclusive (false) Should this consumer be exclusive for this queue?
     # @option opts [Boolean] :block (false) Should the call block calling thread?
     # @option opts [#call] :on_cancellation Block to execute when this consumer is cancelled remotely (e.g. via the RabbitMQ Management plugin)
-    # @option opts [String] :consumer_tag Unique consumer identifier. It is usually recommended to let HotBunnies generate it for you.
+    # @option opts [String] :consumer_tag Unique consumer identifier. It is usually recommended to let CarrotCake generate it for you.
     # @option opts [Hash] :arguments ({}) Additional (optional) arguments, typically used by RabbitMQ extensions
     #
     # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
@@ -209,10 +209,10 @@ module HotBunnies
     end
 
     # Publishes a message to the queue via default exchange. Takes the same arguments
-    # as {HotBunnies::Exchange#publish}
+    # as {CarrotCake::Exchange#publish}
     #
-    # @see HotBunnies::Exchange#publish
-    # @see HotBunnies::Channel#default_exchange
+    # @see CarrotCake::Exchange#publish
+    # @see CarrotCake::Channel#default_exchange
     def publish(payload, opts = {})
       @channel.default_exchange.publish(payload, opts.merge(:routing_key => @name))
 
@@ -263,4 +263,4 @@ module HotBunnies
       end
     end
   end # Queue
-end # HotBunnies
+end # CarrotCake
