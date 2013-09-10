@@ -128,7 +128,7 @@ module CarrotCake
       # executors when the channel is closed. This frees library users
       # from having to worry about this. MK.
       @consumers      = JavaConcurrent::ConcurrentHashMap.new
-      @shutdown_hooks = JavaConcurrent::ConcurrentSkipListSet.new
+      @shutdown_hooks = Array.new
       @recoveries_counter = JavaConcurrent::AtomicInteger.new(0)
 
       on_shutdown do |ch, cause|

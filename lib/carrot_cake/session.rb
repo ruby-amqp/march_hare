@@ -86,7 +86,7 @@ module CarrotCake
                                  opts[:automatically_recover] || opts[:automatic_recovery]
                                end
       @network_recovery_interval = opts.fetch(:network_recovery_interval, DEFAULT_NETWORK_RECOVERY_INTERVAL)
-      @shutdown_hooks            = JavaConcurrent::ConcurrentSkipListSet.new
+      @shutdown_hooks            = Array.new
 
       if @automatically_recover
         self.add_automatic_recovery_hook
