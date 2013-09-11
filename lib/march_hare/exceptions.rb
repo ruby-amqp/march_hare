@@ -1,4 +1,4 @@
-module CarrotCake
+module MarchHare
   class Exception < StandardError
   end
 
@@ -159,4 +159,4 @@ module CarrotCake
       klass.new(m.reply_text, m)
     end
   end
-end # CarrotCake
+end # MarchHare

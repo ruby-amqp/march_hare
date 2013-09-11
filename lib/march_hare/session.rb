@@ -1,9 +1,9 @@
 # encoding: utf-8
-require "carrot_cake/shutdown_listener"
+require "march_hare/shutdown_listener"
 require "set"
-require "carrot_cake/thread_pools"
+require "march_hare/thread_pools"
 
-module CarrotCake
+module MarchHare
   java_import com.rabbitmq.client.ConnectionFactory
   java_import com.rabbitmq.client.Connection
 
@@ -68,7 +68,7 @@ module CarrotCake
       new(cf, options)
     end
 
-    # @return [Array<CarrotCake::Channel>] Channels opened on this connection
+    # @return [Array<MarchHare::Channel>] Channels opened on this connection
     attr_reader :channels
 
 
@@ -95,11 +95,11 @@ module CarrotCake
 
     # Opens a new channel.
     #
-    # @param [Integer] (nil): Channel number. Pass nil to let CarrotCake allocate an available number
+    # @param [Integer] (nil): Channel number. Pass nil to let MarchHare allocate an available number
     #                         in a safe way.
     #
-    # @return [CarrotCake::Channel] Newly created channel
-    # @see CarrotCake::Channel
+    # @return [MarchHare::Channel] Newly created channel
+    # @see MarchHare::Channel
     # @see http://hotbunnies.info/articles/getting_started.html Getting Started guide
     def create_channel(n = nil)
       jc = if n
@@ -326,7 +326,7 @@ module CarrotCake
     def reconnecting_on_network_failures(interval_in_ms, &fn)
       begin
         fn.call
-      rescue IOError, CarrotCake::ConnectionRefused, java.io.IOException => e
+      rescue IOError, MarchHare::ConnectionRefused, java.io.IOException => e
         java.lang.Thread.sleep(interval_in_ms)
 
         retry

@@ -7,7 +7,7 @@ describe "Any queue" do
   # Environment
   #
 
-  let(:connection) { CarrotCake.connect }
+  let(:connection) { MarchHare.connect }
   let(:channel)    { connection.create_channel }
 
   after :each do

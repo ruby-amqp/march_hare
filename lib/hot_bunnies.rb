@@ -1,2 +1,2 @@
 # Backwards compatibility
-require "carrot_cake"
+require "march_hare"

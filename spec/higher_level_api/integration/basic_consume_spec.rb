@@ -2,7 +2,7 @@ require "spec_helper"
 
 
 describe "A consumer" do
-  let(:connection) { CarrotCake.connect }
+  let(:connection) { MarchHare.connect }
 
   after :each do
     connection.close
@@ -29,7 +29,7 @@ end
 
 
 describe "Multiple non-exclusive consumers per queue" do
-  let(:connection) { CarrotCake.connect }
+  let(:connection) { MarchHare.connect }
 
   after :each do
     connection.close
@@ -83,14 +83,14 @@ end
 
 
 describe "A consumer" do
-  let(:connection) { CarrotCake.connect }
+  let(:connection) { MarchHare.connect }
 
   after :each do
     connection.close
   end
 
   context "instantiated manually" do
-    it "works just like CarrotCake::Queue#subscribe" do
+    it "works just like MarchHare::Queue#subscribe" do
       ch = connection.create_channel
 
       n                = 100

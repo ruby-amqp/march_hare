@@ -1,7 +1,7 @@
 require "spec_helper"
 
-describe CarrotCake::Exchange do
-  let(:connection) { CarrotCake.connect }
+describe MarchHare::Exchange do
+  let(:connection) { MarchHare.connect }
 
   after :each do
     connection.close

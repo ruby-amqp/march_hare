@@ -1,4 +1,4 @@
-module CarrotCake
+module MarchHare
   class ShutdownListener
     include com.rabbitmq.client.ShutdownListener
 

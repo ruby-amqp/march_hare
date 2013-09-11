@@ -1,4 +1,4 @@
-module CarrotCake
+module MarchHare
   # Wraps a delivery tag (which is an integer) so that {Bunny::Channel} could
   # detect stale tags after connection recovery.
   #

@@ -1,7 +1,7 @@
 require "spec_helper"
 
 describe "A consumer" do
-  let(:connection) { CarrotCake.connect }
+  let(:connection) { MarchHare.connect }
   let(:channel)    { connection.create_channel }
 
   after :each do

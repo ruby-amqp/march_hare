@@ -1,7 +1,7 @@
 require "spec_helper"
 
-describe CarrotCake::Channel, "#ack" do
-  let(:connection) { CarrotCake.connect }
+describe MarchHare::Channel, "#ack" do
+  let(:connection) { MarchHare.connect }
 
   after :each do
     connection.close

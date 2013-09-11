@@ -1,4 +1,4 @@
-module CarrotCake
+module MarchHare
   module JavaConcurrent
     java_import 'java.lang.Thread'
     java_import 'java.lang.Runnable'

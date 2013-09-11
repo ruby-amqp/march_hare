@@ -1,4 +1,4 @@
-module CarrotCake
+module MarchHare
   class Headers
     attr_reader :channel, :consumer_tag, :envelope, :properties
 
@@ -90,4 +90,4 @@ module CarrotCake
         build
     end
   end
-end # CarrotCake
+end # MarchHare

@@ -1,6 +1,6 @@
-require "carrot_cake/consumers/base"
+require "march_hare/consumers/base"
 
-module CarrotCake
+module MarchHare
   class BlockingCallbackConsumer < CallbackConsumer
     POISON = :__poison__
 

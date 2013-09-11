@@ -2,7 +2,7 @@ require "spec_helper"
 
 describe "Non-blocking consumer" do
   let(:connection) do
-    CarrotCake.connect
+    MarchHare.connect
   end
 
   after :each do
@@ -39,7 +39,7 @@ end
 
 describe "Blocking consumer" do
   let(:connection) do
-    CarrotCake.connect
+    MarchHare.connect
   end
 
   after :each do

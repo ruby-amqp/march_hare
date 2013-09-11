@@ -1,6 +1,6 @@
-require "carrot_cake/juc"
+require "march_hare/juc"
 
-module CarrotCake
+module MarchHare
   # A slighly more Ruby developer-friendly way of instantiating various
   # JDK executors (thread pools).
   class ThreadPools

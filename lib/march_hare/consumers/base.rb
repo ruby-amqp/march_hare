@@ -1,6 +1,6 @@
-require "carrot_cake/versioned_delivery_tag"
+require "march_hare/versioned_delivery_tag"
 
-module CarrotCake
+module MarchHare
   import com.rabbitmq.client.DefaultConsumer
 
   class BaseConsumer < DefaultConsumer

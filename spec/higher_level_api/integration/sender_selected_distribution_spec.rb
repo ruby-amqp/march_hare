@@ -6,7 +6,7 @@ describe "Any AMQP 0.9.1 client using RabbitMQ" do
   # Environment
   #
 
-  let(:connection) { CarrotCake.connect }
+  let(:connection) { MarchHare.connect }
   let(:channel)    { connection.create_channel }
 
   after :each do
