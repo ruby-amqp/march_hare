@@ -43,7 +43,7 @@ and is considered to be a reference implementation.
 
 ### With Bundler
 
-    gem "march_hare", "~> 2.0.0.pre14"
+    gem "march_hare", "~> 2.0.0.rc1"
 
 
 ## Documentation
@@ -69,7 +69,7 @@ March Hare supports JRuby 1.7+ in 1.9 and 1.8 modes.
 
 ## Supported JDK Versions
 
-MarchHare is tested against OpenJDK 7, Oracle JDK 7 and is
+The project is tested against OpenJDK 7, Oracle JDK 7 and is
 known to work well on OpenJDK 6 and Sun JDK 6.
 
 
