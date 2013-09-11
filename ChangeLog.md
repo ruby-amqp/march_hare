@@ -1,6 +1,12 @@
 # Changes Between 1.5.0 and 2.0.0
 
-Hot Bunnies 2.0 has **breaking API changes**.
+March Hare (previously Hot Bunnies) 2.0 has **breaking API changes**.
+
+### New Name
+
+March Hare is the new project name. The previous name had a sexist
+meaning (unintentionally) and changing it was long overdue.
+
 
 ### exchange.unbind Support
 
