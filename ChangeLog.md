@@ -10,8 +10,8 @@ meaning (unintentionally) and changing it was long overdue.
 
 ### exchange.unbind Support
 
-`HotBunnies::Exchange#unbind` is now provided to compliment
-`HotBunnies::Exchange#bind`.
+`MarchHare::Exchange#unbind` is now provided to compliment
+`MarchHare::Exchange#bind`.
 
 ### Safe[r] basic.ack, basic.nack and basic.reject implementation
 
@@ -26,41 +26,41 @@ tag to ack or reject a message will produce no method sent to RabbitMQ.
 Note that unacknowledged messages will be requeued by RabbitMQ when connection
 goes down anyway.
 
-This involves an API change: `HotBunnies::Headers#delivery_tag` is now
+This involves an API change: `MarchHare::Headers#delivery_tag` is now
 and instance of a class that responds to `#to_i` and is accepted
-by `HotBunnies::Channel#ack` and related methods.
+by `MarchHare::Channel#ack` and related methods.
 
 Integers are still accepted by the same methods.
 
 ## Consumer Work Pool Changes
 
-HotBunnies 1.x used to maintain a separate executor (thread pool) per non-blocking
+MarchHare 1.x used to maintain a separate executor (thread pool) per non-blocking
 consumer. This is not optimal and reimplements the wheel RabbitMQ Java client
 already has invented: it dispatches consumer methods in a thread pool maintained
 by every connection.
 
-Instead of maintaining its own executor, HotBunnies now relies on the Java client
+Instead of maintaining its own executor, MarchHare now relies on the Java client
 to do the job.
 
 It is still possible to override the executor when opening a connection by
 providing an executor factory (any Ruby callable):
 
 ``` ruby
-HotBunnies.connect(:executor_factory => Proc.new {
-  HotBunnies::ThreadPools.fixed_of_size(16)
+MarchHare.connect(:executor_factory => Proc.new {
+  MarchHare::ThreadPools.fixed_of_size(16)
 })
 ```
 
 It has to be a factory to make sure we can allocate a new pool upon connection
 recovery, since JVM executors cannot be cloned or restarted.
 
-By default HotBunnies will rely on the default RabbitMQ Java client's
+By default MarchHare will rely on the default RabbitMQ Java client's
 executor service, which has a fixed size of 5 threads.
 
 
 ## Automatic Connection Recovery
 
-HotBunnies now supports automatic connection recovery from a network outage,
+MarchHare now supports automatic connection recovery from a network outage,
 similar to the version [in Bunny](http://rubybunny.info/articles/error_handling.html).
 
 It recovers
@@ -77,37 +77,37 @@ and can be disabled by setting `:automatically_recover` connection option to `fa
 
 ## Shutdown Callbacks
 
-`HotBunnies::Session#on_shutdown` and `HotBunnies::Channel#on_shutdown` are two
+`MarchHare::Session#on_shutdown` and `MarchHare::Channel#on_shutdown` are two
 new methods that register **shutdown hooks**. Those are executed when
 
  * Network connectivity to RabbitMQ is lost
  * RabbitMQ shuts down the connection (because of an error or management UI action)
 
 The callbacks take two arguments: the entity that's being shutdown
-(`HotBunnies::Session` or `HotBunnies::Channel`) and shutdown reason (an exception):
+(`MarchHare::Session` or `MarchHare::Channel`) and shutdown reason (an exception):
 
 ``` ruby
-conn = HotBunnies.connect
+conn = MarchHare.connect
 conn.on_shutdown |conn, reason|
   # ...
 end
 ```
 
-In addition, HotBunnies channels will make sure consumers are gracefully
+In addition, MarchHare channels will make sure consumers are gracefully
 shutdown (thread pools stopped, blocking consumers unblocked).
 
 These are initial steps towards easier to use error handling and recovery,
 similar to what amqp gem and Bunny 0.9+ provide.
 
 
-## HotBunnies::Session#start
+## MarchHare::Session#start
 
-`HotBunnies::Session#start` is a new no-op method that improves API
+`MarchHare::Session#start` is a new no-op method that improves API
 compatibility with [Bunny 0.9](http://rubybunny.info).
 
-## HotBunnies::Queue#subscribe_with, HotBunnies::Queue#build_consumer
+## MarchHare::Queue#subscribe_with, MarchHare::Queue#build_consumer
 
-`HotBunnies::Queue#subscribe_with` and `HotBunnies::Queue#build_consumer` are new method
+`MarchHare::Queue#subscribe_with` and `MarchHare::Queue#build_consumer` are new method
 that allow using consumer objects, for example, to first instantiate a blocking consumer
 and pass the reference around so it can be cancelled from a different thread later.
 
@@ -121,14 +121,14 @@ consumer         = q.subscribe_with(consumer_object, :blocking => false)
 
 ## Consumer Cancellation Support
 
-Passing a block for the `:on_cancellation` option to `HotBunnies::Queue#subscribe`
+Passing a block for the `:on_cancellation` option to `MarchHare::Queue#subscribe`
 lets you support [RabbitMQ consumer cancellation](http://www.rabbitmq.com/consumer-cancel.html). The block should take 3
 arguments: a channel, a consumer and a consumer tag.
 
 
-## HotBunnies Operations Now Raise Ruby Exceptions
+## MarchHare Operations Now Raise Ruby Exceptions
 
-HotBunnies used to expose RabbitMQ Java client's channel implementation
+MarchHare used to expose RabbitMQ Java client's channel implementation
 directly to Ruby code. This means that whenever an exception was raised,
 it was a Java exception (commonly `java.io.IOException`, wrapping a shutdown
 signal).
@@ -138,7 +138,7 @@ makes it much harder to inspect the exception and figure out how to get
 relevant information from it without reading the RabbitMQ Java client
 source.
 
-Hot Bunnies 2.0+ provides a Ruby implementation of `HotBunnies::Channel`
+Hot Bunnies 2.0+ provides a Ruby implementation of `MarchHare::Channel`
 which rescues Java exceptions and turns them into Ruby
 exceptions.
 
@@ -154,7 +154,7 @@ context "when the exchange does not exist" do
     raised = nil
     begin
       q.bind("asyd8a9d98sa73t78hd9as^&&(&@#(*^")
-    rescue HotBunnies::NotFound => e
+    rescue MarchHare::NotFound => e
       raised = e
     end
 
@@ -163,35 +163,35 @@ context "when the exchange does not exist" do
 end
 ```
 
-HotBunnies Ruby exceptions follow AMQP 0.9.1 exception code names:
+MarchHare Ruby exceptions follow AMQP 0.9.1 exception code names:
 
- * `HotBunnies::NotFound`
- * `HotBunnies::PreconditionFailed`
- * `HotBunnies::ResourceLocked`
- * `HotBunnies::AccessRefused`
+ * `MarchHare::NotFound`
+ * `MarchHare::PreconditionFailed`
+ * `MarchHare::ResourceLocked`
+ * `MarchHare::AccessRefused`
 
 or have otherwise meaningful names that follow [Bunny](http://rubybunny.info) names closely:
 
- * `HotBunnies::PossibleAuthenticationFailureError`
- * `HotBunnies::ChannelAlreadyClosed`
+ * `MarchHare::PossibleAuthenticationFailureError`
+ * `MarchHare::ChannelAlreadyClosed`
 
 
-## HotBunnies::Queue#subscribe Now Returns a Consumer
+## MarchHare::Queue#subscribe Now Returns a Consumer
 
 **This is a breaking API change**
 
-`HotBunnies::Queue#subscribe` now returns a consumer (a `HotBunnies::Consumer` instance)
+`MarchHare::Queue#subscribe` now returns a consumer (a `MarchHare::Consumer` instance)
 that can be cancelled and contains a consumer tag.
 
-`HotBunnies::Subscription` was eliminated as redundant. All the same methods are
-now available on `HotBunnies::Consumer` subclasses.
+`MarchHare::Subscription` was eliminated as redundant. All the same methods are
+now available on `MarchHare::Consumer` subclasses.
 
 
-## HotBunnies::Queue#subscribe Uses :block => false By Default
+## MarchHare::Queue#subscribe Uses :block => false By Default
 
 **This is a breaking API change**
 
-`HotBunnies::Queue#subscribe` now uses `:block => false` by default, thus
+`MarchHare::Queue#subscribe` now uses `:block => false` by default, thus
 not blocking the caller. This reduces the need to use explicitly
 started threads for consumers.
 
@@ -201,27 +201,27 @@ a better idea.
 
 ## More Convenient Way of Creating Thread Pools
 
-HotBunnies allows you to pass your own thread pool to `HotBunnies::Queue#subscribe` via
+MarchHare allows you to pass your own thread pool to `MarchHare::Queue#subscribe` via
 the `:executor` option. Choosing the right thread pool size can make a huge difference
 in throughput for applications that use non-blocking consumers.
 
-Previously to 2.0, HotBunnies required using Java interop and being familiar
+Previously to 2.0, MarchHare required using Java interop and being familiar
 with JDK executors API to instantiate them.
 
-HotBunnies 2.0 introduces `HotBunnies::ThreadPools` that has convenience methods
+MarchHare 2.0 introduces `MarchHare::ThreadPools` that has convenience methods
 that make it easier:
 
 ``` ruby
 # fixed size thread pool of size 1
-HotBunnies::ThreadPools.single_threaded
+MarchHare::ThreadPools.single_threaded
 # fixed size thread pool of size 16
-HotBunnies::ThreadPools.fixed_of_size(16)
+MarchHare::ThreadPools.fixed_of_size(16)
 # dynamically growing thread pool, will allocate new threads
 # as needed
-HotBunnies::ThreadPools.dynamically_growing
+MarchHare::ThreadPools.dynamically_growing
 
 # in context
-subscribe(:blocking => false, :executor => HotBunnies::ThreadPools.single_threaded) do |metadata, payload|
+subscribe(:blocking => false, :executor => MarchHare::ThreadPools.single_threaded) do |metadata, payload|
  # ...
 end
 ```
@@ -234,7 +234,7 @@ Hot Bunnies now uses RabbitMQ Java client 3.1.
 
 ## Queue Predicates
 
-`HotBunnies::Queue` now provides several predicate methods:
+`MarchHare::Queue` now provides several predicate methods:
 
  * `#server_named?`
  * `#auto_delete?`
@@ -261,7 +261,7 @@ Hot Bunnies now uses RabbitMQ Java client 2.8.7.
 
 ## TLS Support
 
-`HotBunnies.connect` now supports a new `:tls` option:
+`MarchHare.connect` now supports a new `:tls` option:
 
 ``` ruby
 HotBunnies.connect(:tls => true)
