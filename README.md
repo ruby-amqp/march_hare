@@ -1,23 +1,23 @@
-# Hot Bunnies, a JRuby RabbitMQ Client
+# March Hare, a JRuby RabbitMQ Client
 
-Hot Bunnies is an idiomatic, fast and well-maintained (J)Ruby DSL on top of the [RabbitMQ Java client](http://www.rabbitmq.com/api-guide.html). It strives to combine
+March Hare is an idiomatic, fast and well-maintained (J)Ruby DSL on top of the [RabbitMQ Java client](http://www.rabbitmq.com/api-guide.html). It strives to combine
 strong parts of the Java client with over 4 years of experience using and developing [Ruby amqp gem](http://rubyamqp.info)
 and [Bunny](http://rubybunny.info).
 
-## Why Hot Bunnies
+## Why March Hare
 
  * Concurrency support on the JVM is excellent, with many tools & approaches available. Lets make use of it.
  * RabbitMQ Java client is rock solid and supports every RabbitMQ feature. Very nice.
  * It is screaming fast thanks to all the heavy duty being done in the pretty efficient & lightweight Java code.
  * It uses synchronous APIs where it makes sense and asynchronous APIs where it makes sense. Some other [Ruby RabbitMQ clients](https://github.com/ruby-amqp)
    only use one or the other.
- * [amqp gem](https://github.com/ruby-amqp/amqp) has certain amount of baggage it cannot drop because of backwards compatibility concerns. Hot Bunnies is a
+ * [amqp gem](https://github.com/ruby-amqp/amqp) has certain amount of baggage it cannot drop because of backwards compatibility concerns. March Hare is a
    clean room design, much more open to radical new ideas.
 
 
-## What Hot Bunnies is not
+## What March Hare is not
 
-Hot Bunnies is not
+March Hare is not
 
  * A replacement for the RabbitMQ Java client
  * An attempt to re-create 100% of the amqp gem API on top of the Java client
@@ -27,7 +27,7 @@ Hot Bunnies is not
 
 ## Project Maturity
 
-Hot Bunnies is not a young project. Extracted from a system that processes a terabyte of data
+March Hare is not a young project. Extracted from a system that processes a terabyte of data
 over RabbitMQ every day, it has been around as an open source project since mid-2011 and will
 reach 2.0 in 2013.
 
@@ -39,18 +39,18 @@ and is considered to be a reference implementation.
 
 ### With Rubygems
 
-    gem install hot_bunnies --pre
+    gem install march_hare --pre
 
 ### With Bundler
 
-    gem "hot_bunnies", "~> 2.0.0.pre12"
+    gem "march_hare", "~> 2.0.0.pre14"
 
 
 ## Documentation
 
 ### Guides
 
-[HotBunnies documentation guides](http://hotbunnies.info) are mostly complete.
+[MarchHare documentation guides](http://hotbunnies.info) are mostly complete.
 
 ### Examples
 
@@ -64,12 +64,12 @@ The API reference is currently being worked on.
 
 ## Supported Ruby Versions
 
-Hot Bunnies supports JRuby 1.7+ in 1.9 and 1.8 modes.
+March Hare supports JRuby 1.7+ in 1.9 and 1.8 modes.
 
 
 ## Supported JDK Versions
 
-HotBunnies is tested against OpenJDK 7, Oracle JDK 7 and is
+MarchHare is tested against OpenJDK 7, Oracle JDK 7 and is
 known to work well on OpenJDK 6 and Sun JDK 6.
 
 
@@ -80,18 +80,9 @@ See [ChangeLog.md](ChangeLog.md).
 
 ## Continuous Integration
 
-[![Continuous Integration status](https://secure.travis-ci.org/ruby-amqp/hot_bunnies.png)](http://travis-ci.org/ruby-amqp/hot_bunnies)
+[![Continuous Integration status](https://secure.travis-ci.org/ruby-amqp/march_hare.png)](http://travis-ci.org/ruby-amqp/march_hare)
 
 CI is hosted by [travis-ci.org](http://travis-ci.org)
-
-
-## FAQ
-
-### What's with the name?
-
-HotBunnies is a pun on [Bunny](http://rubybunny.info) and like 4 RabbitMQ clients named
-Carrot. We did not intend to offend anyone with this name. Consider it to be
-an unfortunate joke.
 
 
 ## License
