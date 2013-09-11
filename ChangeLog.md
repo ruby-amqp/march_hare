@@ -1,4 +1,4 @@
-# Changes Between 1.5.0 and 2.0.0
+## Changes Between 1.5.0 and 2.0.0
 
 March Hare (previously Hot Bunnies) 2.0 has **breaking API changes**.
 
