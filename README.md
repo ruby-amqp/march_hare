@@ -27,7 +27,7 @@ March Hare is not
 
 ## Project Maturity
 
-March Hare is not a young project. Extracted from a system that processes a terabyte of data
+March Hare is not a young project. Extracted from a platform that transports more than a terabyte of data
 over RabbitMQ every day, it has been around as an open source project since mid-2011 and will
 reach 2.0 in 2013.
 
