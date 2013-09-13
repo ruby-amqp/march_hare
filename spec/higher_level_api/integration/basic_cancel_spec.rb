@@ -78,7 +78,6 @@ describe 'A consumer' do
     end
   end
 
-
   context "that DOES block the caller and never receives any messages" do
     it 'can be cancelled' do
       x  = connection.create_channel.default_exchange
@@ -104,6 +103,25 @@ describe 'A consumer' do
 
       consumer_thread.join
       consumer_exited.should be_true
+    end
+  end
+
+  context 'that is cancelled' do
+    it 'will not raise errors when cancelled again' do
+      queue = connection.create_channel.queue('')
+      consumer = queue.build_consumer(:block => true) { |headers, message| }
+      thread = Thread.new do
+        queue.subscribe_with(consumer, :block => true)
+      end
+      sleep 1
+      begin
+        consumer.cancel
+        consumer.cancel
+      rescue NativeException => e
+        raise e
+      ensure
+        thread.join
+      end
     end
   end
 end
