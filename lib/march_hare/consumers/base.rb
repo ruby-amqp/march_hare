@@ -108,7 +108,14 @@ module MarchHare
     end
 
     def cancel
-      @channel.basic_cancel(consumer_tag)
+      if @cancelling.get_and_set(true)
+        false
+      else
+        @channel.basic_cancel(@consumer_tag)
+        @cancelled.set(true)
+        @terminated.set(true)
+        true
+      end
     end
   end
 end
