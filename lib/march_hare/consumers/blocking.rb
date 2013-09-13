@@ -14,14 +14,8 @@ module MarchHare
     end
 
     def cancel
-      unless @cancelling.get_and_set(true)
-        response = channel.basic_cancel(consumer_tag)
-        @cancelled.set(true)
-
+      if super
         @internal_queue.offer(POISON)
-        @terminated.set(true)
-
-        response
       end
     end
 
