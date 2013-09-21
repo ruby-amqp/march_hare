@@ -238,7 +238,7 @@ module MarchHare
 
     # @private
     def self.hostname_from(options)
-      options[:host] || options[:hostname] || ConnectionFactory.DEFAULT_HOST
+      options[:host] || options[:hostname] || ConnectionFactory::DEFAULT_HOST
     end
 
     # @private
@@ -248,7 +248,7 @@ module MarchHare
 
     # @private
     def self.vhost_from(options)
-      options[:virtual_host] || options[:vhost] || ConnectionFactory.DEFAULT_VHOST
+      options[:virtual_host] || options[:vhost] || ConnectionFactory::DEFAULT_VHOST
     end
 
     # @private
@@ -268,17 +268,17 @@ module MarchHare
 
     # @private
     def self.username_from(options)
-      options[:username] || options[:user] || ConnectionFactory.DEFAULT_USER
+      options[:username] || options[:user] || ConnectionFactory::DEFAULT_USER
     end
 
     # @private
     def self.heartbeat_from(options)
-      options[:heartbeat_interval] || options[:requested_heartbeat] || ConnectionFactory.DEFAULT_HEARTBEAT
+      options[:heartbeat_interval] || options[:requested_heartbeat] || ConnectionFactory::DEFAULT_HEARTBEAT
     end
 
     # @private
     def self.connection_timeout_from(options)
-      options[:connection_timeout_interval] || options[:connection_timeout] || ConnectionFactory.DEFAULT_CONNECTION_TIMEOUT
+      options[:connection_timeout_interval] || options[:connection_timeout] || ConnectionFactory::DEFAULT_CONNECTION_TIMEOUT
     end
 
     # @private
@@ -288,7 +288,7 @@ module MarchHare
 
     # @private
     def self.password_from(options)
-      options[:password] || options[:pass] || ConnectionFactory.DEFAULT_PASS
+      options[:password] || options[:pass] || ConnectionFactory::DEFAULT_PASS
     end
 
     # @private
