@@ -3,7 +3,7 @@ script: "bundle exec rspec -c spec"
 rvm:
   - jruby-18mode
   - jruby-19mode
-  - jruby-head
+  - jruby
 notifications:
   recipients:
     - michael@rabbitmq.com
