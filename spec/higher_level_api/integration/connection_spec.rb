@@ -61,6 +61,17 @@ describe "MarchHare.connect" do
     c1.close
     calls.should == 2
   end
+
+
+  it "lets you specify fixed thread pool size" do
+    c = MarchHare.connect(:thread_pool_size => 20)
+    c.should be_connected
+    c.close
+    c.should_not be_connected
+    c.automatically_recover
+    c.should be_connected
+    c.close
+  end
 end
 
 

@@ -74,10 +74,12 @@ module MarchHare
 
     # @private
     def initialize(connection_factory, opts = {})
-      @cf = connection_factory
-      @executor_factory = opts[:executor_factory]
-      @connection = self.new_connection
-      @channels = JavaConcurrent::ConcurrentHashMap.new
+      @cf               = connection_factory
+      # executors cannot be restarted after shutdown,
+      # so we really need a factory here. MK.
+      @executor_factory = opts[:executor_factory] || build_executor_factory_from(opts)
+      @connection       = self.new_connection
+      @channels         = JavaConcurrent::ConcurrentHashMap.new
 
       # should automatic recovery from network failures be used?
       @automatically_recover = if opts[:automatically_recover].nil? && opts[:automatic_recovery].nil?
@@ -341,6 +343,17 @@ module MarchHare
         else
           @cf.new_connection
         end
+      end
+    end
+
+    # Makes it easier to construct executor factories.
+    # @private
+    def build_executor_factory_from(opts)
+      # if we are given a thread pool size, construct
+      # a callable that createa a fixed size executor
+      # of that size. MK.
+      if n = opts[:thread_pool_size]
+        return Proc.new { MarchHare::ThreadPools.fixed_of_size(n) }
       end
     end
   end
