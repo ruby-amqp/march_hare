@@ -350,7 +350,7 @@ module MarchHare
     # @private
     def build_executor_factory_from(opts)
       # if we are given a thread pool size, construct
-      # a callable that createa a fixed size executor
+      # a callable that creates a fixed size executor
       # of that size. MK.
       if n = opts[:thread_pool_size]
         return Proc.new { MarchHare::ThreadPools.fixed_of_size(n) }
