@@ -40,7 +40,8 @@ already has invented: it dispatches consumer methods in a thread pool maintained
 by every connection.
 
 Instead of maintaining its own executor, MarchHare now relies on the Java client
-to do the job.
+to do the job. The **key difference** is that `1.x` versions used to maintain
+a thread pool per channel while `2.x` have a thread pool **per connection**.
 
 It is still possible to override the executor when opening a connection by
 providing an executor factory (any Ruby callable):
@@ -49,6 +50,13 @@ providing an executor factory (any Ruby callable):
 MarchHare.connect(:executor_factory => Proc.new {
   MarchHare::ThreadPools.fixed_of_size(16)
 })
+```
+
+There is a shortcut that accepts a thread pool size
+and takes care of the rest:
+
+``` ruby
+MarchHare.connect(:thread_pool_size => 16)
 ```
 
 It has to be a factory to make sure we can allocate a new pool upon connection
