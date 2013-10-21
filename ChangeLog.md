@@ -41,7 +41,7 @@ by every connection.
 
 Instead of maintaining its own executor, MarchHare now relies on the Java client
 to do the job. The **key difference** is that `1.x` versions used to maintain
-a thread pool per channel while `2.x` have a thread pool **per connection**.
+a thread pool per channel while `2.x` has a thread pool **per connection**.
 
 It is still possible to override the executor when opening a connection by
 providing an executor factory (any Ruby callable):
