@@ -98,7 +98,7 @@ module MarchHare
   # @example Handling 406 PRECONDITION_FAILED
   #   begin
   #     ch2 = conn.create_channel
-  #     q   = "hotbunnies.examples.recovery.q#{rand}"
+  #     q   = "rubymarchhare.examples.recovery.q#{rand}"
   #
   #     ch2.queue_declare(q, :durable => false)
   #     ch2.queue_declare(q, :durable => true)
@@ -110,9 +110,9 @@ module MarchHare
   #
   # @see MarchHare::Session#create_channel
   # @see http://www.rabbitmq.com/tutorials/amqp-concepts.html AMQP 0.9.1 Model Concepts Guide
-  # @see http://hotbunnies.info/articles/getting_started.html Getting Started with RabbitMQ Using MarchHare
-  # @see http://hotbunnies.info/articles/queues.html Queues and Consumers
-  # @see http://hotbunnies.info/articles/exchanges.html Exchanges and Publishing
+  # @see http://rubymarchhare.info/articles/getting_started.html Getting Started with RabbitMQ Using MarchHare
+  # @see http://rubymarchhare.info/articles/queues.html Queues and Consumers
+  # @see http://rubymarchhare.info/articles/exchanges.html Exchanges and Publishing
   class Channel
     # @return [Array<MarchHare::Consumer>] Consumers on this channel
     attr_reader :consumers
@@ -260,8 +260,8 @@ module MarchHare
     # @option options [Hash] :arguments ({}) Optional exchange arguments
     #
     # @return [MarchHare::Exchange] Exchange instance
-    # @see http://hotbunnies.info/articles/exchanges.html Exchanges and Publishing guide
-    # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions to AMQP 0.9.1 guide
+    # @see http://rubymarchhare.info/articles/exchanges.html Exchanges and Publishing guide
+    # @see http://rubymarchhare.info/articles/extensions.html RabbitMQ Extensions to AMQP 0.9.1 guide
     def exchange(name, options={})
       dx = Exchange.new(self, name, options).tap do |x|
         x.declare!
@@ -281,8 +281,8 @@ module MarchHare
     # @option opts [Hash] :arguments ({}) Optional exchange arguments (used by RabbitMQ extensions)
     #
     # @return [MarchHare::Exchange] Exchange instance
-    # @see http://hotbunnies.info/articles/exchanges.html Exchanges and Publishing guide
-    # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions to AMQP 0.9.1 guide
+    # @see http://rubymarchhare.info/articles/exchanges.html Exchanges and Publishing guide
+    # @see http://rubymarchhare.info/articles/extensions.html RabbitMQ Extensions to AMQP 0.9.1 guide
     def fanout(name, opts = {})
       dx = Exchange.new(self, name, opts.merge(:type => "fanout")).tap do |x|
         x.declare!
@@ -302,8 +302,8 @@ module MarchHare
     # @option opts [Hash] :arguments ({}) Optional exchange arguments (used by RabbitMQ extensions)
     #
     # @return [MarchHare::Exchange] Exchange instance
-    # @see http://hotbunnies.info/articles/exchanges.html Exchanges and Publishing guide
-    # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions to AMQP 0.9.1 guide
+    # @see http://rubymarchhare.info/articles/exchanges.html Exchanges and Publishing guide
+    # @see http://rubymarchhare.info/articles/extensions.html RabbitMQ Extensions to AMQP 0.9.1 guide
     def direct(name, opts = {})
       dx = Exchange.new(self, name, opts.merge(:type => "direct")).tap do |x|
         x.declare!
@@ -323,8 +323,8 @@ module MarchHare
     # @option opts [Hash] :arguments ({}) Optional exchange arguments (used by RabbitMQ extensions)
     #
     # @return [MarchHare::Exchange] Exchange instance
-    # @see http://hotbunnies.info/articles/exchanges.html Exchanges and Publishing guide
-    # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions to AMQP 0.9.1 guide
+    # @see http://rubymarchhare.info/articles/exchanges.html Exchanges and Publishing guide
+    # @see http://rubymarchhare.info/articles/extensions.html RabbitMQ Extensions to AMQP 0.9.1 guide
     def topic(name, opts = {})
       dx = Exchange.new(self, name, opts.merge(:type => "topic")).tap do |x|
         x.declare!
@@ -344,8 +344,8 @@ module MarchHare
     # @option opts [Hash] :arguments ({}) Optional exchange arguments
     #
     # @return [MarchHare::Exchange] Exchange instance
-    # @see http://hotbunnies.info/articles/exchanges.html Exchanges and Publishing guide
-    # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions to AMQP 0.9.1 guide
+    # @see http://rubymarchhare.info/articles/exchanges.html Exchanges and Publishing guide
+    # @see http://rubymarchhare.info/articles/extensions.html RabbitMQ Extensions to AMQP 0.9.1 guide
     def headers(name, opts = {})
       dx = Exchange.new(self, name, opts.merge(:type => "headers")).tap do |x|
         x.declare!
@@ -355,7 +355,7 @@ module MarchHare
     end
 
     # Provides access to the default exchange
-    # @see http://hotbunnies.info/articles/exchanges.html Exchanges and Publishing guide
+    # @see http://rubymarchhare.info/articles/exchanges.html Exchanges and Publishing guide
     def default_exchange
       @default_exchange ||= self.exchange("", :durable => true, :auto_delete => false, :type => "direct")
     end
@@ -370,7 +370,7 @@ module MarchHare
     #                                          exist, {MarchHare::NotFound} will be raised.
     #
     # @return RabbitMQ response
-    # @see http://hotbunnies.info/articles/echanges.html Exchanges and Publishing guide
+    # @see http://rubymarchhare.info/articles/echanges.html Exchanges and Publishing guide
     def exchange_declare(name, type, durable = false, auto_delete = false, arguments = nil)
       @delegate.exchange_declare(name, type, durable, auto_delete, arguments)
     end
@@ -384,8 +384,8 @@ module MarchHare
     # @param [Hash] arguments (nil) Optional arguments
     #
     # @return RabbitMQ response
-    # @see http://hotbunnies.info/articles/extensions.html RabbitMQ extensions guide
-    # @see http://hotbunnies.info/articles/bindings.html Bindings guide
+    # @see http://rubymarchhare.info/articles/extensions.html RabbitMQ extensions guide
+    # @see http://rubymarchhare.info/articles/bindings.html Bindings guide
     def exchange_bind(destination, source, routing_key, arguments = nil)
       @delegate.exchange_bind(destination, source, routing_key, arguments)
     end
@@ -399,8 +399,8 @@ module MarchHare
     # @param [Hash] arguments ({}) Optional arguments
     #
     # @return RabbitMQ response
-    # @see http://hotbunnies.info/articles/extensions.html RabbitMQ extensions guide
-    # @see http://hotbunnies.info/articles/bindings.html Bindings guide
+    # @see http://rubymarchhare.info/articles/extensions.html RabbitMQ extensions guide
+    # @see http://rubymarchhare.info/articles/bindings.html Bindings guide
     def exchange_unbind(destination, source, routing_key, arguments = nil)
       @delegate.exchange_unbind(destination, source, routing_key, arguments)
     end
@@ -421,8 +421,8 @@ module MarchHare
     # @option options [Boolean] :arguments ({}) Additional optional arguments (typically used by RabbitMQ extensions and plugins)
     #
     # @return [MarchHare::Queue] Queue that was declared or looked up in the cache
-    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
-    # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions guide
+    # @see http://rubymarchhare.info/articles/queues.html Queues and Consumers guide
+    # @see http://rubymarchhare.info/articles/extensions.html RabbitMQ Extensions guide
     def queue(name, options={})
       dq = Queue.new(self, name, options).tap do |q|
         q.declare!
@@ -445,7 +445,7 @@ module MarchHare
     #                                      exist, {MarchHare::NotFound} will be raised.
     #
     # @return RabbitMQ response
-    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
+    # @see http://rubymarchhare.info/articles/queues.html Queues and Consumers guide
     def queue_declare(name, durable, exclusive, auto_delete, arguments = {})
       converting_rjc_exceptions_to_ruby do
         @delegate.queue_declare(name, durable, exclusive, auto_delete, arguments)
@@ -457,7 +457,7 @@ module MarchHare
     #
     # @param [String] name Queue name
     #
-    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
+    # @see http://rubymarchhare.info/articles/queues.html Queues and Consumers guide
     def queue_declare_passive(name)
       converting_rjc_exceptions_to_ruby do
         @delegate.queue_declare_passive(name)
@@ -472,7 +472,7 @@ module MarchHare
     # @param [Boolean] if_unused (false) Should this queue be deleted only if it has no consumers?
     #
     # @return RabbitMQ response
-    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
+    # @see http://rubymarchhare.info/articles/queues.html Queues and Consumers guide
     def queue_delete(name, if_empty = false, if_unused = false)
       converting_rjc_exceptions_to_ruby do
         @delegate.queue_delete(name, if_empty, if_unused)
@@ -488,8 +488,8 @@ module MarchHare
     # @param [Hash] arguments (nil) Optional arguments
     #
     # @return RabbitMQ response
-    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
-    # @see http://hotbunnies.info/articles/bindings.html Bindings guide
+    # @see http://rubymarchhare.info/articles/queues.html Queues and Consumers guide
+    # @see http://rubymarchhare.info/articles/bindings.html Bindings guide
     def queue_bind(queue, exchange, routing_key, arguments = nil)
       converting_rjc_exceptions_to_ruby do
         @delegate.queue_bind(queue, exchange, routing_key, arguments)
@@ -505,8 +505,8 @@ module MarchHare
     # @param [Hash] arguments ({}) Optional arguments
     #
     # @return RabbitMQ response
-    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
-    # @see http://hotbunnies.info/articles/bindings.html Bindings guide
+    # @see http://rubymarchhare.info/articles/queues.html Queues and Consumers guide
+    # @see http://rubymarchhare.info/articles/bindings.html Bindings guide
     def queue_unbind(queue, exchange, routing_key, arguments = nil)
       converting_rjc_exceptions_to_ruby do
         @delegate.queue_unbind(queue, exchange, routing_key, arguments)
@@ -518,7 +518,7 @@ module MarchHare
     # @param [String] name Queue name
     #
     # @return RabbitMQ response
-    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
+    # @see http://rubymarchhare.info/articles/queues.html Queues and Consumers guide
     def queue_purge(name)
       converting_rjc_exceptions_to_ruby do
         @delegate.queue_purge(name)
@@ -595,8 +595,8 @@ module MarchHare
     # have to acknowledge or reject one of the previously consumed messages
     #
     # @param [Integer] prefetch_count Prefetch (QoS setting) for this channel
-    # @see http://hotbunnies.info/articles/exchanges.html Exchanges and Publishing guide
-    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
+    # @see http://rubymarchhare.info/articles/exchanges.html Exchanges and Publishing guide
+    # @see http://rubymarchhare.info/articles/queues.html Queues and Consumers guide
     def prefetch=(n)
       basic_qos(n)
     end
@@ -606,7 +606,7 @@ module MarchHare
     # @param [Integer] delivery_tag Delivery tag to acknowledge
     # @param [Boolean] multiple (false) Should all unacknowledged messages up to this be acknowledged as well?
     # @see #nack
-    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
+    # @see http://rubymarchhare.info/articles/queues.html Queues and Consumers guide
     def ack(delivery_tag, multiple = false)
       guarding_against_stale_delivery_tags(delivery_tag) do
         basic_ack(delivery_tag.to_i, multiple)
@@ -621,7 +621,7 @@ module MarchHare
     # @param [Boolean] requeue      Should this message be requeued instead of dropping it?
     # @see #ack
     # @see #nack
-    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
+    # @see http://rubymarchhare.info/articles/queues.html Queues and Consumers guide
     def reject(delivery_tag, requeue = false)
       guarding_against_stale_delivery_tags(delivery_tag) do
         basic_reject(delivery_tag.to_i, requeue)
@@ -636,7 +636,7 @@ module MarchHare
     # @param [Boolean] multiple (false) Should all unacknowledged messages up to this be rejected as well?
     # @param [Boolean] requeue  (false) Should this message be requeued instead of dropping it?
     # @see #ack
-    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
+    # @see http://rubymarchhare.info/articles/queues.html Queues and Consumers guide
     def nack(delivery_tag, multiple = false, requeue = false)
       guarding_against_stale_delivery_tags(delivery_tag) do
         basic_nack(delivery_tag.to_i, multiple, requeue)
@@ -679,7 +679,7 @@ module MarchHare
     #   ch.basic_reject(delivery_info.delivery_tag, true)
     #
     # @see #basic_nack
-    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
+    # @see http://rubymarchhare.info/articles/queues.html Queues and Consumers guide
     def basic_reject(delivery_tag, requeue)
       converting_rjc_exceptions_to_ruby do
         @delegate.basic_reject(delivery_tag.to_i, requeue)
@@ -692,7 +692,7 @@ module MarchHare
     # @param [Boolean] multiple Should all deliveries up to this one be acknowledged?
     # @return [NilClass] nil
     #
-    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
+    # @see http://rubymarchhare.info/articles/queues.html Queues and Consumers guide
     def basic_ack(delivery_tag, multiple)
       converting_rjc_exceptions_to_ruby do
         @delegate.basic_ack(delivery_tag.to_i, multiple)
@@ -707,8 +707,8 @@ module MarchHare
     # @param [Boolean] multiple Should all deliveries up to this one be rejected/requeued?
     # @return [NilClass] nil
     #
-    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
-    # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions guide
+    # @see http://rubymarchhare.info/articles/queues.html Queues and Consumers guide
+    # @see http://rubymarchhare.info/articles/extensions.html RabbitMQ Extensions guide
     def basic_nack(delivery_tag, multiple = false, requeue = false)
       converting_rjc_exceptions_to_ruby do
         @delegate.basic_nack(delivery_tag.to_i, multiple, requeue)
@@ -740,8 +740,8 @@ module MarchHare
     # Enables publisher confirms on the channel.
     # @return [NilClass] nil
     #
-    # @see http://hotbunnies.info/articles/exchanges.html Exchanges and Publishers guide
-    # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions guide
+    # @see http://rubymarchhare.info/articles/exchanges.html Exchanges and Publishers guide
+    # @see http://rubymarchhare.info/articles/extensions.html RabbitMQ Extensions guide
     def confirm_select
       converting_rjc_exceptions_to_ruby do
         @delegate.confirm_select
@@ -800,7 +800,7 @@ module MarchHare
     end
 
     # Defines a returned message handler.
-    # @see http://hotbunnies.info/articles/exchanges.html Exchanges and Publishers guide
+    # @see http://rubymarchhare.info/articles/exchanges.html Exchanges and Publishers guide
     def on_return(&block)
       self.add_return_listener(BlockReturnListener.from(block))
     end
