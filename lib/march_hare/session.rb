@@ -14,8 +14,8 @@ module MarchHare
   # @see .connect
   # @see #create_channel
   # @see #close
-  # @see http://hotbunnies.info/articles/getting_started.html Getting Started guide
-  # @see http://hotbunnies.info/articles/connecting.html Connecting to RabbitMQ guide
+  # @see http://rubymarchhare.info/articles/getting_started.html Getting Started guide
+  # @see http://rubymarchhare.info/articles/connecting.html Connecting to RabbitMQ guide
   class Session
 
     #
@@ -37,7 +37,7 @@ module MarchHare
     # @option options [Integer] :heartbeat (600) Heartbeat interval. 0 means no heartbeat.
     # @option options [Boolean] :tls (false) Set to true to use TLS/SSL connection. This will switch port to 5671 by default.
     #
-    # @see http://hotbunnies.info/articles/connecting.html Connecting to RabbitMQ guide
+    # @see http://rubymarchhare.info/articles/connecting.html Connecting to RabbitMQ guide
     def self.connect(options={})
       cf = ConnectionFactory.new
 
@@ -102,7 +102,7 @@ module MarchHare
     #
     # @return [MarchHare::Channel] Newly created channel
     # @see MarchHare::Channel
-    # @see http://hotbunnies.info/articles/getting_started.html Getting Started guide
+    # @see http://rubymarchhare.info/articles/getting_started.html Getting Started guide
     def create_channel(n = nil)
       jc = if n
              @connection.create_channel(n)
