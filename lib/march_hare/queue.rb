@@ -8,8 +8,8 @@ require "set"
 module MarchHare
   # Represents AMQP 0.9.1 queue.
   #
-  # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
-  # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions guide
+  # @see http://rubymarchhare.info/articles/queues.html Queues and Consumers guide
+  # @see http://rubymarchhare.info/articles/extensions.html RabbitMQ Extensions guide
   class Queue
     # @return [MarchHare::Channel] Channel this queue uses
     attr_reader :channel
@@ -26,8 +26,8 @@ module MarchHare
     # @option opts [Boolean] :arguments ({})       Additional optional arguments (typically used by RabbitMQ extensions and plugins)
     #
     # @see MarchHare::Channel#queue
-    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
-    # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions guide
+    # @see http://rubymarchhare.info/articles/queues.html Queues and Consumers guide
+    # @see http://rubymarchhare.info/articles/extensions.html RabbitMQ Extensions guide
     def initialize(channel, name, options={})
       @channel = channel
       @name = name
@@ -44,25 +44,25 @@ module MarchHare
 
 
     # @return [Boolean] true if this queue was declared as durable (will survive broker restart).
-    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
+    # @see http://rubymarchhare.info/articles/queues.html Queues and Consumers guide
     def durable?
       @durable
     end # durable?
 
     # @return [Boolean] true if this queue was declared as exclusive (limited to just one consumer)
-    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
+    # @see http://rubymarchhare.info/articles/queues.html Queues and Consumers guide
     def exclusive?
       @exclusive
     end # exclusive?
 
     # @return [Boolean] true if this queue was declared as automatically deleted (deleted as soon as last consumer unbinds).
-    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
+    # @see http://rubymarchhare.info/articles/queues.html Queues and Consumers guide
     def auto_delete?
       @auto_delete
     end # auto_delete?
 
     # @return [Boolean] true if this queue was declared as server named.
-    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
+    # @see http://rubymarchhare.info/articles/queues.html Queues and Consumers guide
     def server_named?
       @server_named
     end # server_named?
@@ -82,8 +82,8 @@ module MarchHare
     # @option options [String] :routing_key  Routing key
     # @option options [Hash] :arguments ({}) Additional optional binding arguments
     #
-    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
-    # @see http://hotbunnies.info/articles/bindings.html Bindings guide
+    # @see http://rubymarchhare.info/articles/queues.html Queues and Consumers guide
+    # @see http://rubymarchhare.info/articles/bindings.html Bindings guide
     def bind(exchange, options={})
       exchange_name = if exchange.respond_to?(:name) then
                         exchange.name
@@ -108,8 +108,8 @@ module MarchHare
     # @option options [String] :routing_key  Routing key
     # @option options [Hash] :arguments ({}) Additional optional binding arguments
     #
-    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
-    # @see http://hotbunnies.info/articles/bindings.html Bindings guide
+    # @see http://rubymarchhare.info/articles/queues.html Queues and Consumers guide
+    # @see http://rubymarchhare.info/articles/bindings.html Bindings guide
     def unbind(exchange, options={})
       exchange_name = if exchange.respond_to?(:name) then
                         exchange.name
@@ -129,13 +129,13 @@ module MarchHare
     # @option [Boolean] if_unused (false) Should this queue be deleted only if it has no consumers?
     # @option [Boolean] if_empty (false) Should this queue be deleted only if it has no messages?
     #
-    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
+    # @see http://rubymarchhare.info/articles/queues.html Queues and Consumers guide
     def delete(if_unused = false, if_empty = false)
       @channel.queue_delete(@name, if_unused, if_empty)
     end
 
     # Purges a queue (removes all messages from it)
-    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
+    # @see http://rubymarchhare.info/articles/queues.html Queues and Consumers guide
     # @api public
     def purge
       @channel.queue_purge(@name)
@@ -171,7 +171,7 @@ module MarchHare
     # @option opts [String] :consumer_tag Unique consumer identifier. It is usually recommended to let MarchHare generate it for you.
     # @option opts [Hash] :arguments ({}) Additional (optional) arguments, typically used by RabbitMQ extensions
     #
-    # @see http://hotbunnies.info/articles/queues.html Queues and Consumers guide
+    # @see http://rubymarchhare.info/articles/queues.html Queues and Consumers guide
     # @api public
     def subscribe(opts = {}, &block)
       subscribe_with(build_consumer(opts, &block), opts)
