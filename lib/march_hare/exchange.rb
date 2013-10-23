@@ -5,8 +5,8 @@ module MarchHare
 
   # Represents AMQP 0.9.1 exchanges.
   #
-  # @see http://hotbunnies.info/articles/exchanges.html Exchanges and Publishing guide
-  # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions guide
+  # @see http://rubymarchhare.info/articles/exchanges.html Exchanges and Publishing guide
+  # @see http://rubymarchhare.info/articles/extensions.html RabbitMQ Extensions guide
   class Exchange
     # @return [String] Exchange name
     attr_reader :name
@@ -51,7 +51,7 @@ module MarchHare
     #  * :app_id (String) Optional application ID
     #
     # @return [MarchHare::Exchange] Self
-    # @see http://hotbunnies.info/articles/exchanges.html Exchanges and Publishing guide
+    # @see http://rubymarchhare.info/articles/exchanges.html Exchanges and Publishing guide
     # @api public
     def publish(body, opts = {})
       options = {:routing_key => '', :mandatory => false}.merge(opts)
@@ -68,7 +68,7 @@ module MarchHare
     #
     # @option opts [Boolean] if_unused (false) Should this exchange be deleted only if it is no longer used
     #
-    # @see http://hotbunnies.info/articles/exchanges.html Exchanges and Publishing guide
+    # @see http://rubymarchhare.info/articles/exchanges.html Exchanges and Publishing guide
     # @api public
     def delete(options={})
       @channel.deregister_exchange(self)
@@ -85,9 +85,9 @@ module MarchHare
     # @option opts [Hash] arguments ({}) Optional arguments
     #
     # @return [MarchHare::Exchange] Self
-    # @see http://hotbunnies.info/articles/exchanges.html Exchanges and Publishing guide
-    # @see http://hotbunnies.info/articles/bindings.html Bindings guide
-    # @see http://hotbunnies.info/articles/extensions.html RabbitMQ Extensions guide
+    # @see http://rubymarchhare.info/articles/exchanges.html Exchanges and Publishing guide
+    # @see http://rubymarchhare.info/articles/bindings.html Bindings guide
+    # @see http://rubymarchhare.info/articles/extensions.html RabbitMQ Extensions guide
     # @api public
     def bind(exchange, options={})
       exchange_name = if exchange.respond_to?(:name) then exchange.name else exchange.to_s end
@@ -104,9 +104,9 @@ module MarchHare
     # @option opts [Hash] arguments ({}) Optional arguments
     #
     # @return [Bunny::Exchange] Self
-    # @see http://rubybunny.info/articles/exchanges.html Exchanges and Publishing guide
-    # @see http://rubybunny.info/articles/bindings.html Bindings guide
-    # @see http://rubybunny.info/articles/extensions.html RabbitMQ Extensions guide
+    # @see http://rubymarchhare.info/articles/exchanges.html Exchanges and Publishing guide
+    # @see http://rubymarchhare.info/articles/bindings.html Bindings guide
+    # @see http://rubymarchhare.info/articles/extensions.html RabbitMQ Extensions guide
     # @api public
     def unbind(exchange, opts = {})
       exchange_name = if exchange.respond_to?(:name) then exchange.name else exchange.to_s end
