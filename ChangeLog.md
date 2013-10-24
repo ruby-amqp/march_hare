@@ -237,7 +237,7 @@ end
 
 ## RabbitMQ Java Client Upgrade
 
-Hot Bunnies now uses RabbitMQ Java client 3.1.
+March Hare now uses RabbitMQ Java client 3.2.
 
 
 ## Queue Predicates
