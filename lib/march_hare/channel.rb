@@ -804,15 +804,41 @@ module MarchHare
     def on_return(&block)
       self.add_return_listener(BlockReturnListener.from(block))
     end
+    
+    # Defines a publisher confirm handler
+    def on_confirm(&block)
+      self.add_confirm_listener(BlockConfirmListener.from(block))
+    end
 
     def method_missing(selector, *args)
       @delegate.__send__(selector, *args)
     end
-
+    
 
     #
     # Implementation
     #
+    
+    # @private
+    class BlockConfirmListener
+      include com.rabbitmq.client.ConfirmListener
+      
+      def self.from(block)
+        new(block)
+      end
+
+      def initialize(block)
+        @block = block
+      end
+
+      def handleAck(delivery_tag, multiple)
+        @block.call(:ack, delivery_tag, multiple)
+      end
+
+      def handleNack(delivery_tag, multiple)
+        @block.call(:nack, delivery_tag, multiple)
+      end
+    end
 
     # @private
     class BlockReturnListener
