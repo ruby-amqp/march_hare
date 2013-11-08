@@ -2,7 +2,6 @@ $: << 'lib'
 
 require 'march_hare'
 
-
 connection = MarchHare.connect(:host => 'localhost')
 channel = connection.create_channel
 channel.prefetch = 10
