@@ -6,6 +6,7 @@ require "march_hare/thread_pools"
 module MarchHare
   java_import com.rabbitmq.client.ConnectionFactory
   java_import com.rabbitmq.client.Connection
+  java_import com.rabbitmq.client.BlockedListener
 
   # Connection to a RabbitMQ node.
   #
@@ -149,12 +150,12 @@ module MarchHare
 
     # Defines a connection.blocked handler
     def on_blocked(&block)
-      self.add_blocked_listener(BlockedListener.for_blocked(block))
+      self.add_blocked_listener(BlockBlockedUnblockedListener.for_blocked(block))
     end
 
     # Defines a connection.unblocked handler
     def on_unblocked(&block)
-      self.add_blocked_listener(BlockedListener.for_unblocked(block))
+      self.add_blocked_listener(BlockBlockedUnblockedListener.for_unblocked(block))
     end
 
     # Clears all callbacks defined with #on_blocked and #on_unblocked.
@@ -373,6 +374,8 @@ module MarchHare
       end
     end
 
+    # Ruby blocks-based BlockedListener that handles
+    # connection.blocked and connection.unblocked.
     # @private
     class BlockBlockedUnblockedListener
       include com.rabbitmq.client.BlockedListener
@@ -396,12 +399,16 @@ module MarchHare
       end
 
       def initialize(on_blocked, on_unblocked)
-        @block = block
+        @blocked   = on_blocked
+        @unblocked = on_unblocked
       end
 
-      def handleReturn(reply_code, reply_text, exchange, routing_key, basic_properties, payload)
-        # TODO: convert properties to a Ruby hash
-        @block.call(reply_code, reply_text, exchange, routing_key, basic_properties, String.from_java_bytes(payload))
+      def handle_blocked(reason)
+        @blocked.call(reason)
+      end
+
+      def handle_unblocked()
+        @unblocked.call()
       end
     end
 
