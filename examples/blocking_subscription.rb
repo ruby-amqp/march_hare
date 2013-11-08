@@ -1,9 +1,9 @@
 $: << 'lib'
 
-require 'hot_bunnies'
+require 'march_hare'
 
 
-connection = HotBunnies.connect(:host => 'localhost')
+connection = MarchHare.connect(:host => 'localhost')
 channel = connection.create_channel
 channel.prefetch = 10
 
