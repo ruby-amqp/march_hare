@@ -336,6 +336,8 @@ module MarchHare
         raise ConnectionRefused.new("Connection to #{@cf.host}:#{@cf.port} refused")
       rescue java.net.UnknownHostException => e
         raise ConnectionRefused.new("Connection to #{@cf.host}:#{@cf.port} refused: host unknown")
+      rescue com.rabbitmq.client.AuthenticationFailureException => e
+        raise AuthenticationFailureError.new(@cf.username, @cf.virtual_host, @cf.password.bytesize)
       rescue com.rabbitmq.client.PossibleAuthenticationFailureException => e
         raise PossibleAuthenticationFailureError.new(@cf.username, @cf.virtual_host, @cf.password.bytesize)
       end

@@ -38,6 +38,9 @@ module MarchHare
 
   # Raised when RabbitMQ closes network connection before
   # finalizing the connection, typically indicating authentication failure.
+  #
+  # RabbitMQ versions beyond 3.2 use a better defined authentication failure
+  # notifications.
   class PossibleAuthenticationFailureError < Exception
     attr_reader :username, :vhost
 
@@ -45,10 +48,19 @@ module MarchHare
       @username = username
       @vhost    = vhost
 
-      super("RabbitMQ closed TCP connection before authentication succeeded: this usually means authentication failure due to misconfiguration or that RabbitMQ version does not support AMQP 0.9.1. Please check your configuration. Username: #{username}, vhost: #{vhost}, password length: #{password_length}")
+      super("Authentication with RabbitMQ failed or RabbitMQ version used does not support AMQP 0-9-1. Username: #{username}, vhost: #{vhost}, password length: #{password_length}. Please check your configuration.")
     end
   end
 
+  # Raised when RabbitMQ 3.2+ reports authentication
+  # failure before closing TCP connection.
+  class AuthenticationFailureError < PossibleAuthenticationFailureError
+    attr_reader :username, :vhost
+
+    def initialize(username, vhost, password_length)
+      super(username, vhost, password_length)
+    end
+  end
 
   class PreconditionFailed < ChannelLevelException
   end
