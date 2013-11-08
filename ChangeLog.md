@@ -117,6 +117,14 @@ it's typically more convenient to use
 confirms.
 
 
+## connection.blocked, connection.unblocked support
+
+`MarchHare::Session#on_blocked` and `MarchHare::Session#on_unblocked`
+are new methods that provide a way to define [blocked connection
+notifications](http://www.rabbitmq.com/connection-blocked.html)
+callbacks.
+
+
 ## MarchHare::Session#start
 
 `MarchHare::Session#start` is a new no-op method that improves API
