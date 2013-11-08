@@ -117,12 +117,17 @@ it's typically more convenient to use
 confirms.
 
 
-## connection.blocked, connection.unblocked support
+## connection.blocked, connection.unblocked Support
 
 `MarchHare::Session#on_blocked` and `MarchHare::Session#on_unblocked`
 are new methods that provide a way to define [blocked connection
 notifications](http://www.rabbitmq.com/connection-blocked.html)
 callbacks.
+
+
+## Authentication Failure Notifications Support
+
+MarchHare now supports [authentication failure notifications](http://www.rabbitmq.com/auth-notification.html) (new in RabbitMQ 3.2).
 
 
 ## MarchHare::Session#start
