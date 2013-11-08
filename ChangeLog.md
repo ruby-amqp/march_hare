@@ -108,6 +108,15 @@ These are initial steps towards easier to use error handling and recovery,
 similar to what amqp gem and Bunny 0.9+ provide.
 
 
+## MarchHare::Channel#on_confirm
+
+`MarchHare::Channel#on_confirm` provides a way to define [publisher
+confirms](http://www.rabbitmq.com/confirms.html) callbacks. Note that
+it's typically more convenient to use
+`MarchHare::Channel#wait_for_confirms` to wait for all outdated
+confirms.
+
+
 ## MarchHare::Session#start
 
 `MarchHare::Session#start` is a new no-op method that improves API
