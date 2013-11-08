@@ -6,7 +6,7 @@ connection = MarchHare.connect
 connection.on_blocked do |reason|
   puts "I am blocked now. Reason: #{reason}"
 end
-connection.on_unblocked do |_|
+connection.on_unblocked do
   puts "I am unblocked now."
 end
 
