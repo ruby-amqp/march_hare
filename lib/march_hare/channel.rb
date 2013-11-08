@@ -806,6 +806,7 @@ module MarchHare
     end
 
     # Defines a publisher confirm handler
+    # @see http://rubymarchhare.info/articles/exchanges.html Exchanges and Publishers guide
     def on_confirm(&block)
       self.add_confirm_listener(BlockConfirmListener.from(block))
     end
