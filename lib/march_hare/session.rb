@@ -147,6 +147,22 @@ module MarchHare
       sh
     end
 
+    # Defines a connection.blocked handler
+    def on_blocked(&block)
+      self.add_blocked_listener(BlockedListener.for_blocked(block))
+    end
+
+    # Defines a connection.unblocked handler
+    def on_unblocked(&block)
+      self.add_blocked_listener(BlockedListener.for_unblocked(block))
+    end
+
+    # Clears all callbacks defined with #on_blocked and #on_unblocked.
+    def clear_blocked_connection_callbacks
+      @connection.clear_blocked_listeners
+    end
+
+
     # @private
     def add_automatic_recovery_hook
       fn = Proc.new do |_, signal|
@@ -356,5 +372,38 @@ module MarchHare
         return Proc.new { MarchHare::ThreadPools.fixed_of_size(n) }
       end
     end
+
+    # @private
+    class BlockBlockedUnblockedListener
+      include com.rabbitmq.client.BlockedListener
+
+      def self.for_blocked(block)
+        new(block, noop_fn1)
+      end
+
+      def self.for_unblocked(block)
+        new(noop_fn0, block)
+      end
+
+      # Returns a no-op function of arity 0.
+      def self.noop_fn0
+        Proc.new {}
+      end
+
+      # Returns a no-op function of arity 1.
+      def self.noop_fn1
+        Proc.new { |_| }
+      end
+
+      def initialize(on_blocked, on_unblocked)
+        @block = block
+      end
+
+      def handleReturn(reply_code, reply_text, exchange, routing_key, basic_properties, payload)
+        # TODO: convert properties to a Ruby hash
+        @block.call(reply_code, reply_text, exchange, routing_key, basic_properties, String.from_java_bytes(payload))
+      end
+    end
+
   end
 end
