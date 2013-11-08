@@ -122,7 +122,17 @@ confirms.
 `MarchHare::Session#on_blocked` and `MarchHare::Session#on_unblocked`
 are new methods that provide a way to define [blocked connection
 notifications](http://www.rabbitmq.com/connection-blocked.html)
-callbacks.
+callbacks:
+
+``` ruby
+connection.on_blocked do |reason|
+  puts "I am blocked now. Reason: #{reason}"
+end
+
+connection.on_unblocked do
+  puts "I am unblocked now."
+end
+```
 
 
 ## Authentication Failure Notifications Support
