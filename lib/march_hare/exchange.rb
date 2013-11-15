@@ -29,12 +29,12 @@ module MarchHare
     # @options opts :auto_delete [Boolean] (false) Will the exchange be auto-deleted?
     # @options opts :passive [Boolean] (false) Should passive declaration be used?
     #
-    # @see Channel#default_exchange
-    # @see Channel#fanout
-    # @see Channel#topic
-    # @see Channel#direct
-    # @see Channel#headers
-    # @see Channel#exchange
+    # @see MarchHare::Channel#default_exchange
+    # @see MarchHare::Channel#fanout
+    # @see MarchHare::Channel#topic
+    # @see MarchHare::Channel#direct
+    # @see MarchHare::Channel#headers
+    # @see MarchHare::Channel#exchange
     def initialize(channel, name, options = {})
       raise ArgumentError, "exchange channel cannot be nil" if channel.nil?
       raise ArgumentError, "exchange name cannot be nil" if name.nil?
