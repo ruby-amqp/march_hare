@@ -12,18 +12,34 @@ conn = HotBunnies.connect(:heartbeat_interval => 8)
 
 ch = conn.create_channel
 x  = ch.topic("hb.examples.recovery.topic", :durable => false)
-q  = ch.queue("hb.examples.recovery.client_named_queue1", :durable => false)
+q1 = ch.queue("hb.examples.recovery.client_named_queue1", :durable => false)
+q2 = ch.queue("hb.examples.recovery.client_named_queue2", :durable => false)
+q3 = ch.queue("hb.examples.recovery.client_named_queue3", :durable => false)
 
-q.bind(x, :routing_key => "abc").bind(x, :routing_key => "def")
+q1.bind(x, :routing_key => "abc")
+q2.bind(x, :routing_key => "def")
+q3.bind(x, :routing_key => "xyz")
 
-q.subscribe do |metadata, payload|
-  puts "Consumed #{payload}"
+q1.subscribe do |metadata, payload|
+  puts "Consumed #{payload} from Q1"
+end
+
+q2.subscribe do |metadata, payload|
+  puts "Consumed #{payload} from Q2"
+end
+
+q3.subscribe do |metadata, payload|
+  puts "Consumed #{payload} from Q3 (consumer 1)"
+end
+
+q3.subscribe do |metadata, payload|
+  puts "Consumed #{payload} from Q3 (consumer 2)"
 end
 
 loop do
-  sleep 2
+  sleep 1
   data = rand.to_s
-  rk   = ["abc", "def"].sample
+  rk   = ["abc", "def", "xyz", Time.now.to_i.to_s].sample
 
   begin
     x.publish(rand.to_s, :routing_key => rk)
