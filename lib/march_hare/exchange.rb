@@ -23,6 +23,15 @@ module MarchHare
     # @param [Channel] channel Channel to declare exchange on
     # @params [String] name Exchange name
     # @params [Hash] options ({}) Exchange and declaration attributes
+    #
+    # @options opts :type (Symbol, String) Exchange type
+    #
+    # @see Channel#default_exchange
+    # @see Channel#fanout
+    # @see Channel#topic
+    # @see Channel#direct
+    # @see Channel#headers
+    # @see Channel#exchange
     def initialize(channel, name, options = {})
       raise ArgumentError, "exchange channel cannot be nil" if channel.nil?
       raise ArgumentError, "exchange name cannot be nil" if name.nil?
