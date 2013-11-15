@@ -18,6 +18,11 @@ module MarchHare
     # @return [Symbol]
     attr_reader :type
 
+    # Instantiates a new exchange.
+    #
+    # @param [Channel] channel Channel to declare exchange on
+    # @params [String] name Exchange name
+    # @params [Hash] options ({}) Exchange and declaration attributes
     def initialize(channel, name, options = {})
       raise ArgumentError, "exchange channel cannot be nil" if channel.nil?
       raise ArgumentError, "exchange name cannot be nil" if name.nil?
