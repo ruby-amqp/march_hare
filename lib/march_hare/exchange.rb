@@ -7,6 +7,7 @@ module MarchHare
   #
   # @see http://rubymarchhare.info/articles/exchanges.html Exchanges and Publishing guide
   # @see http://rubymarchhare.info/articles/extensions.html RabbitMQ Extensions guide
+  # @see Queue#bind
   class Exchange
     # @return [String] Exchange name
     attr_reader :name
