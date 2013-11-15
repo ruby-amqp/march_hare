@@ -24,7 +24,10 @@ module MarchHare
     # @params [String] name Exchange name
     # @params [Hash] options ({}) Exchange and declaration attributes
     #
-    # @options opts :type (Symbol, String) Exchange type
+    # @options opts :type [Symbol, String] Exchange type
+    # @options opts :durable [Boolean] (false) Will the exchange be durable?
+    # @options opts :auto_delete [Boolean] (false) Will the exchange be auto-deleted?
+    # @options opts :passive [Boolean] (false) Should passive declaration be used?
     #
     # @see Channel#default_exchange
     # @see Channel#fanout
