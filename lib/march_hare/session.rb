@@ -136,6 +136,11 @@ module MarchHare
     end
     alias connected? open?
 
+    # @return [Boolean] true if this channel is closed
+    def closed?
+      !@connection.open?
+    end
+
     # Defines a shutdown event callback. Shutdown events are
     # broadcasted when a connection is closed, either explicitly
     # or forcefully, or due to a network/peer failure.
