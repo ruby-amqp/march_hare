@@ -200,8 +200,13 @@ module MarchHare
       @thread_pool = ThreadPools.dynamically_growing
       self.recover_shutdown_hooks
 
-      @channels.each do |id, ch|
-        ch.automatically_recover(self, @connection)
+      @channels.sort_by {|id, _| id}.each do |id, ch|
+        begin
+          ch.automatically_recover(self, @connection)
+        rescue Exception, java.io.IOException => e
+          # TODO: logging
+          $stderr.puts e
+        end
       end
     end
 
