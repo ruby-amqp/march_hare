@@ -21,7 +21,6 @@ c2 = MarchHare.connect(:heartbeat_interval => 8)
 
 s   = 32
 n   = 1000
-xs  = []
 chs = []
 qs  = []
 cs  = []
