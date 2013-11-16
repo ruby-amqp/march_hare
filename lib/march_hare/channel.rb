@@ -188,7 +188,7 @@ module MarchHare
 
       self.recover_prefetch_setting
       self.recover_exchanges
-      # this includes recovering bindings
+      # # this includes bindings recovery
       self.recover_queues
       self.recover_consumers
       self.increment_recoveries_counter
