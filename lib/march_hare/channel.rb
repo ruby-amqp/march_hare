@@ -234,14 +234,19 @@ module MarchHare
     # Recovery feature.
     def recover_consumers
       @consumers.values.each do |c|
-        self.unregister_consumer(c)
-        c.recover_from_network_failure
+        begin
+          self.unregister_consumer(c)
+          c.recover_from_network_failure
+        rescue Exception => e
+          # TODO: logger
+          $stderr.puts "Caught exception when recovering consumer #{c.consumer_tag}"
+        end
       end
     end
 
     # @private
     def increment_recoveries_counter
-      @recoveries_counter.increment
+      @recoveries_counter.increment_and_get
     end
 
     attr_reader :recoveries_counter
