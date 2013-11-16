@@ -226,7 +226,12 @@ module MarchHare
     # Recovery feature.
     def recover_queues
       @queues.values.each do |q|
-        q.recover_from_network_failure
+        begin
+          q.recover_from_network_failure
+        rescue Exception => e
+          # TODO: logger
+          $stderr.puts "Caught exception when recovering queue #{q.name}"
+        end
       end
     end
 
