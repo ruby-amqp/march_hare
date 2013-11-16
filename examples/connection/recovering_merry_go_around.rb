@@ -8,6 +8,14 @@ $:.unshift(File.expand_path("../../../lib", __FILE__))
 
 require 'march_hare'
 
+# This example passes messages between N queues:
+#
+# Q1 => Q2 => ... => Qn-1 => Qn
+#
+# and is used primarily to test (and demonstrate) connection
+# recovery with a lot of channels and mixed consumer/producer
+# workloads.
+
 c1 = MarchHare.connect(:heartbeat_interval => 8)
 c2 = MarchHare.connect(:heartbeat_interval => 8)
 
