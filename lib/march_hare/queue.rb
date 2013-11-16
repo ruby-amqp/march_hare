@@ -224,6 +224,11 @@ module MarchHare
     # Implementation
     #
 
+    # @return [Boolean] true if this queue is a pre-defined one (amq.direct, amq.fanout, amq.match and so on)
+    def predefined?
+      @name.start_with?("amq.")
+    end
+
     # @private
     def declare!
       response = if @options[:passive]
@@ -242,15 +247,9 @@ module MarchHare
         @channel.deregister_queue_named(old_name)
       end
 
-      # puts "Recovering queue #{@name}"
-      begin
-        declare!
+      declare! if !predefined?
 
-        @channel.register_queue(self)
-      rescue Exception => e
-        # TODO: use a logger
-        puts "Caught #{e.inspect} while redeclaring and registering #{@name}!"
-      end
+      @channel.register_queue(self)
       recover_bindings
     end
 
