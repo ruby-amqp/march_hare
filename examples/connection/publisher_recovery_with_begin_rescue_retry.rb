@@ -1,10 +1,10 @@
 $: << 'lib'
 
-require 'hot_bunnies'
+require 'march_hare'
 
 
 begin
-  conn = HotBunnies.connect(:host => 'localhost')
+  conn = MarchHare.connect(:host => 'localhost')
   ch   = conn.create_channel
   x    = ch.default_exchange
 
@@ -16,7 +16,7 @@ begin
 
     sleep 3.0
   end
-rescue HotBunnies::Exception => e
+rescue MarchHare::Exception => e
   puts "RabbitMQ connection error: #{e.message}. Will reconnect in 10 seconds..."
 
   sleep 10
