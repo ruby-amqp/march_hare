@@ -200,6 +200,18 @@ module MarchHare
       @thread_pool = ThreadPools.dynamically_growing
       self.recover_shutdown_hooks
 
+      # sorting channels by id means that the cases like the following:
+      #
+      # ch1 = conn.create_channel
+      # ch2 = conn.create_channel
+      #
+      # x   = ch1.topic("logs", :durable => false)
+      # q   = ch2.queue("", :exclusive => true)
+      #
+      # q.bind(x)
+      #
+      # will recover correctly because exchanges and queues will be recovered
+      # in the order the user expects and before bindings.
       @channels.sort_by {|id, _| id}.each do |id, ch|
         begin
           ch.automatically_recover(self, @connection)
