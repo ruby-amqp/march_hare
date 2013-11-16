@@ -218,7 +218,12 @@ module MarchHare
     #
     def recover_exchanges
       @exchanges.values.each do |x|
-        x.recover_from_network_failure
+        begin
+          x.recover_from_network_failure
+        rescue Exception => e
+          # TODO: logger
+          $stderr.puts "Caught exception when recovering exchange #{x.name}"
+        end
       end
     end
 
