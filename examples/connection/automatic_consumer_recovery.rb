@@ -6,9 +6,9 @@ Bundler.setup
 
 $:.unshift(File.expand_path("../../../lib", __FILE__))
 
-require 'hot_bunnies'
+require 'march_hare'
 
-conn = HotBunnies.connect(:heartbeat_interval => 8)
+conn = MarchHare.connect(:heartbeat_interval => 8)
 
 ch0 = conn.create_channel
 ch1 = conn.create_channel
