@@ -27,7 +27,7 @@ q3.bind(x, :routing_key => "xyz")
 x0  = ch0.fanout("hb.examples.recovery.fanout0")
 x1  = ch1.fanout("hb.examples.recovery.fanout1")
 x2  = ch2.fanout("hb.examples.recovery.fanout2")
-x3  = ch3.fanout("hb.examples.recovery.fanout2")
+x3  = ch3.fanout("hb.examples.recovery.fanout3")
 
 q4  = ch1.queue("", :exclusive => true)
 q4.bind(x0)
