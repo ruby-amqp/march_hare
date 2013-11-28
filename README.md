@@ -43,7 +43,7 @@ and is considered to be a reference implementation.
 
 ### With Bundler
 
-    gem "march_hare", "~> 2.0.0.rc3"
+    gem "march_hare", "~> 2.0.0.rc5"
 
 
 ## Documentation
