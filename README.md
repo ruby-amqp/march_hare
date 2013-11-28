@@ -59,7 +59,7 @@ that demonstrate various parts of the API.
 
 ### Reference
 
-The API reference is currently being worked on.
+[API reference](http://reference.rubymarchhare.info) is available.
 
 
 ## Supported Ruby Versions
