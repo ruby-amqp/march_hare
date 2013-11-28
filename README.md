@@ -50,7 +50,7 @@ and is considered to be a reference implementation.
 
 ### Guides
 
-[MarchHare documentation guides](http://hotbunnies.info) are mostly complete.
+[MarchHare documentation guides](http://rubymarchhare.info) are mostly complete.
 
 ### Examples
 
