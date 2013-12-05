@@ -27,12 +27,13 @@ March Hare is not
 
 ## Project Maturity
 
-March Hare is not a young project. Extracted from a platform that transports more than a terabyte of data
-over RabbitMQ every day, it has been around as an open source project since mid-2011 and will
-reach 2.0 in 2013.
+March Hare is not a young project. Extracted from a platform that
+transports more than a terabyte of data over RabbitMQ every day, it
+has been around as an open source project since mid-2011 and has
+reached 2.0 in late 2013.
 
-It is also based on the RabbitMQ Java client, which is an officially supported client
-and is considered to be a reference implementation.
+It is also based on the RabbitMQ Java client, which is an officially
+supported client and is considered to be a reference implementation.
 
 
 ## Installation, Dependency
