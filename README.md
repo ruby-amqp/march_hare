@@ -39,11 +39,11 @@ and is considered to be a reference implementation.
 
 ### With Rubygems
 
-    gem install march_hare --pre
+    gem install march_hare
 
 ### With Bundler
 
-    gem "march_hare", "~> 2.0.0.rc5"
+    gem "march_hare", "~> 2.0.0"
 
 
 ## Documentation
