@@ -93,7 +93,7 @@ MIT, see LICENSE in the repository root
 
 ## Copyright
 
-Theo Hultberg, Michael Klishin, 2011-2013.
+Theo Hultberg, Michael Klishin, 2011-2014.
 
 
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/ruby-amqp/march_hare/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
