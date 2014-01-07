@@ -187,6 +187,7 @@ module MarchHare
       self.recover_shutdown_hooks
 
       self.recover_prefetch_setting
+      self.recover_confirm_flag
       self.recover_exchanges
       # # this includes bindings recovery
       self.recover_queues
@@ -211,6 +212,12 @@ module MarchHare
     #
     def recover_prefetch_setting
       basic_qos(@prefetch_count) if @prefetch_count
+    end
+
+    # Recovers publisher confirms mode. Used by the Automatic Network Failure
+    # Recovery feature.
+    def recover_confirm_mode
+      confirm_select if @confirm_mode
     end
 
     # Recovers exchanges. Used by the Automatic Network Failure
@@ -759,6 +766,7 @@ module MarchHare
     # @see http://rubymarchhare.info/articles/extensions.html RabbitMQ Extensions guide
     def confirm_select
       converting_rjc_exceptions_to_ruby do
+        @confirm_mode = true
         @delegate.confirm_select
       end
     end
