@@ -187,7 +187,7 @@ module MarchHare
       self.recover_shutdown_hooks
 
       self.recover_prefetch_setting
-      self.recover_confirm_flag
+      self.recover_confirm_mode
       self.recover_tx_mode
       self.recover_exchanges
       # # this includes bindings recovery
