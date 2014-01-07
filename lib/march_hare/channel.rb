@@ -188,6 +188,7 @@ module MarchHare
 
       self.recover_prefetch_setting
       self.recover_confirm_flag
+      self.recover_tx_mode
       self.recover_exchanges
       # # this includes bindings recovery
       self.recover_queues
@@ -218,6 +219,12 @@ module MarchHare
     # Recovery feature.
     def recover_confirm_mode
       confirm_select if @confirm_mode
+    end
+
+    # Recovers transaction mode. Used by the Automatic Network Failure
+    # Recovery feature.
+    def recover_tx_mode
+      tx_select if @tx_mode
     end
 
     # Recovers exchanges. Used by the Automatic Network Failure
@@ -796,6 +803,7 @@ module MarchHare
     # Enables transactions on the channel
     def tx_select
       converting_rjc_exceptions_to_ruby do
+        @tx_mode = true
         @delegate.tx_select
       end
     end
