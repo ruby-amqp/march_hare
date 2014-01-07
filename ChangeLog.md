@@ -1,3 +1,11 @@
+## Changes Between 2.1.0 and 2.0.x
+
+### Full Channel State Recovery
+
+Channel recovery now involves recovery of publisher confirms and
+transaction modes.
+
+
 ## Changes Between 1.5.0 and 2.0.0
 
 March Hare (previously Hot Bunnies) 2.0 has **breaking API changes**.
