@@ -193,7 +193,6 @@ module MarchHare
       # recovering immediately makes little sense. Wait a bit first. MK.
       java.lang.Thread.sleep(ms)
 
-      maybe_shut_down_executor
       @connection = converting_rjc_exceptions_to_ruby do
         reconnecting_on_network_failures(ms) do
           self.new_connection
