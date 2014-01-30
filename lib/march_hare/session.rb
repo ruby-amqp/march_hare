@@ -79,7 +79,7 @@ module MarchHare
       # executors cannot be restarted after shutdown,
       # so we really need a factory here. MK.
       @executor_factory = opts[:executor_factory] || build_executor_factory_from(opts)
-      @connection       = self.new_connection
+      @connection       = self.new_connection_impl
       @channels         = JavaConcurrent::ConcurrentHashMap.new
 
       # should automatic recovery from network failures be used?
@@ -127,7 +127,7 @@ module MarchHare
         ch.close
       end
 
-      @executor.shutdown if @executor
+      maybe_shut_down_executor
       @connection.close
     end
 
@@ -193,6 +193,7 @@ module MarchHare
       # recovering immediately makes little sense. Wait a bit first. MK.
       java.lang.Thread.sleep(ms)
 
+      maybe_shut_down_executor
       @connection = converting_rjc_exceptions_to_ruby do
         reconnecting_on_network_failures(ms) do
           self.new_connection
@@ -378,15 +379,20 @@ module MarchHare
     end
 
     # @private
-    def new_connection
+    def new_connection_impl
       converting_rjc_exceptions_to_ruby do
-        @executor = @executor_factory.call
         if @executor_factory
+          @executor = @executor_factory.call
           @cf.new_connection(@executor)
         else
           @cf.new_connection
         end
       end
+    end
+
+    # @private
+    def maybe_shut_down_executor
+      @executor.shutdown if @executor
     end
 
     # Makes it easier to construct executor factories.
