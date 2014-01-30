@@ -5,10 +5,6 @@
 `MarchHare::Session#close` now will always shut down the custom
 executor service it was using, if any.
 
-### Ruby 1.8 Support Dropped
-
-March Hare no longer officially supports Ruby 1.8.
-
 
 ## Changes Between 2.0.x and 2.1.0
 
