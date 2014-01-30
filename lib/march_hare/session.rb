@@ -127,6 +127,7 @@ module MarchHare
         ch.close
       end
 
+      @executor.shutdown if @executor
       @connection.close
     end
 
@@ -379,8 +380,9 @@ module MarchHare
     # @private
     def new_connection
       converting_rjc_exceptions_to_ruby do
+        @executor = @executor_factory.call
         if @executor_factory
-          @cf.new_connection(@executor_factory.call)
+          @cf.new_connection(@executor)
         else
           @cf.new_connection
         end
