@@ -195,7 +195,7 @@ module MarchHare
 
       @connection = converting_rjc_exceptions_to_ruby do
         reconnecting_on_network_failures(ms) do
-          self.new_connection
+          self.new_connection_impl
         end
       end
       @thread_pool = ThreadPools.dynamically_growing
