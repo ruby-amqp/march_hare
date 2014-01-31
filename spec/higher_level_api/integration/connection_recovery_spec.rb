@@ -32,6 +32,23 @@ describe "Connection recovery" do
     q.purge
   end
 
+  def ensure_queue_binding_recovery(x, q, routing_key = "")
+    q.purge
+    x.publish("msg", :routing_key => routing_key)
+    sleep 0.2
+    q.message_count.should == 1
+    q.purge
+  end
+
+  def ensure_exchange_binding_recovery(ch, source, destination, routing_key = "")
+    q  = ch.queue("", :exclusive => true)
+    q.bind(destination, :routing_key => routing_key)
+
+    source.publish("msg", :routing_key => routing_key)
+    q.message_count.should == 1
+    q.delete
+  end
+
   #
   # Examples
   #
@@ -134,6 +151,38 @@ describe "Connection recovery" do
       wait_for_recovery
       ch.should be_open
       ensure_queue_recovery(ch, q)
+    end
+  end
+
+  it "recovers queue bindings" do
+    with_open do |c|
+      ch = c.create_channel
+      x  = ch.fanout("amq.fanout")
+      q  = ch.queue("", :exclusive => true)
+      q.bind(x)
+      close_all_connections!
+      sleep 0.1
+      c.should_not be_open
+
+      wait_for_recovery
+      ch.should be_open
+      ensure_queue_binding_recovery(x, q)
+    end
+  end
+
+  it "recovers exchange bindings" do
+    with_open do |c|
+      ch = c.create_channel
+      x  = ch.fanout("amq.fanout")
+      x2 = ch.fanout("bunny.tests.recovery.fanout")
+      x2.bind(x)
+      close_all_connections!
+      sleep 0.1
+      c.should_not be_open
+
+      wait_for_recovery
+      ch.should be_open
+      ensure_exchange_binding_recovery(ch, x, x2)
     end
   end
 end
