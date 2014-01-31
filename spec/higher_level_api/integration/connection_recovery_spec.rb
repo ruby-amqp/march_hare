@@ -66,4 +66,20 @@ describe "Connection recovery" do
       ch.prefetch.should == 11
     end
   end
+
+
+  it "recovers publisher confirms setting" do
+    with_open do |c|
+      ch = c.create_channel
+      ch.confirm_select
+      ch.should be_using_publisher_confirms
+      close_all_connections!
+      sleep 0.1
+      c.should_not be_open
+
+      wait_for_recovery
+      ch.should be_open
+      ch.should be_using_publisher_confirms
+    end
+  end
 end
