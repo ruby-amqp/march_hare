@@ -780,6 +780,12 @@ module MarchHare
       end
     end
 
+    # @return [Boolean] true if publisher confirms are enabled for this channel
+    def using_publisher_confirms?
+      !!@confirm_mode
+    end
+    alias uses_publisher_confirms? using_publisher_confirms?
+
     # Waits until all outstanding publisher confirms arrive.
     #
     # Takes an optional timeout in milliseconds. Will raise
