@@ -82,4 +82,19 @@ describe "Connection recovery" do
       ch.should be_using_publisher_confirms
     end
   end
+
+  it "recovers transactionality setting" do
+    with_open do |c|
+      ch = c.create_channel
+      ch.tx_select
+      ch.should be_using_tx
+      close_all_connections!
+      sleep 0.1
+      c.should_not be_open
+
+      wait_for_recovery
+      ch.should be_open
+      ch.should be_using_tx
+    end
+  end
 end
