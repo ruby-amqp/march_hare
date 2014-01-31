@@ -51,4 +51,19 @@ describe "Connection recovery" do
       ch2.should be_open
     end
   end
+
+  it "recovers basic.qos prefetch setting" do
+    with_open do |c|
+      ch = c.create_channel
+      ch.prefetch = 11
+      ch.prefetch.should == 11
+      close_all_connections!
+      sleep 0.1
+      c.should_not be_open
+
+      wait_for_recovery
+      ch.should be_open
+      ch.prefetch.should == 11
+    end
+  end
 end
