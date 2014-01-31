@@ -627,6 +627,11 @@ module MarchHare
       basic_qos(n)
     end
 
+    # @return [Integer] Active basic.qos prefetch setting.
+    def prefetch
+      @prefetch_count || 0
+    end
+
     # Acknowledges a message. Acknowledged messages are completely removed from the queue.
     #
     # @param [Integer] delivery_tag Delivery tag to acknowledge
