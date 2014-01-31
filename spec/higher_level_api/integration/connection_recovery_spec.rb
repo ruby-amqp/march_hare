@@ -107,10 +107,26 @@ describe "Connection recovery" do
     end
   end
 
-  it "recovers client queues" do
+  it "recovers client-named queues" do
     with_open do |c|
       ch = c.create_channel
-      q  = ch.queue("bunny.tests.recovery.client-named#{rand}", :exclusive => true)
+      q  = ch.queue("bunny.tests.recovery.client-named#{rand}")
+      close_all_connections!
+      sleep 0.1
+      c.should_not be_open
+
+      wait_for_recovery
+      ch.should be_open
+      ensure_queue_recovery(ch, q)
+      q.delete
+    end
+  end
+
+
+  it "recovers server-named queues" do
+    with_open do |c|
+      ch = c.create_channel
+      q  = ch.queue("", :exclusive => true)
       close_all_connections!
       sleep 0.1
       c.should_not be_open
