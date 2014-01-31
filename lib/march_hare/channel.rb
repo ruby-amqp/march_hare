@@ -614,10 +614,7 @@ module MarchHare
     end
 
     def qos(options={})
-      if options.size == 1 && options[:prefetch_count]
-      then basic_qos(options[:prefetch_count])
-      else basic_qos(options.fetch(:prefetch_size, 0), options.fetch(:prefetch_count, 0), options.fetch(:global, false))
-      end
+      basic_qos(options.fetch(:prefetch_count, 0))
     end
 
     # Sets how many messages will be given to consumers on this channel before they
