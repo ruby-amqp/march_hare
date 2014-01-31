@@ -23,6 +23,15 @@ describe "Connection recovery" do
     end
   end
 
+  def ensure_queue_recovery(ch, q)
+    q.purge
+    x = ch.default_exchange
+    x.publish("msg", :routing_key => q.name)
+    sleep 0.2
+    q.message_count.should == 1
+    q.purge
+  end
+
   #
   # Examples
   #
@@ -95,6 +104,20 @@ describe "Connection recovery" do
       wait_for_recovery
       ch.should be_open
       ch.should be_using_tx
+    end
+  end
+
+  it "recovers client queues" do
+    with_open do |c|
+      ch = c.create_channel
+      q  = ch.queue("bunny.tests.recovery.client-named#{rand}", :exclusive => true)
+      close_all_connections!
+      sleep 0.1
+      c.should_not be_open
+
+      wait_for_recovery
+      ch.should be_open
+      ensure_queue_recovery(ch, q)
     end
   end
 end
