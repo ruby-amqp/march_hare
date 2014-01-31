@@ -816,6 +816,12 @@ module MarchHare
       end
     end
 
+    # @return [Boolean] true if transactions are enabled for this channel
+    def using_tx?
+      !!@tx_mode
+    end
+    alias uses_tx? using_tx?
+
     # Commits a transaction
     def tx_commit
       converting_rjc_exceptions_to_ruby do
