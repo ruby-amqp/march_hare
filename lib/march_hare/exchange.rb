@@ -28,6 +28,7 @@ module MarchHare
     # @options opts :durable [Boolean] (false) Will the exchange be durable?
     # @options opts :auto_delete [Boolean] (false) Will the exchange be auto-deleted?
     # @options opts :passive [Boolean] (false) Should passive declaration be used?
+    # @options opts :internal [Boolean] (false) Will the exchange be internal?
     #
     # @see MarchHare::Channel#default_exchange
     # @see MarchHare::Channel#fanout
@@ -136,6 +137,12 @@ module MarchHare
       @name.empty? || @name.start_with?("amq.")
     end
 
+    # @return [Boolean] true if this exchange is internal (used solely for exchange-to-exchange
+    #                   bindings and cannot be published to by clients)
+    def internal?
+      !!@options[:internal]
+    end
+
     # Waits until all outstanding publisher confirms on the channel
     # arrive.
     #
@@ -156,7 +163,11 @@ module MarchHare
       unless predefined?
         if @options[:passive]
         then @channel.exchange_declare_passive(@name)
-        else @channel.exchange_declare(@name, @options[:type].to_s, @options[:durable], @options[:auto_delete], @options[:arguments])
+        else @channel.exchange_declare(@name, @options[:type].to_s,
+            @options[:durable],
+            @options[:auto_delete],
+            @options[:internal],
+            @options[:arguments])
         end
       end
     end

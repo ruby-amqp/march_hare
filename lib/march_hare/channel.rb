@@ -400,8 +400,8 @@ module MarchHare
     #
     # @return RabbitMQ response
     # @see http://rubymarchhare.info/articles/echanges.html Exchanges and Publishing guide
-    def exchange_declare(name, type, durable = false, auto_delete = false, arguments = nil)
-      @delegate.exchange_declare(name, type, durable, auto_delete, arguments)
+    def exchange_declare(name, type, durable = false, auto_delete = false, internal = false, arguments = nil)
+      @delegate.exchange_declare(name, type, durable, auto_delete, internal, arguments)
     end
 
     # Binds an exchange to another exchange using exchange.bind method (RabbitMQ extension)
