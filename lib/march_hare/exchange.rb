@@ -137,6 +137,18 @@ module MarchHare
       @name.empty? || @name.start_with?("amq.")
     end
 
+    # @return [Boolean] true if this exchange was declared as durable (will survive broker restart).
+    # @api public
+    def durable?
+      !!@options[:durable]
+    end # durable?
+
+    # @return [Boolean] true if this exchange was declared as automatically deleted (deleted as soon as last consumer unbinds).
+    # @api public
+    def auto_delete?
+      !!@options[:auto_delete]
+    end # auto_delete?
+
     # @return [Boolean] true if this exchange is internal (used solely for exchange-to-exchange
     #                   bindings and cannot be published to by clients)
     def internal?
