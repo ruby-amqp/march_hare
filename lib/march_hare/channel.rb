@@ -400,8 +400,8 @@ module MarchHare
     #
     # @return RabbitMQ response
     # @see http://rubymarchhare.info/articles/echanges.html Exchanges and Publishing guide
-    def exchange_declare(name, type, durable = false, auto_delete = false, arguments = nil)
-      @delegate.exchange_declare(name, type, durable, auto_delete, arguments)
+    def exchange_declare(name, type, durable = false, auto_delete = false, internal = false, arguments = nil)
+      @delegate.exchange_declare(name, type, durable, auto_delete, internal, arguments)
     end
 
     # Binds an exchange to another exchange using exchange.bind method (RabbitMQ extension)
@@ -614,10 +614,7 @@ module MarchHare
     end
 
     def qos(options={})
-      if options.size == 1 && options[:prefetch_count]
-      then basic_qos(options[:prefetch_count])
-      else basic_qos(options.fetch(:prefetch_size, 0), options.fetch(:prefetch_count, 0), options.fetch(:global, false))
-      end
+      basic_qos(options.fetch(:prefetch_count, 0))
     end
 
     # Sets how many messages will be given to consumers on this channel before they
@@ -628,6 +625,11 @@ module MarchHare
     # @see http://rubymarchhare.info/articles/queues.html Queues and Consumers guide
     def prefetch=(n)
       basic_qos(n)
+    end
+
+    # @return [Integer] Active basic.qos prefetch setting.
+    def prefetch
+      @prefetch_count || 0
     end
 
     # Acknowledges a message. Acknowledged messages are completely removed from the queue.
@@ -778,6 +780,12 @@ module MarchHare
       end
     end
 
+    # @return [Boolean] true if publisher confirms are enabled for this channel
+    def using_publisher_confirms?
+      !!@confirm_mode
+    end
+    alias uses_publisher_confirms? using_publisher_confirms?
+
     # Waits until all outstanding publisher confirms arrive.
     #
     # Takes an optional timeout in milliseconds. Will raise
@@ -807,6 +815,12 @@ module MarchHare
         @delegate.tx_select
       end
     end
+
+    # @return [Boolean] true if transactions are enabled for this channel
+    def using_tx?
+      !!@tx_mode
+    end
+    alias uses_tx? using_tx?
 
     # Commits a transaction
     def tx_commit

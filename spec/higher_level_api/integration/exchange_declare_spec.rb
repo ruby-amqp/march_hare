@@ -38,6 +38,7 @@ describe "Fanout exchange" do
 
   it "can be declared" do
     exchange = channel.exchange("hot_bunnies.exchanges.fanout1", :type => :fanout)
+    exchange.should_not be_internal
     queue    = channel.queue("", :exclusive => true)
 
     queue.bind(exchange)
@@ -109,5 +110,24 @@ describe "Headers exchange" do
 
     mc, cc = queue.status
     mc.should == 1
+  end
+end
+
+
+
+describe "Internal exchange" do
+  let(:connection) { MarchHare.connect }
+  let(:channel)    { connection.create_channel }
+
+  after :each do
+    channel.close
+    connection.close
+  end
+
+  it "can be declared" do
+    exchange = channel.topic("hot_bunnies.exchanges.topic.internal", :internal => true)
+    exchange.should be_internal
+
+    exchange.delete
   end
 end

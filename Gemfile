@@ -13,4 +13,6 @@ group :development do
   # JRuby-friendly Markdown renderer
   gem "kramdown",  :platform => :jruby
   gem "redcarpet", :platform => :mri
+
+  gem "rabbitmq_http_api_client"
 end

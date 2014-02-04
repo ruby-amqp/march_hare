@@ -1,5 +1,20 @@
 ## Changes Between 2.1.0 and 2.1.1
 
+### Internal Exchanges
+
+Exchanges now can be declared as internal:
+
+``` ruby
+ch = conn.create_channel
+x  = ch.fanout("marchhare.tests.exchanges.internal", :internal => true)
+```
+
+Internal exchanges cannot be published to by clients and are solely used
+for [Exchange-to-Exchange bindings](http://rabbitmq.com/e2e.html) and various
+plugins but apps may still need to bind them. Now it is possible
+to do so with March Hare.
+
+
 ### Custom Executor Shutdown
 
 `MarchHare::Session#close` now will always shut down the custom
