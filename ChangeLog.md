@@ -1,4 +1,4 @@
-## Changes Between 2.1.0 and 2.1.1
+## Changes Between 2.1.1 and 2.1.2
 
 ### Internal Exchanges
 
@@ -14,6 +14,8 @@ for [Exchange-to-Exchange bindings](http://rabbitmq.com/e2e.html) and various
 plugins but apps may still need to bind them. Now it is possible
 to do so with March Hare.
 
+
+## Changes Between 2.1.0 and 2.1.1
 
 ### Custom Executor Shutdown
 
