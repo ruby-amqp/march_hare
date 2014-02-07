@@ -1,5 +1,9 @@
 ## Changes Between 2.1.x and 2.2.0
 
+### RabbitMQ Java Client Upgrade
+
+RabbitMQ Java client dependency has been updated to `3.2.3`.
+
 ### Internal Exchanges
 
 Exchanges now can be declared as internal:
