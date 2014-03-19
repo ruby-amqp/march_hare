@@ -129,6 +129,7 @@ module MarchHare
       # from having to worry about this. MK.
       @consumers      = JavaConcurrent::ConcurrentHashMap.new
       @shutdown_hooks = Array.new
+      @confirm_hooks  = Array.new
       @recoveries_counter = JavaConcurrent::AtomicInteger.new(0)
 
       on_shutdown do |ch, cause|
@@ -188,6 +189,7 @@ module MarchHare
 
       self.recover_prefetch_setting
       self.recover_confirm_mode
+      self.recover_confirm_hooks
       self.recover_tx_mode
       self.recover_exchanges
       # # this includes bindings recovery
@@ -205,6 +207,13 @@ module MarchHare
     def recover_shutdown_hooks
       @shutdown_hooks.each do |sh|
         @delegate.add_shutdown_listener(sh)
+      end
+    end
+
+    # @private
+    def recover_confirm_hooks
+      @confirm_hooks.each do |ch|
+        @delegate.add_confirm_listener(ch)
       end
     end
 
@@ -853,7 +862,9 @@ module MarchHare
     # Defines a publisher confirm handler
     # @see http://rubymarchhare.info/articles/exchanges.html Exchanges and Publishers guide
     def on_confirm(&block)
-      self.add_confirm_listener(BlockConfirmListener.from(block))
+      ch = BlockConfirmListener.from(block)
+      self.add_confirm_listener(ch)
+      @confirm_hooks << ch
     end
 
     def method_missing(selector, *args)
