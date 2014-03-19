@@ -1,5 +1,11 @@
 ## Changes Between 2.1.x and 2.2.0
 
+### Confirm Hooks Recovery
+
+Confirm hooks (callbacks) are now recovered automatically.
+
+Contributed by Noah Magram.
+
 ### RabbitMQ Java Client Upgrade
 
 RabbitMQ Java client dependency has been updated to `3.2.4`.
