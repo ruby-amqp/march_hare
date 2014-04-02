@@ -845,14 +845,6 @@ module MarchHare
       end
     end
 
-    # Enables or disables channel flow. This feature id deprecated
-    # in RabbitMQ.
-    def channel_flow(active)
-      converting_rjc_exceptions_to_ruby do
-        @delegate.channel_flow(active)
-      end
-    end
-
     # Defines a returned message handler.
     # @see http://rubymarchhare.info/articles/exchanges.html Exchanges and Publishers guide
     def on_return(&block)
