@@ -108,9 +108,7 @@ module MarchHare
       when com.rabbitmq.client.AlreadyClosedException then
         ChannelAlreadyClosed.new(e.reason)
       when com.rabbitmq.client.ShutdownSignalException then
-        cmd = e.reason
-
-        exception_for_protocol_method(cmd.method)
+        exception_for_protocol_method(e.reason)
       else
         e
       end
