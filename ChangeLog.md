@@ -1,5 +1,11 @@
 ## Changes Between 2.1.x and 2.2.0
 
+### Client-side Flow Control Removed
+
+`MarchHare::Channel#channel_flow` is removed. Client-side flow control
+has been deprecated for some time and is now removed in the Java client.
+
+
 ### Confirm Hooks Recovery
 
 Confirm hooks (callbacks) are now recovered automatically.
