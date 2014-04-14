@@ -12,7 +12,7 @@ describe "Connection recovery" do
   end
 
   def wait_for_recovery
-    sleep 0.5
+    sleep 1.0
   end
 
   def with_open(c = MarchHare.connect(:network_recovery_interval => 0.2), &block)
@@ -183,6 +183,74 @@ describe "Connection recovery" do
       wait_for_recovery
       ch.should be_open
       ensure_exchange_binding_recovery(ch, x, x2)
+    end
+  end
+
+  it "recovers consumers" do
+    with_open do |c|
+      delivered = false
+
+      ch = c.create_channel
+      q  = ch.queue("", :exclusive => true)
+      q.subscribe do |_, _, _|
+        delivered = true
+      end
+      close_all_connections!
+      sleep 0.1
+      c.should_not be_open
+
+      wait_for_recovery
+      ch.should be_open
+
+      q.publish("")
+      sleep 0.5
+      expect(delivered).to be_true
+    end
+  end
+
+  it "recovers all consumers" do
+    n = 1024
+
+    with_open do |c|
+      ch = c.create_channel
+      q  = ch.queue("", :exclusive => true)
+      n.times do
+        q.subscribe do |_, _, _|
+          delivered = true
+        end
+      end
+      close_all_connections!
+      sleep 0.1
+      c.should_not be_open
+
+      wait_for_recovery
+      ch.should be_open
+
+      q.consumer_count.should == n
+    end
+  end
+
+  it "recovers all queues" do
+    n = 256
+
+    qs = []
+
+    with_open do |c|
+      ch = c.create_channel
+
+      n.times do
+        qs << ch.queue("", :exclusive => true)
+      end
+      close_all_connections!
+      sleep 0.1
+      c.should_not be_open
+
+      wait_for_recovery
+      ch.should be_open
+
+      qs.each do |q|
+        ch.queue_declare_passive(q.name)
+      end
     end
   end
 end
