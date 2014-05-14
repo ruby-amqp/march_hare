@@ -97,6 +97,8 @@ module MarchHare
   class Exceptions
     def self.convert(e, unwrap_io_exception = true)
       case e
+      when java.net.SocketException then
+        ChannelAlreadyClosed.new(e.message)
       when java.io.IOException then
         c = e.cause
 
