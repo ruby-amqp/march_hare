@@ -100,10 +100,10 @@ module MarchHare
       when java.io.IOException then
         c = e.cause
 
-        if unwrap_io_exception
+        if c && unwrap_io_exception
           convert(c, false)
         else
-          c
+          IOError.new
         end
       when com.rabbitmq.client.AlreadyClosedException then
         ChannelAlreadyClosed.new(e.reason)
