@@ -32,8 +32,8 @@ transports more than a terabyte of data over RabbitMQ every day, it
 has been around as an open source project since mid-2011 and has
 reached 2.0 in late 2013.
 
-It is also based on the RabbitMQ Java client, which is an officially
-supported client and is considered to be a reference implementation.
+It is based on the RabbitMQ Java client, which is officially
+supported and is considered to be reference implementation.
 
 
 ## Installation, Dependency
