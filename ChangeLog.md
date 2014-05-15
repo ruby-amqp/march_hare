@@ -1,5 +1,10 @@
 ## Changes Between 2.1.x and 2.2.0
 
+### IOExceptions Conversion Fix
+
+Causeless IOExceptions and SocketExceptions thrown by the Java client are
+correctly converted to `IOError` in Ruby land.
+
 ### Client-side Flow Control Removed
 
 `MarchHare::Channel#channel_flow` is removed. Client-side flow control
