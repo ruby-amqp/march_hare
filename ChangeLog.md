@@ -14,7 +14,7 @@ Contributed by Noah Magram.
 
 ### RabbitMQ Java Client Upgrade
 
-RabbitMQ Java client dependency has been updated to `3.3.0`.
+RabbitMQ Java client dependency has been updated to `3.3.x`.
 
 ### Internal Exchanges
 
