@@ -44,7 +44,7 @@ supported client and is considered to be a reference implementation.
 
 ### With Bundler
 
-    gem "march_hare", "~> 2.0.0"
+    gem "march_hare", "~> 2.2.0"
 
 
 ## Documentation
