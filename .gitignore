@@ -9,3 +9,4 @@ doc/*
 .yardoc/*
 debug/*
 deploy.docs.sh
+.ruby-version
