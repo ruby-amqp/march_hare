@@ -1,3 +1,10 @@
+## Changes Between 2.2.x and 2.3.0
+
+### RabbitMQ Java Client Upgrade
+
+RabbitMQ Java client dependency has been updated to `3.3.4`.
+
+
 ## Changes Between 2.1.x and 2.2.0
 
 ### IOExceptions Conversion Fix
