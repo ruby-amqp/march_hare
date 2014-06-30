@@ -37,6 +37,7 @@ module MarchHare
     # @option options [String] :vhost ("/") Virtual host to use
     # @option options [Integer] :heartbeat (600) Heartbeat interval. 0 means no heartbeat.
     # @option options [Boolean] :tls (false) Set to true to use TLS/SSL connection. This will switch port to 5671 by default.
+    # @option options [java.util.concurrent.ThreadFactory] :thread_factory Thread factory RabbitMQ Java client will use (useful in restricted PaaS platforms such as GAE)
     #
     # @see http://rubymarchhare.info/articles/connecting.html Connecting to RabbitMQ guide
     def self.connect(options={})
