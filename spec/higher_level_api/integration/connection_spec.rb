@@ -35,7 +35,7 @@ describe "MarchHare.connect" do
   context "when connection fails due to RabbitMQ node not running" do
     it "raises an exception" do
       lambda {
-        MarchHare.connect(:hostname => "hotbunnies.info")
+        MarchHare.connect(:hostname => "rubymarchhare.info")
       }.should raise_error(MarchHare::ConnectionRefused)
     end
   end
