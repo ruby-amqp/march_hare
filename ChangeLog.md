@@ -17,7 +17,7 @@ end
 MarchHare.connect(:exception_handler => ExceptionHandler.new)
 ```
 
-A thread factory is an object that conforms to the `com.rabbitmq.client.ExceptionHandler`
+An exception handler is an object that conforms to the `com.rabbitmq.client.ExceptionHandler`
 interface.
 
 
