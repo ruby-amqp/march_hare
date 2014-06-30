@@ -54,7 +54,8 @@ module MarchHare
       cf.requested_heartbeat = heartbeat_from(options)          if include_heartbeat?(options)
       cf.connection_timeout  = connection_timeout_from(options) if include_connection_timeout?(options)
 
-      cf.thread_factory      = thread_factory_from(options) if include_thread_factory?(options)
+      cf.thread_factory      = thread_factory_from(options)    if include_thread_factory?(options)
+      cf.exception_handler   = exception_handler_from(options) if include_exception_handler?(options)
 
       tls = (options[:ssl] || options[:tls])
       case tls
@@ -359,6 +360,16 @@ module MarchHare
     # @private
     def self.include_thread_factory?(opts)
       !!opts[:thread_factory]
+    end
+
+    # @private
+    def self.exception_handler_from(opts)
+      opts[:exception_handler]
+    end
+
+    # @private
+    def self.include_exception_handler?(opts)
+      !!opts[:exception_handler]
     end
 
     # Executes a block, catching Java exceptions RabbitMQ Java client throws and

@@ -1,5 +1,7 @@
 require "spec_helper"
 
+java_import java.util.concurrent.CountDownLatch
+java_import java.util.concurrent.TimeUnit
 
 describe "MarchHare.connect" do
 
@@ -77,7 +79,7 @@ describe "MarchHare.connect" do
     class ThreadFactory
       include java.util.concurrent.ThreadFactory
 
-      def new_thread(runnable)
+      def newThread(runnable)
         java.lang.Thread.new(runnable)
       end
     end
@@ -85,6 +87,30 @@ describe "MarchHare.connect" do
     c  = MarchHare.connect(:thread_factory => ThreadFactory.new)
     c.should be_connected
     ch = c.create_channel
+    c.close
+  end
+
+  it "lets you specify exception handler" do
+    class ExceptionHandler < com.rabbitmq.client.impl.DefaultExceptionHandler
+      include com.rabbitmq.client.ExceptionHandler
+
+      def handleConsumerException(ch, ex, consumer, tag, method_name)
+        # different from the default in that it does not print
+        # anything. MK.
+      end
+    end
+
+    c  = MarchHare.connect(:exception_handler => ExceptionHandler.new)
+    ch = c.create_channel
+    q  = ch.queue("", exclusive: true)
+    q.subscribe do |*args|
+      raise "oops"
+    end
+
+    x  = ch.default_exchange
+    x.publish("", :routing_key => q.name)
+    sleep 0.5
+
     c.close
   end
 end
