@@ -72,6 +72,21 @@ describe "MarchHare.connect" do
     c.should be_connected
     c.close
   end
+
+  it "lets you specify thread factory (e.g. for GAE)" do
+    class ThreadFactory
+      include java.util.concurrent.ThreadFactory
+
+      def new_thread(runnable)
+        java.lang.Thread.new(runnable)
+      end
+    end
+
+    c  = MarchHare.connect(:thread_factory => ThreadFactory.new)
+    c.should be_connected
+    ch = c.create_channel
+    c.close
+  end
 end
 
 
