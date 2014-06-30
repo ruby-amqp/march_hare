@@ -20,7 +20,7 @@ interface:
 class ThreadFactory
   include java.util.concurrent.ThreadFactory
 
-  def new_thread(runnable)
+  def newThread(runnable)
     # e.g. java.lang.Thread.new(runnable)
   end
 end
