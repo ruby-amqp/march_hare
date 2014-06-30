@@ -1,5 +1,31 @@
 ## Changes Between 2.2.x and 2.3.0
 
+### Custom Thread Factories Support
+
+Certain environments (e.g. Google App Engine) restrict thread modification.
+RabbitMQ Java client 3.3 can use a custom factory in those environments.
+
+March Hare now exposes this functionality to Ruby in a straightforward way:
+
+``` ruby
+java_import com.google.appengine.api.ThreadManager
+
+MarchHare.connect(:thread_factory => ThreadManager.background_thread_factory)
+```
+
+A thread factory is an object that conforms to the [j.u.c.ThreadFactory](java.util.concurrent.ThreadFactory)
+interface:
+
+``` ruby
+class ThreadFactory
+  include java.util.concurrent.ThreadFactory
+
+  def new_thread(runnable)
+    # e.g. java.lang.Thread.new(runnable)
+  end
+end
+```
+
 ### RabbitMQ Java Client Upgrade
 
 RabbitMQ Java client dependency has been updated to `3.3.4`.
