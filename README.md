@@ -65,7 +65,7 @@ that demonstrate various parts of the API.
 
 ## Supported Ruby Versions
 
-March Hare supports JRuby 1.7+ in 1.9 and 1.8 modes.
+March Hare supports JRuby 1.7+ in 1.9 mode.
 
 
 ## Supported JDK Versions
