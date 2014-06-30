@@ -1,5 +1,26 @@
 ## Changes Between 2.2.x and 2.3.0
 
+### Custom Exception Handler Support
+
+March Hare now provides a way to define a custom (unexpected) exception handler
+RabbitMQ Java client will use:
+
+``` ruby
+class ExceptionHandler < com.rabbitmq.client.impl.DefaultExceptionHandler
+  include com.rabbitmq.client.ExceptionHandler
+
+  def handleConsumerException(ch, ex, consumer, tag, method_name)
+    # ...
+  end
+end
+
+MarchHare.connect(:exception_handler => ExceptionHandler.new)
+```
+
+A thread factory is an object that conforms to the `com.rabbitmq.client.ExceptionHandler`
+interface.
+
+
 ### Custom Thread Factories Support
 
 Certain environments (e.g. Google App Engine) restrict thread modification.
