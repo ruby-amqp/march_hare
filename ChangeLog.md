@@ -34,7 +34,7 @@ java_import com.google.appengine.api.ThreadManager
 MarchHare.connect(:thread_factory => ThreadManager.background_thread_factory)
 ```
 
-A thread factory is an object that conforms to the [j.u.c.ThreadFactory](java.util.concurrent.ThreadFactory)
+A thread factory is an object that conforms to the [j.u.c.ThreadFactory](http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ThreadFactory.html)
 interface:
 
 ``` ruby
