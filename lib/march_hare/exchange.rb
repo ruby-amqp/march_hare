@@ -75,9 +75,9 @@ module MarchHare
     def publish(body, opts = {})
       options = {:routing_key => '', :mandatory => false}.merge(opts)
       @channel.basic_publish(@name,
-                             options[:routing_key],
-                             options[:mandatory],
-                             options.fetch(:properties, Hash.new),
+                             options.delete(:routing_key),
+                             options.delete(:mandatory),
+                             options.fetch(:properties, options),
                              body.to_java_bytes)
     end
 
