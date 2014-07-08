@@ -1,3 +1,78 @@
+## Changes Between 2.3.x and 2.4.0
+
+### MarchHare::Exchange#publish Options Bunny Compatibility
+
+`MarchHare::Exchange#publish` now accepts property options the same way
+as [Bunny](http://rubybunny.info) does (the old way with the `:properties`
+option is still supported). This improves March Hare and Bunny API compatibility.
+
+The new way:
+
+``` ruby
+exchange.publish(payload,
+                 :app_id      => "hotbunnies.tests",
+                 :persistent  => true,
+                 :priority    => 8,
+                 :type        => "kinda.checkin",
+                 # headers table keys can be anything
+                 :headers     => {
+                   "coordinates" => {
+                     "latitude"  => 59.35,
+                     "longitude" => 18.066667
+                   },
+                   "time"         => @now,
+                   "participants" => 11,
+                   "venue"        => "Stockholm",
+                   "true_field"   => true,
+                   "false_field"  => false,
+                   "nil_field"    => nil,
+                   "ary_field"    => ["one", 2.0, 3, [{ "abc" => 123 }]]
+                 },
+                 :timestamp        => @now,
+                 :reply_to         => "a.sender",
+                 :correlation_id   => "r-1",
+                 :message_id       => "m-1",
+                 :content_type     => "application/octet-stream",
+                 # just an example. MK.
+                 :content_encoding => "zip/zap",
+                 :routing_key    => "hotbunnies.key")
+```
+
+The old way:
+
+``` ruby
+exchange.publish(payload,
+                 :properties => {
+                   :app_id      => "hotbunnies.tests",
+                   :persistent  => true,
+                   :priority    => 8,
+                   :type        => "kinda.checkin",
+                   # headers table keys can be anything
+                   :headers     => {
+                     "coordinates" => {
+                       "latitude"  => 59.35,
+                       "longitude" => 18.066667
+                     },
+                     "time"         => @now,
+                     "participants" => 11,
+                     "venue"        => "Stockholm",
+                     "true_field"   => true,
+                     "false_field"  => false,
+                     "nil_field"    => nil,
+                     "ary_field"    => ["one", 2.0, 3, [{ "abc" => 123 }]]
+                   },
+                   :timestamp        => @now,
+                   :reply_to         => "a.sender",
+                   :correlation_id   => "r-1",
+                   :message_id       => "m-1",
+                   :content_type     => "application/octet-stream",
+                   # just an example. MK.
+                   :content_encoding => "zip/zap"
+                 },
+                 :routing_key    => "hotbunnies.key")
+```
+
+
 ## Changes Between 2.2.x and 2.3.0
 
 ### Custom Exception Handler Support
