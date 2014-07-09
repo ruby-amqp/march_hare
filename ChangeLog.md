@@ -72,6 +72,8 @@ exchange.publish(payload,
                  :routing_key    => "hotbunnies.key")
 ```
 
+Contributed by Devin Christensen.
+
 
 ## Changes Between 2.2.x and 2.3.0
 
