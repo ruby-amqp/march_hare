@@ -83,6 +83,8 @@ Contributed by Devin Christensen.
 * Error 320 (connection-forced) is now properly handled (#53)
 * Fixed a race condition that could cause subscriptions utilizing manual acks to fail immediately after recovery (#54)
 
+Contributed by Chris Heald.
+
 ## Changes Between 2.2.x and 2.3.0
 
 ### Custom Exception Handler Support
