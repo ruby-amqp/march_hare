@@ -268,7 +268,7 @@ module MarchHare
     def recover_consumers
       @consumers.values.each do |c|
         begin
-          self.unregister_consumer(c)
+          self.unregister_consumer(c.consumer_tag)
           c.recover_from_network_failure
         rescue Exception => e
           # TODO: logger
