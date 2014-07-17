@@ -2,6 +2,8 @@
 
 ### MarchHare::Exchange#publish Options Bunny Compatibility
 
+#### Features
+
 `MarchHare::Exchange#publish` now accepts property options the same way
 as [Bunny](http://rubybunny.info) does (the old way with the `:properties`
 option is still supported). This improves March Hare and Bunny API compatibility.
@@ -74,6 +76,12 @@ exchange.publish(payload,
 
 Contributed by Devin Christensen.
 
+#### Bugfixes
+
+* Consumers are now properly unregistered from their owning channel during recovery (#52)
+* Sessions in recovery are no longer reported active until recovery has fully completed (#55)
+* Error 320 (connection-forced) is now properly handled (#53)
+* Fixed a race condition that could cause subscriptions utilizing manual acks to fail immediately after recovery (#54)
 
 ## Changes Between 2.2.x and 2.3.0
 
