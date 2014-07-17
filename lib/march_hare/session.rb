@@ -197,13 +197,13 @@ module MarchHare
       # recovering immediately makes little sense. Wait a bit first. MK.
       java.lang.Thread.sleep(ms)
 
-      @connection = converting_rjc_exceptions_to_ruby do
+      new_connection = converting_rjc_exceptions_to_ruby do
         reconnecting_on_network_failures(ms) do
           self.new_connection_impl
         end
       end
       @thread_pool = ThreadPools.dynamically_growing
-      self.recover_shutdown_hooks
+      self.recover_shutdown_hooks(new_connection)
 
       # sorting channels by id means that the cases like the following:
       #
@@ -219,18 +219,20 @@ module MarchHare
       # in the order the user expects and before bindings.
       @channels.sort_by {|id, _| id}.each do |id, ch|
         begin
-          ch.automatically_recover(self, @connection)
+          ch.automatically_recover(self, new_connection)
         rescue Exception, java.io.IOException => e
           # TODO: logging
           $stderr.puts e
         end
       end
+
+      @connection = new_connection
     end
 
     # @private
-    def recover_shutdown_hooks
+    def recover_shutdown_hooks(connection)
       @shutdown_hooks.each do |sh|
-        @connection.add_shutdown_listener(sh)
+        connection.add_shutdown_listener(sh)
       end
     end
 
