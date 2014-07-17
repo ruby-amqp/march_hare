@@ -89,7 +89,8 @@ module MarchHare
   class ChannelAlreadyClosed < Exception
   end
 
-
+  class ConnectionForced < Exception
+  end
 
   # Converts RabbitMQ Java client exceptions
   #
