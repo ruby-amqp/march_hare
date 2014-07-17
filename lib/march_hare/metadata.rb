@@ -7,6 +7,11 @@ module MarchHare
       @consumer_tag = consumer_tag
       @envelope     = envelope
       @properties   = properties
+
+      # Prime the delivery tag when the instance is created. If #delivery_tag is first
+      # called after a recovery, then it'll fail to mismatch and will allow an invalid
+      # ack/nack, which will cause the channel to unexpectedly close
+      @delivery_tag = delivery_tag
     end
 
     def ack(options={})
