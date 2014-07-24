@@ -51,7 +51,7 @@ module MarchHare
       cf.username           = username_from(options) if include_username?(options)
       cf.password           = password_from(options) if include_password?(options)
 
-      cf.requested_heartbeat = heartbeat_from(options)          if include_heartbeat?(options)
+      cf.requested_heartbeat = heartbeat_from(options)
       cf.connection_timeout  = connection_timeout_from(options) if include_connection_timeout?(options)
 
       cf.thread_factory      = thread_factory_from(options)    if include_thread_factory?(options)
@@ -321,7 +321,7 @@ module MarchHare
 
     # @private
     def self.heartbeat_from(options)
-      options[:heartbeat_interval] || options[:requested_heartbeat] || ConnectionFactory::DEFAULT_HEARTBEAT
+      options[:heartbeat_interval] || options[:requested_heartbeat] || options[:heartbeat] || ConnectionFactory::DEFAULT_HEARTBEAT
     end
 
     # @private
@@ -342,11 +342,6 @@ module MarchHare
     # @private
     def self.include_password?(options)
       !!(options[:password] || options[:pass])
-    end
-
-    # @private
-    def self.include_heartbeat?(options)
-      !!(options[:heartbeat_interval] || options[:requested_heartbeat] || options[:heartbeat])
     end
 
     # @private
