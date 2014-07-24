@@ -1,3 +1,14 @@
+## Changes Between 2.5.0 and 2.5.1
+
+### Better Bunny Compatibility: the Heartbeat Option
+
+`MarchHare.connect` now accepts `:heartbeat` as an alias for `:heartbeat_requested`
+for better Bunny compatibility (and because API reference accidentally listed it).
+
+GH issue: #57.
+
+
+
 ## Changes Between 2.3.x and 2.4.0
 
 ### Features
