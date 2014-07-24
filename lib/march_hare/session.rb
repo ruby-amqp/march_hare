@@ -35,7 +35,7 @@ module MarchHare
     # @option options [String] :username ("guest") Username
     # @option options [String] :password ("guest") Password
     # @option options [String] :vhost ("/") Virtual host to use
-    # @option options [Integer] :heartbeat (600) Heartbeat interval. 0 means no heartbeat.
+    # @option options [Integer] :requested_heartbeat (580) Heartbeat timeout used. 0 means no heartbeat.
     # @option options [Boolean] :tls (false) Set to true to use TLS/SSL connection. This will switch port to 5671 by default.
     # @option options [java.util.concurrent.ThreadFactory] :thread_factory Thread factory RabbitMQ Java client will use (useful in restricted PaaS platforms such as GAE)
     #
