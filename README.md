@@ -55,7 +55,7 @@ supported and is considered to be reference implementation.
 
 ### Examples
 
-Several [code examples](./examples) are available. Our [test suite](https://github.com/ruby-amqp/march_hare/tree/master/spec/higher_level_api/integration) also has many code examples
+Several [code examples](./examples) are available. Our [test suite](./spec/higher_level_api/integration) also has many code examples
 that demonstrate various parts of the API.
 
 ### Reference
