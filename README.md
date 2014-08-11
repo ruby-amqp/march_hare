@@ -44,7 +44,7 @@ supported and is considered to be reference implementation.
 
 ### With Bundler
 
-    gem "march_hare", "~> 2.3.0"
+    gem "march_hare", "~> 2.5.1"
 
 
 ## Documentation
@@ -55,7 +55,7 @@ supported and is considered to be reference implementation.
 
 ### Examples
 
-Several [code examples](examples) are available. Our [test suite](spec/integration) also has many code examples
+Several [code examples](./examples) are available. Our [test suite](./spec/higher_level_api/integration) also has many code examples
 that demonstrate various parts of the API.
 
 ### Reference
