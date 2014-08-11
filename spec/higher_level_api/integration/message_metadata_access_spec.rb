@@ -14,7 +14,7 @@ describe "A consumer" do
     queue    = channel.queue("", :exclusive => true)
     exchange = channel.exchange("amq.fanout", :type => :fanout)
 
-    queue.bind(exchange, :routing_key => "hotbunnies.key")
+    queue.bind(exchange, :routing_key => "march.hare.key")
 
     @now     = Time.now
     @payload = "Hello, world!"
@@ -34,7 +34,7 @@ describe "A consumer" do
 
     exchange.publish(@payload,
                      :properties => {
-                       :app_id      => "hotbunnies.tests",
+                       :app_id      => "march.hare.tests",
                        :persistent  => true,
                        :priority    => 8,
                        :type        => "kinda.checkin",
@@ -60,10 +60,10 @@ describe "A consumer" do
                        # just an example. MK.
                        :content_encoding => "zip/zap"
                      },
-                     :routing_key    => "hotbunnies.key")
+                     :routing_key    => "march.hare.key")
     latch.await
 
-    @meta.routing_key.should  == "hotbunnies.key"
+    @meta.routing_key.should  == "march.hare.key"
     @meta.content_type.should == "application/octet-stream"
     @meta.content_encoding.should == "zip/zap"
     @meta.priority.should == 8
@@ -89,7 +89,7 @@ describe "A consumer" do
     @meta.message_id.should == "m-1"
     @meta.should_not be_redelivered
 
-    @meta.app_id.should == "hotbunnies.tests"
+    @meta.app_id.should == "march.hare.tests"
     @meta.exchange.should == "amq.fanout"
   end
 
@@ -98,7 +98,7 @@ describe "A consumer" do
     queue    = channel.queue("", :exclusive => true)
     exchange = channel.exchange("amq.fanout", :type => :fanout)
 
-    queue.bind(exchange, :routing_key => "hotbunnies.key")
+    queue.bind(exchange, :routing_key => "march.hare.key")
 
     @now     = Time.now
     @payload = "Hello, world!"
@@ -117,7 +117,7 @@ describe "A consumer" do
     end
 
     exchange.publish(@payload,
-                     :app_id      => "hotbunnies.tests",
+                     :app_id      => "march.hare.tests",
                      :persistent  => true,
                      :priority    => 8,
                      :type        => "kinda.checkin",
@@ -142,10 +142,10 @@ describe "A consumer" do
                      :content_type     => "application/octet-stream",
                      # just an example. MK.
                      :content_encoding => "zip/zap",
-                     :routing_key    => "hotbunnies.key")
+                     :routing_key    => "march.hare.key")
     latch.await
 
-    @meta.routing_key.should  == "hotbunnies.key"
+    @meta.routing_key.should  == "march.hare.key"
     @meta.content_type.should == "application/octet-stream"
     @meta.content_encoding.should == "zip/zap"
     @meta.priority.should == 8
@@ -171,7 +171,7 @@ describe "A consumer" do
     @meta.message_id.should == "m-1"
     @meta.should_not be_redelivered
 
-    @meta.app_id.should == "hotbunnies.tests"
+    @meta.app_id.should == "march.hare.tests"
     @meta.exchange.should == "amq.fanout"
   end
 end
