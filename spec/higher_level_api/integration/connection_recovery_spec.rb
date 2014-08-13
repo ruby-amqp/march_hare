@@ -12,7 +12,7 @@ describe "Connection recovery" do
   end
 
   def wait_for_recovery
-    sleep 1.0
+    sleep 2.0
   end
 
   def with_open(c = MarchHare.connect(:network_recovery_interval => 0.2), &block)
