@@ -1,5 +1,11 @@
 ## Changes Between 2.5.0 and 2.6.0
 
+### Host Lists
+
+It is now possible to pass the `:hosts` option to `MarchHare.connect`. When
+connection to RabbitMQ (including during connection recovery), a random host
+will be chosen from the list.
+
 ### Better Bunny Compatibility: the Heartbeat Option
 
 `MarchHare.connect` now accepts `:heartbeat` as an alias for `:heartbeat_requested`
