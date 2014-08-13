@@ -43,6 +43,8 @@ module MarchHare
     def self.connect(options={})
       cf = ConnectionFactory.new
 
+      @hosts                = hosts_from(options)
+
       cf.uri                = options[:uri]          if options[:uri]
       cf.host               = hostname_from(options) if include_host?(options)
       cf.port               = options[:port].to_i    if options[:port]
@@ -83,7 +85,7 @@ module MarchHare
       # executors cannot be restarted after shutdown,
       # so we really need a factory here. MK.
       @executor_factory = opts[:executor_factory] || build_executor_factory_from(opts)
-      @connection       = self.new_connection_impl
+      @connection       = self.new_connection_impl(@hosts, @host_selection_strategy)
       @channels         = JavaConcurrent::ConcurrentHashMap.new
 
       # should automatic recovery from network failures be used?
@@ -94,6 +96,9 @@ module MarchHare
                                end
       @network_recovery_interval = opts.fetch(:network_recovery_interval, DEFAULT_NETWORK_RECOVERY_INTERVAL)
       @shutdown_hooks            = Array.new
+
+      @default_host_selection_strategy = Proc.new { |hosts| hosts.sample }
+      @host_selection_strategy         = opts[:host_selection_strategy] || @default_host_selection_strategy
 
       if @automatically_recover
         self.add_automatic_recovery_hook
@@ -199,7 +204,7 @@ module MarchHare
 
       new_connection = converting_rjc_exceptions_to_ruby do
         reconnecting_on_network_failures(ms) do
-          self.new_connection_impl
+          self.new_connection_impl(@hosts, @host_selection_strategy)
         end
       end
       @thread_pool = ThreadPools.dynamically_growing
@@ -287,6 +292,11 @@ module MarchHare
     # @private
     def self.hostname_from(options)
       options[:host] || options[:hostname] || ConnectionFactory::DEFAULT_HOST
+    end
+
+    # @private
+    def self.hosts_from(options)
+      options[:hosts] || [hostname_from(options)]
     end
 
     # @private
@@ -399,7 +409,11 @@ module MarchHare
     end
 
     # @private
-    def new_connection_impl
+    def new_connection_impl(hosts, host_selector)
+      if hosts && !hosts.empty?
+        @cf.host = host_selector(hosts)
+      end
+
       converting_rjc_exceptions_to_ruby do
         if @executor_factory
           @executor = @executor_factory.call

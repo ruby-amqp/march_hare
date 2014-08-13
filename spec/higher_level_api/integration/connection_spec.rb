@@ -75,6 +75,16 @@ describe "MarchHare.connect" do
     c.close
   end
 
+  it "lets you specify multiple hosts" do
+    c = MarchHare.connect(:hosts => ["127.0.0.1"])
+    c.should be_connected
+    c.close
+    c.should_not be_connected
+    c.automatically_recover
+    c.should be_connected
+    c.close
+  end
+
   it "lets you specify thread factory (e.g. for GAE)" do
     class ThreadFactory
       include java.util.concurrent.ThreadFactory
