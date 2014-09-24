@@ -388,8 +388,12 @@ module MarchHare
         block.call
       rescue java.net.ConnectException => e
         raise ConnectionRefused.new("Connection to #{@cf.host}:#{@cf.port} refused")
+      rescue java.net.NoRouteToHostException => e
+        raise ConnectionRefused.new("Connection to #{@cf.host}:#{@cf.port} failed: no route to host")
       rescue java.net.UnknownHostException => e
         raise ConnectionRefused.new("Connection to #{@cf.host}:#{@cf.port} refused: host unknown")
+      rescue java.net.SocketException => e
+        raise ConnectionRefused.new("Connection to #{@cf.host}:#{@cf.port} failed")
       rescue com.rabbitmq.client.AuthenticationFailureException => e
         raise AuthenticationFailureError.new(@cf.username, @cf.virtual_host, @cf.password.bytesize)
       rescue com.rabbitmq.client.PossibleAuthenticationFailureException => e
