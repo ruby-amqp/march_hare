@@ -44,7 +44,7 @@ supported and is considered to be reference implementation.
 
 ### With Bundler
 
-    gem "march_hare", "~> 2.5.1"
+    gem "march_hare", "~> 2.6.0"
 
 
 ## Documentation
