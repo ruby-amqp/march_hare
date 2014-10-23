@@ -1,5 +1,10 @@
 ## Changes Between 2.5.0 and 2.6.0
 
+### RabbitMQ Java Client Upgrade
+
+RabbitMQ Java client dependency has been updated to `3.4.x`.
+
+
 ### Host Lists
 
 It is now possible to pass the `:hosts` option to `MarchHare.connect`. When
@@ -38,7 +43,7 @@ The new way:
 
 ``` ruby
 exchange.publish(payload,
-                 :app_id      => "hotbunnies.tests",
+                 :app_id      => "marchhare.tests",
                  :persistent  => true,
                  :priority    => 8,
                  :type        => "kinda.checkin",
@@ -63,7 +68,7 @@ exchange.publish(payload,
                  :content_type     => "application/octet-stream",
                  # just an example. MK.
                  :content_encoding => "zip/zap",
-                 :routing_key    => "hotbunnies.key")
+                 :routing_key    => "marchhare.key")
 ```
 
 The old way:
@@ -71,7 +76,7 @@ The old way:
 ``` ruby
 exchange.publish(payload,
                  :properties => {
-                   :app_id      => "hotbunnies.tests",
+                   :app_id      => "marchhare.tests",
                    :persistent  => true,
                    :priority    => 8,
                    :type        => "kinda.checkin",
@@ -97,7 +102,7 @@ exchange.publish(payload,
                    # just an example. MK.
                    :content_encoding => "zip/zap"
                  },
-                 :routing_key    => "hotbunnies.key")
+                 :routing_key    => "marchhare.key")
 ```
 
 Contributed by Devin Christensen.
