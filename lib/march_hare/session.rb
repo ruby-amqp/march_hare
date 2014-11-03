@@ -43,8 +43,6 @@ module MarchHare
     def self.connect(options={})
       cf = ConnectionFactory.new
 
-      @hosts                = hosts_from(options)
-
       cf.uri                = options[:uri]          if options[:uri]
       cf.host               = hostname_from(options) if include_host?(options)
       cf.port               = options[:port].to_i    if options[:port]
@@ -85,6 +83,11 @@ module MarchHare
       # executors cannot be restarted after shutdown,
       # so we really need a factory here. MK.
       @executor_factory = opts[:executor_factory] || build_executor_factory_from(opts)
+
+      @hosts            = self.class.hosts_from(opts)
+      @default_host_selection_strategy = lambda { |hosts| hosts.sample }
+      @host_selection_strategy         = opts[:host_selection_strategy] || @default_host_selection_strategy
+
       @connection       = self.new_connection_impl(@hosts, @host_selection_strategy)
       @channels         = JavaConcurrent::ConcurrentHashMap.new
 
@@ -96,9 +99,6 @@ module MarchHare
                                end
       @network_recovery_interval = opts.fetch(:network_recovery_interval, DEFAULT_NETWORK_RECOVERY_INTERVAL)
       @shutdown_hooks            = Array.new
-
-      @default_host_selection_strategy = Proc.new { |hosts| hosts.sample }
-      @host_selection_strategy         = opts[:host_selection_strategy] || @default_host_selection_strategy
 
       if @automatically_recover
         self.add_automatic_recovery_hook
@@ -415,7 +415,7 @@ module MarchHare
     # @private
     def new_connection_impl(hosts, host_selector)
       if hosts && !hosts.empty?
-        @cf.host = host_selector(hosts)
+        @cf.host = host_selector.call(hosts)
       end
 
       converting_rjc_exceptions_to_ruby do
