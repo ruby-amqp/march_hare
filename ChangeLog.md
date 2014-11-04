@@ -1,8 +1,18 @@
-## Changes Between 2.5.0 and 2.6.0
+## Changes Between 2.6.0 and 2.7.0
 
 ### RabbitMQ Java Client Upgrade
 
-RabbitMQ Java client dependency has been updated to `3.4.x`.
+RabbitMQ Java client dependency has been updated to `3.4.1`.
+
+### Host List Selection Improvements
+
+Host selection from the list is now randomised.
+
+Contributed by Michael Ries.
+
+### RabbitMQ Java Client Upgrade
+
+RabbitMQ Java client dependency has been updated to `3.4.0`.
 
 
 ### Host Lists
