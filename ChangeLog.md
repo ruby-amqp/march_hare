@@ -10,6 +10,10 @@ Host selection from the list is now randomised.
 
 Contributed by Michael Ries.
 
+
+
+## Changes Between 2.5.0 and 2.6.0
+
 ### RabbitMQ Java Client Upgrade
 
 RabbitMQ Java client dependency has been updated to `3.4.0`.
