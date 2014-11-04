@@ -45,6 +45,7 @@ describe "Connection recovery" do
     q.bind(destination, :routing_key => routing_key)
 
     source.publish("msg", :routing_key => routing_key)
+    ch.wait_for_confirms
     q.message_count.should == 1
     q.delete
   end
@@ -173,6 +174,7 @@ describe "Connection recovery" do
   it "recovers exchange bindings" do
     with_open do |c|
       ch = c.create_channel
+      ch.confirm_select
       x  = ch.fanout("amq.fanout")
       x2 = ch.fanout("bunny.tests.recovery.fanout")
       x2.bind(x)
