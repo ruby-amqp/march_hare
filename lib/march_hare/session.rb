@@ -92,17 +92,14 @@ module MarchHare
       @channels         = JavaConcurrent::ConcurrentHashMap.new
 
       # should automatic recovery from network failures be used?
-      @automatically_recover = if opts[:automatically_recover].nil? && opts[:automatic_recovery].nil?
-                                 true
-                               else
-                                 opts[:automatically_recover] || opts[:automatic_recovery]
-                               end
+      @cf.automatic_recovery_enabled = if opts[:automatically_recover].nil? && opts[:automatic_recovery].nil?
+                                        true
+                                      else
+                                        opts[:automatically_recover] || opts[:automatic_recovery]
+                                      end
+
       @network_recovery_interval = opts.fetch(:network_recovery_interval, DEFAULT_NETWORK_RECOVERY_INTERVAL)
       @shutdown_hooks            = Array.new
-
-      if @automatically_recover
-        self.add_automatic_recovery_hook
-      end
     end
 
     # Opens a new channel.
@@ -176,62 +173,6 @@ module MarchHare
     # Clears all callbacks defined with #on_blocked and #on_unblocked.
     def clear_blocked_connection_callbacks
       @connection.clear_blocked_listeners
-    end
-
-
-    # @private
-    def add_automatic_recovery_hook
-      fn = Proc.new do |_, signal|
-        if !signal.initiated_by_application
-          self.automatically_recover
-        end
-      end
-
-      @automatic_recovery_hook = self.on_shutdown(&fn)
-    end
-
-    # @private
-    def disable_automatic_recovery
-      @connetion.remove_shutdown_listener(@automatic_recovery_hook) if @automatic_recovery_hook
-    end
-
-    # Begins automatic connection recovery (typically only used internally
-    # to recover from network failures)
-    def automatically_recover
-      ms = @network_recovery_interval * 1000
-      # recovering immediately makes little sense. Wait a bit first. MK.
-      java.lang.Thread.sleep(ms)
-
-      new_connection = converting_rjc_exceptions_to_ruby do
-        reconnecting_on_network_failures(ms) do
-          self.new_connection_impl(@hosts, @host_selection_strategy)
-        end
-      end
-      @thread_pool = ThreadPools.dynamically_growing
-      self.recover_shutdown_hooks(new_connection)
-
-      # sorting channels by id means that the cases like the following:
-      #
-      # ch1 = conn.create_channel
-      # ch2 = conn.create_channel
-      #
-      # x   = ch1.topic("logs", :durable => false)
-      # q   = ch2.queue("", :exclusive => true)
-      #
-      # q.bind(x)
-      #
-      # will recover correctly because exchanges and queues will be recovered
-      # in the order the user expects and before bindings.
-      @channels.sort_by {|id, _| id}.each do |id, ch|
-        begin
-          ch.automatically_recover(self, new_connection)
-        rescue Exception, java.io.IOException => e
-          # TODO: logging
-          $stderr.puts e
-        end
-      end
-
-      @connection = new_connection
     end
 
     # @private
