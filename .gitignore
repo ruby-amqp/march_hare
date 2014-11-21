@@ -10,3 +10,4 @@ doc/*
 debug/*
 deploy.docs.sh
 .ruby-version
+.idea
