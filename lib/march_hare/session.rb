@@ -7,6 +7,11 @@ module MarchHare
   java_import com.rabbitmq.client.ConnectionFactory
   java_import com.rabbitmq.client.Connection
   java_import com.rabbitmq.client.BlockedListener
+  java_import com.rabbitmq.client.NullTrustManager
+
+  java_import javax.net.ssl.SSLContext
+  java_import javax.net.ssl.KeyManagerFactory
+  java_import java.security.KeyStore
 
   # Connection to a RabbitMQ node.
   #
@@ -64,6 +69,32 @@ module MarchHare
       when String then
         if options[:trust_manager]
           cf.use_ssl_protocol(tls, options[:trust_manager])
+        elsif options[:keycert] && options[:certificate_password]
+          sslContext = SSLContext.get_instance(tls)
+          certificate_password = options[:certificate_password].to_java.to_char_array
+          begin
+            input_stream = File.new(options[:keycert]).to_inputstream
+            key_store = KeyStore.get_instance('PKCS12')
+            key_store.load(input_stream, certificate_password)
+
+            key_manager_factory = KeyManagerFactory.get_instance("SunX509")
+            key_manager_factory.init(key_store, certificate_password)
+
+            key_managers =  key_manager_factory.get_key_managers
+
+            sslContext.init(key_managers, [NullTrustManager.new].to_java('javax.net.ssl.TrustManager'), nil)
+
+            cf.use_ssl_protocol(sslContext)
+          # catch all exceptions from java
+          rescue Java::JavaLang::Exception => e
+            message = e.message
+            message << "\n"
+            message << e.backtrace.join("\n")
+
+            raise SSLContextException.new(message)
+          ensure
+            input_stream.close if input_stream
+          end  
         else
           cf.use_ssl_protocol(tls)
         end
@@ -72,6 +103,11 @@ module MarchHare
 
       new(cf, options)
     end
+
+
+    class SSLContextException < StandardError
+    end
+
 
     # @return [Array<MarchHare::Channel>] Channels opened on this connection
     attr_reader :channels
