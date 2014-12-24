@@ -98,8 +98,7 @@ module MarchHare
                                         opts[:automatically_recover] || opts[:automatic_recovery]
                                       end
 
-      @cf.network_recovery_interval = opts.fetch(:network_recovery_interval, DEFAULT_NETWORK_RECOVERY_INTERVAL)
-
+      @network_recovery_interval = opts.fetch(:network_recovery_interval, DEFAULT_NETWORK_RECOVERY_INTERVAL)
       @shutdown_hooks            = Array.new
     end
 
