@@ -100,7 +100,7 @@ module MarchHare
     end
 
     def deliver(headers, message)
-      if @callback_arity == 2
+      if @callback_arity == 2 or @callback_arity < 0
         @callback.call(headers, message)
       else
         @callback.call(message)
