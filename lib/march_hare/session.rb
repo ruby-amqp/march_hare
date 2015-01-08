@@ -69,11 +69,11 @@ module MarchHare
       when String then
         if options[:trust_manager]
           cf.use_ssl_protocol(tls, options[:trust_manager])
-        elsif options[:keycert] && options[:certificate_password]
+        elsif (key_cert = tls_key_certificate_path_from(options)) && (key_cert_password = tls_key_certificate_password_from(options))
           sslContext = SSLContext.get_instance(tls)
-          certificate_password = options[:certificate_password].to_java.to_char_array
+          certificate_password = key_cert_password.to_java.to_char_array
           begin
-            input_stream = File.new(options[:keycert]).to_inputstream
+            input_stream = File.new(key_cert).to_inputstream
             key_store = KeyStore.get_instance('PKCS12')
             key_store.load(input_stream, certificate_password)
 
@@ -479,6 +479,16 @@ module MarchHare
         return Proc.new { MarchHare::ThreadPools.fixed_of_size(n) }
       end
     end
+
+    # @private
+    def tls_key_certificate_path_from(opts)
+      opts[:tls_key_cert] || opts[:ssl_key_cert] || opts[:tls_key_cert_path] || opts[:ssl_key_cert_path] || opts[:tls_key_certificate_path] || opts[:ssl_key_certificate_path]
+    end
+    
+    # @private
+    def tls_key_certificate_password_from(opts)
+      opts[:cert_password] || opts[:certificate_password]
+    end  
 
     # Ruby blocks-based BlockedListener that handles
     # connection.blocked and connection.unblocked.
