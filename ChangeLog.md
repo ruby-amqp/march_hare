@@ -2,7 +2,7 @@
 
 ### RabbitMQ Java Client Upgrade
 
-RabbitMQ Java client dependency has been updated to `3.4.1`.
+RabbitMQ Java client dependency has been updated to `3.4.3`.
 
 ### Host List Selection Improvements
 
