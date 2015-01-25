@@ -28,32 +28,32 @@ describe "MarchHare.connect" do
 
   context "when connection fails due to unknown host" do
     it "raises an exception" do
-      lambda {
+      expect {
         MarchHare.connect(:hostname => "a8s878787s8d78sd78.lol")
-      }.should raise_error(MarchHare::ConnectionRefused)
+      }.to raise_error(MarchHare::ConnectionRefused)
     end
   end
 
   context "when connection fails due to RabbitMQ node not running" do
     it "raises an exception" do
-      lambda {
+      expect {
         MarchHare.connect(:hostname => "rubymarchhare.info")
-      }.should raise_error(MarchHare::ConnectionRefused)
+      }.to raise_error(MarchHare::ConnectionRefused)
     end
   end
 
   context "when connection fails due to invalid credentials" do
     it "raises an exception" do
-      lambda {
+      expect {
         MarchHare.connect(:username => "this$username%does*not&exist")
-      }.should raise_error(MarchHare::PossibleAuthenticationFailureError)
+      }.to raise_error(MarchHare::PossibleAuthenticationFailureError)
     end
   end
 
   it "lets you specify executor (thread pool) factory" do
     calls = 0
     factory = double(:executor_factory)
-    factory.stub(:call) do
+    allow(factory).to receive(:call) do
       calls += 1
       MarchHare::JavaConcurrent::Executors.new_cached_thread_pool
     end
@@ -61,27 +61,27 @@ describe "MarchHare.connect" do
     c1.close
     c1.automatically_recover
     c1.close
-    calls.should == 2
+    expect(calls).to eq(2)
   end
 
 
   it "lets you specify fixed thread pool size" do
     c = MarchHare.connect(:thread_pool_size => 20)
-    c.should be_connected
+    expect(c).to be_connected
     c.close
-    c.should_not be_connected
+    expect(c).not_to be_connected
     c.automatically_recover
-    c.should be_connected
+    expect(c).to be_connected
     c.close
   end
 
   it "lets you specify multiple hosts" do
     c = MarchHare.connect(:hosts => ["127.0.0.1"])
-    c.should be_connected
+    expect(c).to be_connected
     c.close
-    c.should_not be_connected
+    expect(c).not_to be_connected
     c.automatically_recover
-    c.should be_connected
+    expect(c).to be_connected
     c.close
   end
 
@@ -95,7 +95,7 @@ describe "MarchHare.connect" do
     end
 
     c  = MarchHare.connect(:thread_factory => ThreadFactory.new)
-    c.should be_connected
+    expect(c).to be_connected
     ch = c.create_channel
     c.close
   end

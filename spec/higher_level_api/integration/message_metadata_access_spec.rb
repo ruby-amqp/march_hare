@@ -63,34 +63,34 @@ describe "A consumer" do
                      :routing_key    => "march.hare.key")
     latch.await
 
-    @meta.routing_key.should  == "march.hare.key"
-    @meta.content_type.should == "application/octet-stream"
-    @meta.content_encoding.should == "zip/zap"
-    @meta.priority.should == 8
+    expect(@meta.routing_key).to eq("march.hare.key")
+    expect(@meta.content_type).to eq("application/octet-stream")
+    expect(@meta.content_encoding).to eq("zip/zap")
+    expect(@meta.priority).to eq(8)
 
     time = Time.at(@meta.headers["time"].getTime/1000)
-    time.to_i.should == @now.to_i
+    expect(time.to_i).to eq(@now.to_i)
 
-    @meta.headers["coordinates"]["latitude"].should    == 59.35
-    @meta.headers["participants"].should == 11
-    @meta.headers["true_field"].should == true
-    @meta.headers["false_field"].should == false
-    @meta.headers["nil_field"].should be_nil
+    expect(@meta.headers["coordinates"]["latitude"]).to eq(59.35)
+    expect(@meta.headers["participants"]).to eq(11)
+    expect(@meta.headers["true_field"]).to eq(true)
+    expect(@meta.headers["false_field"]).to eq(false)
+    expect(@meta.headers["nil_field"]).to be_nil
 
-    @meta.timestamp.should == Time.at(@now.to_i)
-    @meta.type.should == "kinda.checkin"
-    @meta.consumer_tag.should_not be_nil
-    @meta.consumer_tag.should_not be_empty
-    @meta.delivery_tag.to_i.should == 1
-    @meta.delivery_mode.should == 2
-    @meta.should be_persistent
-    @meta.reply_to.should == "a.sender"
-    @meta.correlation_id.should == "r-1"
-    @meta.message_id.should == "m-1"
-    @meta.should_not be_redelivered
+    expect(@meta.timestamp).to eq(Time.at(@now.to_i))
+    expect(@meta.type).to eq("kinda.checkin")
+    expect(@meta.consumer_tag).not_to be_nil
+    expect(@meta.consumer_tag).not_to be_empty
+    expect(@meta.delivery_tag.to_i).to eq(1)
+    expect(@meta.delivery_mode).to eq(2)
+    expect(@meta).to be_persistent
+    expect(@meta.reply_to).to eq("a.sender")
+    expect(@meta.correlation_id).to eq("r-1")
+    expect(@meta.message_id).to eq("m-1")
+    expect(@meta).not_to be_redelivered
 
-    @meta.app_id.should == "march.hare.tests"
-    @meta.exchange.should == "amq.fanout"
+    expect(@meta.app_id).to eq("march.hare.tests")
+    expect(@meta.exchange).to eq("amq.fanout")
   end
 
   it "can handle properties being set at the top level" do
@@ -145,33 +145,33 @@ describe "A consumer" do
                      :routing_key    => "march.hare.key")
     latch.await
 
-    @meta.routing_key.should  == "march.hare.key"
-    @meta.content_type.should == "application/octet-stream"
-    @meta.content_encoding.should == "zip/zap"
-    @meta.priority.should == 8
+    expect(@meta.routing_key).to eq("march.hare.key")
+    expect(@meta.content_type).to eq("application/octet-stream")
+    expect(@meta.content_encoding).to eq("zip/zap")
+    expect(@meta.priority).to eq(8)
 
     time = Time.at(@meta.headers["time"].getTime/1000)
-    time.to_i.should == @now.to_i
+    expect(time.to_i).to eq(@now.to_i)
 
-    @meta.headers["coordinates"]["latitude"].should    == 59.35
-    @meta.headers["participants"].should == 11
-    @meta.headers["true_field"].should == true
-    @meta.headers["false_field"].should == false
-    @meta.headers["nil_field"].should be_nil
+    expect(@meta.headers["coordinates"]["latitude"]).to eq(59.35)
+    expect(@meta.headers["participants"]).to eq(11)
+    expect(@meta.headers["true_field"]).to eq(true)
+    expect(@meta.headers["false_field"]).to eq(false)
+    expect(@meta.headers["nil_field"]).to be_nil
 
-    @meta.timestamp.should == Time.at(@now.to_i)
-    @meta.type.should == "kinda.checkin"
-    @meta.consumer_tag.should_not be_nil
-    @meta.consumer_tag.should_not be_empty
-    @meta.delivery_tag.to_i.should == 1
-    @meta.delivery_mode.should == 2
-    @meta.should be_persistent
-    @meta.reply_to.should == "a.sender"
-    @meta.correlation_id.should == "r-1"
-    @meta.message_id.should == "m-1"
-    @meta.should_not be_redelivered
+    expect(@meta.timestamp).to eq(Time.at(@now.to_i))
+    expect(@meta.type).to eq("kinda.checkin")
+    expect(@meta.consumer_tag).not_to be_nil
+    expect(@meta.consumer_tag).not_to be_empty
+    expect(@meta.delivery_tag.to_i).to eq(1)
+    expect(@meta.delivery_mode).to eq(2)
+    expect(@meta).to be_persistent
+    expect(@meta.reply_to).to eq("a.sender")
+    expect(@meta.correlation_id).to eq("r-1")
+    expect(@meta.message_id).to eq("m-1")
+    expect(@meta).not_to be_redelivered
 
-    @meta.app_id.should == "march.hare.tests"
-    @meta.exchange.should == "amq.fanout"
+    expect(@meta.app_id).to eq("march.hare.tests")
+    expect(@meta.exchange).to eq("amq.fanout")
   end
 end

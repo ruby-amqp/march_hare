@@ -17,12 +17,12 @@ describe MarchHare::Channel, "#reject" do
 
         x.publish("bunneth", :routing_key => q.name)
         sleep(0.5)
-        q.message_count.should == 1
+        expect(q.message_count).to eq(1)
         meta, _ = q.pop(:ack => true)
 
         ch.reject(meta.delivery_tag, true)
         sleep(0.5)
-        q.message_count.should == 1
+        expect(q.message_count).to eq(1)
 
         ch.close
       end
@@ -35,21 +35,15 @@ describe MarchHare::Channel, "#reject" do
 
         x.publish("bunneth", :routing_key => q.name)
         sleep(0.5)
-        q.message_count.should == 1
+        expect(q.message_count).to eq(1)
         delivery_info, _, _ = q.pop(:ack => true)
 
         ch.reject(delivery_info.delivery_tag, false)
         sleep(0.5)
-        q.message_count.should == 0
+        expect(q.message_count).to eq(0)
 
         ch.close
       end
-    end
-  end
-
-  context "with an invalid (random) delivery tag" do
-    it "causes a channel-level error" do
-      pending "we need to redesign exception handling first"
     end
   end
 end

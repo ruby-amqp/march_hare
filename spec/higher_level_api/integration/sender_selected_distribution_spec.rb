@@ -39,9 +39,9 @@ describe "Any AMQP 0.9.1 client using RabbitMQ" do
     mc3, _ = queue3.status
     mc4, _ = queue4.status
 
-    mc1.should == 1
-    mc2.should == 1
-    mc3.should == 1
-    mc4.should == 0
+    expect(mc1).to eq(1)
+    expect(mc2).to eq(1)
+    expect(mc3).to eq(1)
+    expect(mc4).to eq(0)
   end
 end

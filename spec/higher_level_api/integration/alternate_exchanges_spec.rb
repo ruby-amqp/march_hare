@@ -24,6 +24,6 @@ describe "Any exchange" do
     q.bind(fe)
     de.publish("1010", :routing_key => "", :mandatory => true)
 
-    q.message_count.should == 1
+    expect(q.message_count).to eq(1)
   end
 end

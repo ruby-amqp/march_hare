@@ -69,8 +69,8 @@ describe "A message that is proxied by multiple intermediate consumers" do
       sleep 0.5
     end
 
-    xs.size.should == n
-    xs.last.should == "msg #{n - 1}"
+    expect(xs.size).to eq(n)
+    expect(xs.last).to eq("msg #{n - 1}")
 
     [cn1, cn2, cn3, cn4].each do |cons|
       cons.cancel
@@ -120,8 +120,8 @@ describe "A message that is proxied by multiple intermediate consumers" do
       sleep 0.5
     end
 
-    xs.size.should == n
-    xs.last.should == "msg #{n - 1}"
+    expect(xs.size).to eq(n)
+    expect(xs.last).to eq("msg #{n - 1}")
 
     cs.each do |cons|
       cons.cancel

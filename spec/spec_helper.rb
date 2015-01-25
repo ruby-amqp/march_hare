@@ -16,3 +16,7 @@ end
 require "march_hare"
 
 puts "Running on Ruby #{RUBY_VERSION}."
+
+RSpec.configure do |config|
+  config.raise_errors_for_deprecations!
+end

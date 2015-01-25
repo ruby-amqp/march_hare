@@ -23,12 +23,12 @@ describe "A queue" do
     x  = ch.exchange("amq.fanout", :type => :fanout, :durable => true, :auto_delete => false)
     q  = ch.queue("", :exclusive => true)
     x.publish("")
-    q.get.should be_nil
+    expect(q.get).to eq(nil)
 
     q.bind(x)
 
     x.publish("", :routing_key => q.name)
-    q.get.should_not be_nil
+    expect(q.get).not_to eq(nil)
 
 
   end
@@ -36,32 +36,32 @@ describe "A queue" do
 
   it "can be bound to a newly declared exchange [an HB::Exchange instance]" do
     ch = connection.create_channel
-    x  = ch.exchange("hot.bunnies.fanout", :type => :fanout, :durable => false, :auto_delete => true)
+    x  = ch.exchange("march.hare.fanout", :type => :fanout, :durable => false, :auto_delete => true)
     q  = ch.queue("", :exclusive => true)
     x.publish("")
-    q.get.should be_nil
+    expect(q.get).to eq(nil)
 
     q.bind(x)
 
     x.publish("", :routing_key => q.name)
-    q.get.should_not be_nil
+    expect(q.get).not_to eq(nil)
 
     q.unbind(x)
   end
 
   it "can be bound to a newly declared exchange [a string]" do
     ch = connection.create_channel
-    x  = ch.exchange("hot.bunnies.fanout", :type => :fanout, :durable => false, :auto_delete => true)
+    x  = ch.exchange("march.hare.fanout", :type => :fanout, :durable => false, :auto_delete => true)
     q  = ch.queue("", :exclusive => true)
     x.publish("")
-    q.get.should be_nil
+    expect(q.get).to eq(nil)
 
-    q.bind("hot.bunnies.fanout")
+    q.bind("march.hare.fanout")
 
     x.publish("", :routing_key => q.name)
-    q.get.should_not be_nil
+    expect(q.get).not_to eq(nil)
 
-    q.unbind("hot.bunnies.fanout")
+    q.unbind("march.hare.fanout")
   end
 
 
@@ -71,7 +71,7 @@ describe "A queue" do
     q  = ch.queue("", :exclusive => true)
 
     x.publish("", :routing_key => q.name)
-    q.get.should_not be_nil
+    expect(q.get).not_to eq(nil)
   end
 
   context "when the exchange does not exist" do
@@ -86,7 +86,7 @@ describe "A queue" do
         raised = e
       end
 
-      raised.channel_close.reply_text.should =~ /no exchange/
+      expect(raised.channel_close.reply_text).to be =~ /no exchange/
     end
   end
 end

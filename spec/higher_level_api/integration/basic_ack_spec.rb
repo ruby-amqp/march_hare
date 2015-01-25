@@ -16,23 +16,17 @@ describe MarchHare::Channel, "#ack" do
 
       x.publish("bunneth", :routing_key => q.name)
       sleep(0.25)
-      q.message_count.should == 1
+      expect(q.message_count).to eq(1)
       meta, content = q.pop(:ack => true)
 
       ch.ack(meta.delivery_tag, true)
-      meta.delivery_tag.to_i.should == 1
+      expect(meta.delivery_tag.to_i).to eq(1)
 
       sleep(0.25)
-      q.message_count.should == 0
+      expect(q.message_count).to eq(0)
 
-      ch.should be_open
+      expect(ch).to be_open
       ch.close
-    end
-  end
-
-  context "with an invalid (random) delivery tag" do
-    it "causes an exception due to a channel-level error" do
-      pending "we need to redesign exception handling first"
     end
   end
 end

@@ -19,7 +19,7 @@ describe "Connection recovery" do
     begin
       block.call(c)
     ensure
-      c.close
+      c.close if c.open?
     end
   end
 
@@ -28,7 +28,7 @@ describe "Connection recovery" do
     x = ch.default_exchange
     x.publish("msg", :routing_key => q.name)
     sleep 0.2
-    q.message_count.should == 1
+    expect(q.message_count).to eq(1)
     q.purge
   end
 
@@ -36,7 +36,7 @@ describe "Connection recovery" do
     q.purge
     x.publish("msg", :routing_key => routing_key)
     sleep 0.2
-    q.message_count.should == 1
+    expect(q.message_count).to eq(1)
     q.purge
   end
 
@@ -46,7 +46,7 @@ describe "Connection recovery" do
 
     source.publish("msg", :routing_key => routing_key)
     ch.wait_for_confirms
-    q.message_count.should == 1
+    expect(q.message_count).to eq(1)
     q.delete
   end
 
@@ -58,10 +58,10 @@ describe "Connection recovery" do
     with_open do |c|
       close_all_connections!
       sleep 0.1
-      c.should_not be_open
+      expect(c).not_to be_open
 
       wait_for_recovery
-      c.should be_open
+      expect(c).to be_open
     end
   end
 
@@ -71,11 +71,11 @@ describe "Connection recovery" do
       ch2 = c.create_channel
       close_all_connections!
       sleep 0.1
-      c.should_not be_open
+      expect(c).not_to be_open
 
       wait_for_recovery
-      ch1.should be_open
-      ch2.should be_open
+      expect(ch1).to be_open
+      expect(ch2).to be_open
     end
   end
 
@@ -83,14 +83,14 @@ describe "Connection recovery" do
     with_open do |c|
       ch = c.create_channel
       ch.prefetch = 11
-      ch.prefetch.should == 11
+      expect(ch.prefetch).to eq(11)
       close_all_connections!
       sleep 0.1
-      c.should_not be_open
+      expect(c).not_to be_open
 
       wait_for_recovery
-      ch.should be_open
-      ch.prefetch.should == 11
+      expect(ch).to be_open
+      expect(ch.prefetch).to eq(11)
     end
   end
 
@@ -99,14 +99,14 @@ describe "Connection recovery" do
     with_open do |c|
       ch = c.create_channel
       ch.confirm_select
-      ch.should be_using_publisher_confirms
+      expect(ch).to be_using_publisher_confirms
       close_all_connections!
       sleep 0.1
-      c.should_not be_open
+      expect(c).not_to be_open
 
       wait_for_recovery
-      ch.should be_open
-      ch.should be_using_publisher_confirms
+      expect(ch).to be_open
+      expect(ch).to be_using_publisher_confirms
     end
   end
 
@@ -114,14 +114,14 @@ describe "Connection recovery" do
     with_open do |c|
       ch = c.create_channel
       ch.tx_select
-      ch.should be_using_tx
+      expect(ch).to be_using_tx
       close_all_connections!
       sleep 0.1
-      c.should_not be_open
+      expect(c).not_to be_open
 
       wait_for_recovery
-      ch.should be_open
-      ch.should be_using_tx
+      expect(ch).to be_open
+      expect(ch).to be_using_tx
     end
   end
 
@@ -131,10 +131,10 @@ describe "Connection recovery" do
       q  = ch.queue("bunny.tests.recovery.client-named#{rand}")
       close_all_connections!
       sleep 0.1
-      c.should_not be_open
+      expect(c).not_to be_open
 
       wait_for_recovery
-      ch.should be_open
+      expect(ch).to be_open
       ensure_queue_recovery(ch, q)
       q.delete
     end
@@ -147,10 +147,10 @@ describe "Connection recovery" do
       q  = ch.queue("", :exclusive => true)
       close_all_connections!
       sleep 0.1
-      c.should_not be_open
+      expect(c).not_to be_open
 
       wait_for_recovery
-      ch.should be_open
+      expect(ch).to be_open
       ensure_queue_recovery(ch, q)
     end
   end
@@ -163,10 +163,10 @@ describe "Connection recovery" do
       q.bind(x)
       close_all_connections!
       sleep 0.1
-      c.should_not be_open
+      expect(c).not_to be_open
 
       wait_for_recovery
-      ch.should be_open
+      expect(ch).to be_open
       ensure_queue_binding_recovery(x, q)
     end
   end
@@ -180,10 +180,10 @@ describe "Connection recovery" do
       x2.bind(x)
       close_all_connections!
       sleep 0.1
-      c.should_not be_open
+      expect(c).not_to be_open
 
       wait_for_recovery
-      ch.should be_open
+      expect(ch).to be_open
       ensure_exchange_binding_recovery(ch, x, x2)
     end
   end
@@ -199,14 +199,14 @@ describe "Connection recovery" do
       end
       close_all_connections!
       sleep 0.1
-      c.should_not be_open
+      expect(c).not_to be_open
 
       wait_for_recovery
-      ch.should be_open
+      expect(ch).to be_open
 
       q.publish("")
       sleep 0.5
-      expect(delivered).to be_true
+      expect(delivered).to eq(true)
     end
   end
 
@@ -223,12 +223,12 @@ describe "Connection recovery" do
       end
       close_all_connections!
       sleep 0.1
-      c.should_not be_open
+      expect(c).not_to be_open
 
       wait_for_recovery
-      ch.should be_open
+      expect(ch).to be_open
 
-      q.consumer_count.should == n
+      expect(q.consumer_count).to eq(n)
     end
   end
 
@@ -245,10 +245,10 @@ describe "Connection recovery" do
       end
       close_all_connections!
       sleep 0.1
-      c.should_not be_open
+      expect(c).not_to be_open
 
       wait_for_recovery
-      ch.should be_open
+      expect(ch).to be_open
 
       qs.each do |q|
         ch.queue_declare_passive(q.name)

@@ -10,7 +10,7 @@ describe "Direct exchange" do
   end
 
   it "can be declared" do
-    exchange = channel.exchange("hot_bunnies.exchanges.direct1", :type => :direct)
+    exchange = channel.exchange("march.hare.exchanges.direct1", :type => :direct)
     queue    = channel.queue("", :exclusive => true)
 
     queue.bind(exchange, :routing_key => "abc")
@@ -21,7 +21,7 @@ describe "Direct exchange" do
     sleep(0.3)
 
     mc, cc = queue.status
-    mc.should == 1
+    expect(mc).to eq(1)
   end
 end
 
@@ -37,8 +37,8 @@ describe "Fanout exchange" do
   end
 
   it "can be declared" do
-    exchange = channel.exchange("hot_bunnies.exchanges.fanout1", :type => :fanout)
-    exchange.should_not be_internal
+    exchange = channel.exchange("march.hare.exchanges.fanout1", :type => :fanout)
+    expect(exchange).not_to be_internal
     queue    = channel.queue("", :exclusive => true)
 
     queue.bind(exchange)
@@ -50,7 +50,7 @@ describe "Fanout exchange" do
     sleep(0.5)
 
     mc, cc = queue.status
-    mc.should == 3
+    expect(mc).to eq(3)
   end
 end
 
@@ -66,7 +66,7 @@ describe "Topic exchange" do
   end
 
   it "can be declared" do
-    exchange = channel.exchange("hot_bunnies.exchanges.topic1", :type => :topic)
+    exchange = channel.exchange("march.hare.exchanges.topic1", :type => :topic)
     queue    = channel.queue("", :exclusive => true)
 
     queue.bind(exchange, :routing_key => "log.*")
@@ -79,7 +79,7 @@ describe "Topic exchange" do
     sleep(0.5)
 
     mc, cc = queue.status
-    mc.should == 2
+    expect(mc).to eq(2)
   end
 end
 
@@ -95,7 +95,7 @@ describe "Headers exchange" do
   end
 
   it "can be declared" do
-    exchange = channel.exchange("hot_bunnies.exchanges.headers1", :type => :headers)
+    exchange = channel.exchange("march.hare.exchanges.headers1", :type => :headers)
     queue    = channel.queue("", :exclusive => true)
 
     queue.bind(exchange, :arguments => { 'x-match' => 'all', 'arch' => "x86_64", 'os' => "linux" })
@@ -109,7 +109,7 @@ describe "Headers exchange" do
     sleep(0.3)
 
     mc, cc = queue.status
-    mc.should == 1
+    expect(mc).to eq(1)
   end
 end
 
@@ -125,8 +125,8 @@ describe "Internal exchange" do
   end
 
   it "can be declared" do
-    exchange = channel.topic("hot_bunnies.exchanges.topic.internal", :internal => true)
-    exchange.should be_internal
+    exchange = channel.topic("march.hare.exchanges.topic.internal", :internal => true)
+    expect(exchange).to be_internal
 
     exchange.delete
   end

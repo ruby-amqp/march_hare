@@ -13,27 +13,27 @@ describe "Queue" do
 
     it "can be declared as auto-deleted" do
       q = channel.queue("", :auto_delete => true)
-      q.should be_auto_delete
+      expect(q).to be_auto_delete
       q.delete
     end
 
     it "can be declared as auto-deleted and non-durable" do
       q = channel.queue("", :auto_delete => true, :durable => false)
-      q.should be_auto_delete
-      q.should_not be_durable
+      expect(q).to be_auto_delete
+      expect(q).not_to be_durable
       q.delete
     end
 
     it "can be declared as NON-auto-deleted" do
       q = channel.queue("", :auto_delete => false)
-      q.should_not be_auto_delete
-      q.should_not be_durable
+      expect(q).not_to be_auto_delete
+      expect(q).not_to be_durable
       q.delete
     end
 
     it "can be declared as NON-durable" do
       q = channel.queue("", :durable => false)
-      q.should_not be_durable
+      expect(q).not_to be_durable
       q.delete
     end
 
@@ -45,10 +45,10 @@ describe "Queue" do
         x.publish("Message #{i}", :routing_key => q.name)
       end
 
-      q.get.should_not be_nil
+      expect(q.get).not_to be_nil
       sleep(2.1)
 
-      q.get.should be_nil
+      expect(q.get).to be_nil
       q.delete
     end
   end
