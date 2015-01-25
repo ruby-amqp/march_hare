@@ -1,5 +1,16 @@
 ## Changes Between 2.6.0 and 2.7.0
 
+### Support P12 Certificates for TLS Connections
+
+It is now possible to use P12 certificates with the Bunny-like
+connection options:
+
+ * `:tls_key_cert` (a file path)
+ * `:certificate_password` (as a Ruby string)
+
+Contributed by Simon Yu.
+
+
 ### RabbitMQ Java Client Upgrade
 
 RabbitMQ Java client dependency has been updated to `3.4.3`.
