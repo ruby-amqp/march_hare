@@ -17,7 +17,7 @@ describe MarchHare::Exchange do
 
     destination.bind(source)
     source.publish("")
-    queue.get.should_not be_nil
+    expect(queue.get).not_to be_nil
   end
 
   it "should bind two exchanges using exchange name" do
@@ -30,6 +30,6 @@ describe MarchHare::Exchange do
 
     destination.bind(source.name)
     source.publish("")
-    queue.get.should_not be_nil
+    expect(queue.get).not_to be_nil
   end
 end

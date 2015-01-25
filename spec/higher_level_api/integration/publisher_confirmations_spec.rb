@@ -26,7 +26,7 @@ describe "Any channel" do
 
     ch.wait_for_confirms(400)
 
-    true.should be_true
+    expect(true).to eq(true)
   end
 
   it "can receive publisher confirmation acks" do
@@ -41,6 +41,6 @@ describe "Any channel" do
 
     ch.wait_for_confirms(40)
 
-    got_ack.should be_true
+    expect(got_ack).to eq(true)
   end
 end

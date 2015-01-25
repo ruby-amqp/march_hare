@@ -37,8 +37,8 @@ describe 'A consumer' do
       consumer_thread.join
       publisher_thread.join
 
-      messages.should_not be_empty
-      consumer_exited.should be_true
+      expect(messages).not_to be_empty
+      expect(consumer_exited).to eq(true)
     end
   end
 
@@ -73,8 +73,8 @@ describe 'A consumer' do
       consumer_thread.join
       publisher_thread.join
 
-      messages.should_not be_empty
-      consumer_exited.should be_true
+      expect(messages).not_to be_empty
+      expect(consumer_exited).to eq(true)
     end
   end
 
@@ -102,7 +102,7 @@ describe 'A consumer' do
       consumer.cancel
 
       consumer_thread.join
-      consumer_exited.should be_true
+      expect(consumer_exited).to eq(true)
     end
   end
 

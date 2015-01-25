@@ -151,6 +151,11 @@ module MarchHare
     alias id channel_number
     alias number channel_number
 
+    # @return [Boolean] true if the channel is open
+    def open?
+      @delegate.open?
+    end
+
     # Closes the channel.
     #
     # Closed channels can no longer be used. Closed channel id is

@@ -20,14 +20,14 @@ describe MarchHare::Exchange do
     source.publish("")
     sleep 0.5
 
-    queue.message_count.should be == 1
+    expect(queue.message_count).to eq(1)
     queue.pop(:ack => true)
 
     destination.unbind(source)
     source.publish("")
     sleep 0.5
 
-    queue.message_count.should be == 0
+    expect(queue.message_count).to eq(0)
 
     source.delete
     destination.delete

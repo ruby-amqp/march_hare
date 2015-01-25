@@ -27,12 +27,12 @@ describe "Any queue" do
     queue.bind(exchange)
 
     exchange.publish("", :routing_key => queue.name)
-    queue.get.should_not be_nil
+    expect(queue.get).not_to be_nil
 
     queue.unbind(exchange)
 
     exchange.publish("")
-    queue.get.should be_nil
+    expect(queue.get).to be_nil
   end
 
 
@@ -43,11 +43,11 @@ describe "Any queue" do
     queue.bind(exchange)
 
     exchange.publish("", :routing_key => queue.name)
-    queue.get.should_not be_nil
+    expect(queue.get).not_to be_nil
 
     queue.unbind(exchange)
 
     exchange.publish("")
-    queue.get.should be_nil
+    expect(queue.get).to be_nil
   end
 end

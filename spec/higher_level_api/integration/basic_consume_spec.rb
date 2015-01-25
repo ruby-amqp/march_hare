@@ -18,12 +18,12 @@ describe "A consumer" do
     # asynchronously and we can either add callbacks/use latches or
     # just wait. MK.
     sleep(1.0)
-    consumer.should be_active
+    expect(consumer).to be_active
 
     consumer.cancel
     sleep(1.0)
-    consumer.should_not be_active
-    consumer.should be_cancelled
+    expect(consumer).not_to be_active
+    expect(consumer).to be_cancelled
   end
 end
 
@@ -70,9 +70,9 @@ describe "Multiple non-exclusive consumers per queue" do
 
       all_received.await
 
-      mailbox1.size.should >= 33
-      mailbox2.size.should >= 33
-      mailbox3.size.should >= 33
+      expect(mailbox1.size).to be >= 33
+      expect(mailbox2.size).to be >= 33
+      expect(mailbox3.size).to be >= 33
 
       consumer1.cancel
       consumer2.cancel
@@ -127,9 +127,9 @@ describe "A consumer" do
 
       all_received.await
 
-      mailbox1.size.should >= 33
-      mailbox2.size.should >= 33
-      mailbox3.size.should >= 33
+      expect(mailbox1.size).to be >= 33
+      expect(mailbox2.size).to be >= 33
+      expect(mailbox3.size).to be >= 33
 
       consumer1.cancel
       consumer2.cancel

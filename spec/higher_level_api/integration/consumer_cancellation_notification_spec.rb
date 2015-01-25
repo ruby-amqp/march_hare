@@ -30,7 +30,7 @@ describe "Non-blocking consumer" do
     ch.queue(queue_name, :auto_delete => true).delete
 
     sleep 0.5
-    cancelled.should be_true
+    expect(cancelled).to eq(true)
 
     ch.close
   end
@@ -70,7 +70,7 @@ describe "Blocking consumer" do
     ch.queue(queue_name, :auto_delete => true).delete
 
     sleep 0.5
-    cancelled.should be_true
+    expect(cancelled).to eq(true)
 
     t.kill
     ch.close
