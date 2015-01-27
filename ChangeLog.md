@@ -10,7 +10,6 @@ connection options:
 
 Contributed by Simon Yu.
 
-
 ### RabbitMQ Java Client Upgrade
 
 RabbitMQ Java client dependency has been updated to `3.4.3`.
@@ -21,6 +20,13 @@ Host selection from the list is now randomised.
 
 Contributed by Michael Ries.
 
+### Support for Consumer Callbacks with Arity < 0
+
+Callbacks with arity < 0 now can be used delivery handlers.
+See [Method#arity](http://www.ruby-doc.org/core-2.2.0/Method.html#method-i-arity)
+documentation for more info.
+
+Contributed by Roman Lishtaba.
 
 
 ## Changes Between 2.5.0 and 2.6.0
