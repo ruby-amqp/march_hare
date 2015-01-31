@@ -1,4 +1,4 @@
-## Changes Between 2.6.0 and 2.7.0
+## Changes Between 2.7.0 and 2.8.0
 
 ### Support P12 Certificates for TLS Connections
 
@@ -29,7 +29,7 @@ documentation for more info.
 Contributed by Roman Lishtaba.
 
 
-## Changes Between 2.5.0 and 2.6.0
+## Changes Between 2.5.0 and 2.7.0
 
 ### RabbitMQ Java Client Upgrade
 
