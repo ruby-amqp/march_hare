@@ -2,7 +2,7 @@
 
 ### RabbitMQ Java Client Upgrade
 
-RabbitMQ Java client dependency has been updated to `3.4.4`.
+RabbitMQ Java client dependency has been updated to `3.5.0`.
 
 
 ## Changes Between 2.7.0 and 2.8.0
