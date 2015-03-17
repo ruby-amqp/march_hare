@@ -50,6 +50,17 @@ describe "MarchHare.connect" do
     end
   end
 
+  it "handles amqp:// URIs w/o path part" do
+    c = MarchHare.connect(:uri => "amqp://127.0.0.1")
+
+    expect(c.vhost).to eq("/")
+    expect(c.host).to eq("127.0.0.1")
+    expect(c.port).to eq(5672)
+    expect(c.ssl?).to eq(false)
+
+    c.close
+  end
+
   it "lets you specify executor (thread pool) factory" do
     calls = 0
     factory = double(:executor_factory)
