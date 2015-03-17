@@ -2,6 +2,7 @@
 require "march_hare/shutdown_listener"
 require "set"
 require "march_hare/thread_pools"
+require "java"
 
 module MarchHare
   java_import com.rabbitmq.client.ConnectionFactory
@@ -45,16 +46,20 @@ module MarchHare
     # @option options [java.util.concurrent.ThreadFactory] :thread_factory Thread factory RabbitMQ Java client will use (useful in restricted PaaS platforms such as GAE)
     #
     # @see http://rubymarchhare.info/articles/connecting.html Connecting to RabbitMQ guide
-    def self.connect(options={})
+    def self.connect(options = {})
       cf = ConnectionFactory.new
 
-      cf.uri                = options[:uri]          if options[:uri]
-      cf.host               = hostname_from(options) if include_host?(options)
-      cf.port               = options[:port].to_i    if options[:port]
-      cf.virtual_host       = vhost_from(options)    if include_vhost?(options)
-      cf.connection_timeout = timeout_from(options)  if include_timeout?(options)
-      cf.username           = username_from(options) if include_username?(options)
-      cf.password           = password_from(options) if include_password?(options)
+      if options[:uri]
+        cf.uri          = options[:uri]          if options[:uri]
+      else
+        cf.host         = hostname_from(options) if include_host?(options)
+        cf.port         = options[:port].to_i    if options[:port]
+        cf.virtual_host = vhost_from(options)    if include_vhost?(options)
+        cf.username     = username_from(options) if include_username?(options)
+        cf.password     = password_from(options) if include_password?(options)
+      end
+
+      cf.connection_timeout  = timeout_from(options)  if include_timeout?(options)
 
       cf.requested_heartbeat = heartbeat_from(options)
       cf.connection_timeout  = connection_timeout_from(options) if include_connection_timeout?(options)
@@ -116,6 +121,8 @@ module MarchHare
     # @private
     def initialize(connection_factory, opts = {})
       @cf               = connection_factory
+      @uri              = opts[:uri]
+      @uses_uri         = !(@uri.nil?)
       # executors cannot be restarted after shutdown,
       # so we really need a factory here. MK.
       @executor_factory = opts[:executor_factory] || build_executor_factory_from(opts)
@@ -124,7 +131,11 @@ module MarchHare
       @default_host_selection_strategy = lambda { |hosts| hosts.sample }
       @host_selection_strategy         = opts[:host_selection_strategy] || @default_host_selection_strategy
 
-      @connection       = self.new_connection_impl(@hosts, @host_selection_strategy)
+      @connection       = if @uses_uri
+                            self.new_uri_connection_impl(opts[:uri])
+                          else
+                            self.new_connection_impl(@hosts, @host_selection_strategy)
+                          end
       @channels         = JavaConcurrent::ConcurrentHashMap.new
 
       # should automatic recovery from network failures be used?
@@ -240,7 +251,11 @@ module MarchHare
 
       new_connection = converting_rjc_exceptions_to_ruby do
         reconnecting_on_network_failures(ms) do
-          self.new_connection_impl(@hosts, @host_selection_strategy)
+          if @uses_uri
+            self.new_uri_connection_impl(options[:uri])
+          else
+            self.new_connection_impl(@hosts, @host_selection_strategy)
+          end
         end
       end
       @thread_pool = ThreadPools.dynamically_growing
@@ -298,6 +313,35 @@ module MarchHare
       # So we stub out #start in case someone migrating from Bunny forgets to remove
       # the call to #start. MK.
     end
+
+    def username
+      @cf.username
+    end
+    alias user username
+
+    def vhost
+      @cf.virtual_host
+    end
+
+    def hostname
+      @cf.host
+    end
+    alias host hostname
+
+    def port
+      @cf.port
+    end
+
+    def tls?
+      if @uses_uri
+        u = java.net.URI.new(@uri.to_java_string)
+
+        u.scheme == "amqps"
+      else
+        self.port == ConnectionFactory.DEFAULT_AMQP_OVER_SSL_PORT
+      end
+    end
+    alias ssl? tls?
 
     def method_missing(selector, *args)
       @connection.__send__(selector, *args)
@@ -450,10 +494,23 @@ module MarchHare
 
     # @private
     def new_connection_impl(hosts, host_selector)
-      if hosts && !hosts.empty?
+      if hosts && !hosts.empty? && !@uses_uri
         @cf.host = host_selector.call(hosts)
       end
 
+      converting_rjc_exceptions_to_ruby do
+        if @executor_factory
+          @executor = @executor_factory.call
+          @cf.new_connection(@executor)
+        else
+          @cf.new_connection
+        end
+      end
+    end
+
+    # @private
+    def new_uri_connection_impl(uri)
+      @cf.uri = uri
       converting_rjc_exceptions_to_ruby do
         if @executor_factory
           @executor = @executor_factory.call
