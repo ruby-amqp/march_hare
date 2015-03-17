@@ -4,7 +4,7 @@
 
 Host selector no longer breaks connections that use URIs.
 
-GH issue: [#73](ruby-amqp/march_hare#73).
+GH issue: [#73](https://github.com/ruby-amqp/march_hare/issues/73).
 
 ### RabbitMQ Java Client Upgrade
 
