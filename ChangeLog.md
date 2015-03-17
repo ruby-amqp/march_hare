@@ -1,5 +1,11 @@
 ## Changes Between 2.8.0 and 2.9.0
 
+### URI Connections Fix
+
+Host selector no longer breaks connections that use URIs.
+
+GH issue: [#73](ruby-amqp/march_hare#73).
+
 ### RabbitMQ Java Client Upgrade
 
 RabbitMQ Java client dependency has been updated to `3.5.0`.
