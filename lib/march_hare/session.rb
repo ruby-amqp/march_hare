@@ -538,8 +538,13 @@ module MarchHare
     end
 
     # @private
-    def tls_key_certificate_path_from(opts)
+    def self.tls_key_certificate_path_from(opts)
       opts[:tls_key_cert] || opts[:ssl_key_cert] || opts[:tls_key_cert_path] || opts[:ssl_key_cert_path] || opts[:tls_key_certificate_path] || opts[:ssl_key_certificate_path]
+    end
+
+# @private
+    def tls_key_certificate_path_from(opts)
+      self.class.tls_key_certificate_path_from(opts)
     end
     
     # @private
