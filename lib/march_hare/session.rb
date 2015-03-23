@@ -99,7 +99,7 @@ module MarchHare
             raise SSLContextException.new(message)
           ensure
             input_stream.close if input_stream
-          end  
+          end
         else
           cf.use_ssl_protocol(tls)
         end
@@ -546,11 +546,11 @@ module MarchHare
     def tls_key_certificate_path_from(opts)
       self.class.tls_key_certificate_path_from(opts)
     end
-    
+
     # @private
     def tls_key_certificate_password_from(opts)
       opts[:cert_password] || opts[:certificate_password]
-    end  
+    end
 
     # Ruby blocks-based BlockedListener that handles
     # connection.blocked and connection.unblocked.
