@@ -1,4 +1,4 @@
-## Changes Between 2.9.0 and 2.10.0
+## Changes Between 2.8.0 and 2.9.0
 
 ### TLS Connection Fixes
 
@@ -13,22 +13,16 @@ To quickly generate a PKCS12 certificate as well as CA and server certificate/ke
 see [tls-gen](https://github.com/michaelklishin/tls-gen/).
 
 
-### RabbitMQ Java Client Upgrade
-
-RabbitMQ Java client dependency has been updated to `3.5.0`.
-
-
-## Changes Between 2.8.0 and 2.9.0
-
 ### URI Connections Fix
 
 Host selector no longer breaks connections that use URIs.
 
 GH issue: [#73](https://github.com/ruby-amqp/march_hare/issues/73).
 
+
 ### RabbitMQ Java Client Upgrade
 
-RabbitMQ Java client dependency has been updated to `3.5.0`.
+RabbitMQ Java client dependency has been updated to `3.5.1`.
 
 
 ## Changes Between 2.7.0 and 2.8.0
