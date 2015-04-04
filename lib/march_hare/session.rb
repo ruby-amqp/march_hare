@@ -42,7 +42,9 @@ module MarchHare
     # @option options [String] :password ("guest") Password
     # @option options [String] :vhost ("/") Virtual host to use
     # @option options [Integer] :requested_heartbeat (580) Heartbeat timeout used. 0 means no heartbeat.
-    # @option options [Boolean] :tls (false) Set to true to use TLS/SSL connection. This will switch port to 5671 by default.
+    # @option options [Boolean, String] :tls (false) Set to true to use TLS/SSL connection or TLS version name as a string, e.g. "TLSv1.1".
+    #                                   This will switch port to 5671 by default.
+    # @option options [String] :tls_certificate_path Path to a PKCS12 certificate.
     # @option options [java.util.concurrent.ThreadFactory] :thread_factory Thread factory RabbitMQ Java client will use (useful in restricted PaaS platforms such as GAE)
     #
     # @see http://rubymarchhare.info/articles/connecting.html Connecting to RabbitMQ guide
@@ -72,43 +74,40 @@ module MarchHare
       when true then
         cf.use_ssl_protocol
       when String then
+        # TODO: logging
+        $stdout.puts "Using TLS/SSL version #{tls}"
         if options[:trust_manager]
           cf.use_ssl_protocol(tls, options[:trust_manager])
-        elsif (key_cert = tls_key_certificate_path_from(options)) && (key_cert_password = tls_key_certificate_password_from(options))
-          sslContext = SSLContext.get_instance(tls)
-          certificate_password = key_cert_password.to_java.to_char_array
+        elsif (cert_path = tls_certificate_path_from(options)) && (password = tls_certificate_password_from(options))
+          ctx = SSLContext.get_instance(tls)
+          pwd = password.to_java.to_char_array
           begin
-            input_stream = File.new(key_cert).to_inputstream
-            key_store = KeyStore.get_instance('PKCS12')
-            key_store.load(input_stream, certificate_password)
+            is = File.new(cert_path).to_inputstream
+            ks = KeyStore.get_instance('PKCS12')
+            ks.load(is, pwd)
 
-            key_manager_factory = KeyManagerFactory.get_instance("SunX509")
-            key_manager_factory.init(key_store, certificate_password)
+            kmf = KeyManagerFactory.get_instance("SunX509")
+            kmf.init(ks, pwd)
 
-            key_managers =  key_manager_factory.get_key_managers
+            ctx.init(kmf.get_key_managers, [NullTrustManager.new].to_java('javax.net.ssl.TrustManager'), nil)
 
-            sslContext.init(key_managers, [NullTrustManager.new].to_java('javax.net.ssl.TrustManager'), nil)
-
-            cf.use_ssl_protocol(sslContext)
-          # catch all exceptions from java
-          rescue Java::JavaLang::Exception => e
+            cf.use_ssl_protocol(ctx)
+          rescue Java::JavaLang::Throwable => e
             message = e.message
             message << "\n"
             message << e.backtrace.join("\n")
 
             raise SSLContextException.new(message)
           ensure
-            input_stream.close if input_stream
+            is.close if is
           end
         else
           cf.use_ssl_protocol(tls)
         end
       end
 
-
       new(cf, options)
     end
-
 
     class SSLContextException < StandardError
     end
@@ -537,19 +536,22 @@ module MarchHare
       end
     end
 
-    # @private
-    def self.tls_key_certificate_path_from(opts)
-      opts[:tls_key_cert] || opts[:ssl_key_cert] || opts[:tls_key_cert_path] || opts[:ssl_key_cert_path] || opts[:tls_key_certificate_path] || opts[:ssl_key_certificate_path]
-    end
-
-# @private
-    def tls_key_certificate_path_from(opts)
-      self.class.tls_key_certificate_path_from(opts)
+    def self.tls_certificate_path_from(opts)
+      opts[:tls_cert] || opts[:ssl_cert] || opts[:tls_cert_path] || opts[:ssl_cert_path] || opts[:tls_certificate_path] || opts[:ssl_certificate_path]
     end
 
     # @private
-    def tls_key_certificate_password_from(opts)
-      opts[:cert_password] || opts[:certificate_password]
+    def tls_certificate_path_from(opts)
+      self.class.tls_certificate_path_from(opts)
+    end
+
+    def self.tls_certificate_password_from(opts)
+      opts[:tls_certificate_password] || opts[:ssl_certificate_password] || opts[:cert_password] || opts[:certificate_password]
+    end
+
+    # @private
+    def tls_certificate_password_from(opts)
+      self.class.tls_certificate_password_from(opts)
     end
 
     # Ruby blocks-based BlockedListener that handles

@@ -19,13 +19,6 @@ describe "MarchHare.connect" do
     c1.close
   end
 
-  if !ENV["CI"] && ENV["TLS_TESTS"]
-    it "supports TLS w/o custom protocol or trust manager" do
-      c1 = MarchHare.connect(:tls => true, :port => 5671)
-      c1.close
-    end
-  end
-
   context "when connection fails due to unknown host" do
     it "raises an exception" do
       expect {
