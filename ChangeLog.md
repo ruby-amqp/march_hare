@@ -1,3 +1,23 @@
+## Changes Between 2.9.0 and 2.10.0
+
+### TLS Connection Fixes
+
+TLS connections with an explicitly provided TLS version and PKCS12 certificate
+no longer fail. In addition, related connection have changed to
+
+ * `:tls` (version as a string: `TLSv1`, `TLSv1.1`, `TLSv1.2`)
+ * `:tls_certificate_path`: PKCS12 certificate path as a string
+ * `:tls_certificate_password`: PKCS12 certificate password as a string
+
+To quickly generate a PKCS12 certificate as well as CA and server certificate/key pair,
+see [tls-gen](https://github.com/michaelklishin/tls-gen/).
+
+
+### RabbitMQ Java Client Upgrade
+
+RabbitMQ Java client dependency has been updated to `3.5.0`.
+
+
 ## Changes Between 2.8.0 and 2.9.0
 
 ### URI Connections Fix
@@ -18,7 +38,7 @@ RabbitMQ Java client dependency has been updated to `3.5.0`.
 It is now possible to use P12 certificates with the Bunny-like
 connection options:
 
- * `:tls_key_cert` (a file path)
+ * `:tls_key_cert` (a PCS12 file path)
  * `:certificate_password` (as a Ruby string)
 
 Contributed by Simon Yu.
