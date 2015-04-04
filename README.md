@@ -70,8 +70,8 @@ March Hare supports JRuby 1.7+ in 1.9 mode.
 
 ## Supported JDK Versions
 
-The project is tested against OpenJDK 7, Oracle JDK 7 and is
-known to work well on OpenJDK 6 and Sun JDK 6.
+The project is tested against OpenJDK 8, Oracle JDK 8 and is
+known to work well on OpenJDK 7 and Oracle JDK 7.
 
 
 ## Change Log
