@@ -1,7 +1,9 @@
 ## Changes Between 2.9.0 and 2.10.0
 
-No changes yet.
+### Header Keys Stringified
 
+Header keys are now automatically stringified so it's possible to
+use symbols as keys.
 
 
 
