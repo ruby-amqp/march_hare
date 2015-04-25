@@ -80,7 +80,7 @@ module MarchHare
 
       builder.content_type(props[:content_type]).
         content_encoding(props[:content_encoding]).
-        headers(props[:headers]).
+        headers(self.deep_stringify_keys(props[:headers])).
         delivery_mode(props[:persistent] ? 2 : 1).
         priority(props[:priority]).
         correlation_id(props[:correlation_id]).
@@ -93,6 +93,35 @@ module MarchHare
         app_id(props[:app_id]).
         cluster_id(props[:cluster_id]).
         build
+    end
+
+    # Deep hash transformation fn is courtesy of Avdi Grimm
+    # and Markus Kuhnt, with some modifications to support primitive
+    # and array values.
+    def self.transform_hash(value, options = {}, &block)
+      return nil if value.nil?
+      return value if !value.is_a?(Hash) && !value.is_a?(Array)
+      return value.map { |v| transform_hash(v, options, &block) } if value.is_a?(Array)
+
+      value.inject({}) do |result, (key, value)|
+        value = if (options[:deep] && value.is_a?(Hash))
+                  transform_hash(value, options, &block)
+                else
+                  if value.is_a?(Array)
+                    value.map { |v| transform_hash(v, options, &block) }
+                  else
+                    value
+                  end
+                end
+        block.call(result, key, value)
+        result
+      end
+    end
+
+    def self.deep_stringify_keys(hash)
+      transform_hash(hash, :deep => true) do |hash, key, value|
+        hash[key.to_s] = value
+      end
     end
   end
 end # MarchHare
