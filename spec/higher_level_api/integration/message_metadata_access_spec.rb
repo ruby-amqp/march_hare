@@ -40,17 +40,17 @@ describe "A consumer" do
                        :type        => "kinda.checkin",
                        # headers table keys can be anything
                        :headers     => {
-                         "coordinates" => {
-                           "latitude"  => 59.35,
+                         :coordinates => {
+                           :latitude  => 59.35,
                            "longitude" => 18.066667
                          },
                          "time"         => @now,
                          "participants" => 11,
-                         "venue"        => "Stockholm",
+                         :venue         => "Stockholm",
                          "true_field"   => true,
                          "false_field"  => false,
                          "nil_field"    => nil,
-                         "ary_field"    => ["one", 2.0, 3, [{ "abc" => 123 }]]
+                         "ary_field"    => ["one", 2.0, 3, [{ :abc => 123 }]]
                        },
                        :timestamp        => @now,
                        :reply_to         => "a.sender",
