@@ -1,5 +1,9 @@
 ## Changes Between 2.9.0 and 2.10.0
 
+### RabbitMQ Java Client Upgrade
+
+RabbitMQ JAva client dependency has been updated to `3.5.3`.
+
 ### Header Keys Stringified
 
 Header keys are now automatically stringified so it's possible to
