@@ -1,8 +1,15 @@
+## Changes Between 2.10.0 and 2.11.0
+
+### RabbitMQ Java Client Upgrade
+
+RabbitMQ Java client dependency has been updated to `3.5.4`.
+
+
 ## Changes Between 2.9.0 and 2.10.0
 
 ### RabbitMQ Java Client Upgrade
 
-RabbitMQ JAva client dependency has been updated to `3.5.3`.
+RabbitMQ Java client dependency has been updated to `3.5.3`.
 
 ### Header Keys Stringified
 
