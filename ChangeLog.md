@@ -1,3 +1,16 @@
+## Changes Betwee 2.11.0 and 2.12.0
+
+### Ruby Exceptions Thrown by More Public Methods
+
+ * `Channel#exchange_declare`
+ * `Channel#exchange_bind`
+ * `Channel#exchange_unbind`
+
+now raise Ruby exceptions instead of their Java counterparts.
+
+Contributed by Thilo-Alexander Ginkel.
+
+
 ## Changes Between 2.10.0 and 2.11.0
 
 ### RabbitMQ Java Client Upgrade
