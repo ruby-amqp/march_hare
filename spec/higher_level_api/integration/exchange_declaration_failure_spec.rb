@@ -23,11 +23,11 @@ describe "Exchange declaration error handling" do
   # Examples
   #
 
-  it "does not leak Java exceptions" do
+  it "does not throw Java exceptions" do
     with_open do |c|
       ch = c.create_channel
       close_all_connections!
-      sleep 0.1
+      sleep 0.5
       expect(c).not_to be_open
       expect { ch.direct("direct.exchange.exception.test", :durable => false) }.to raise_exception(MarchHare::ChannelAlreadyClosed)
     end
