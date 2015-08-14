@@ -2,14 +2,14 @@
 # encoding: utf-8
 
 require "rubygems"
-require "hot_bunnies"
+require "march_hare"
 
 puts "=> Subscribing for messages using explicit acknowledgements model"
 puts
 
-connection1 = HotBunnies.connect
-connection2 = HotBunnies.connect
-connection3 = HotBunnies.connect
+connection1 = MarchHare.connect
+connection2 = MarchHare.connect
+connection3 = MarchHare.connect
 
 ch1 = connection1.create_channel
 ch1.prefetch = 1
@@ -21,7 +21,7 @@ ch3 = connection3.create_channel
 ch3.prefetch = 1
 
 x   = ch3.fanout("amq.fanout")
-q1  = ch1.queue("hot_bunnies.examples.acknowledgements.explicit", :auto_delete => false)
+q1  = ch1.queue("march_hare.examples.acknowledgements.explicit", :auto_delete => false)
 q1.purge
 
 q1.bind(x).subscribe(:manual_ack => true) do |metadata, payload|
@@ -30,7 +30,7 @@ q1.bind(x).subscribe(:manual_ack => true) do |metadata, payload|
 
   # acknowledge some messages, they will be removed from the queue
   if rand > 0.5
-    # FYI: there is a shortcut, HotBunnies::Channel.ack
+    # FYI: there is a shortcut, MarchHare::Channel.ack
     ch1.acknowledge(metadata.delivery_tag, false)
     puts "[consumer1] Got message ##{metadata.headers['i']}, redelivered?: #{metadata.redelivered?}, ack-ed"
   else
@@ -40,7 +40,7 @@ q1.bind(x).subscribe(:manual_ack => true) do |metadata, payload|
   end
 end
 
-q2   = ch2.queue("hot_bunnies.examples.acknowledgements.explicit", :auto_delete => false)
+q2   = ch2.queue("march_hare.examples.acknowledgements.explicit", :auto_delete => false)
 q2.bind(x).subscribe(:manual_ack => true) do |metadata, payload|
   # do some work
   sleep(0.2)

@@ -2,12 +2,12 @@
 # encoding: utf-8
 
 require "rubygems"
-require "hot_bunnies"
+require "march_hare"
 
 puts "=> Publishing messages as mandatory"
 puts
 
-conn = HotBunnies.connect
+conn = MarchHare.connect
 
 ch   = conn.create_channel
 x    = ch.default_exchange

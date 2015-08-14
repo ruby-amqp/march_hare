@@ -2,9 +2,9 @@
 # encoding: utf-8
 
 require "rubygems"
-require "hot_bunnies"
+require "march_hare"
 
-connection = HotBunnies.connect
+connection = MarchHare.connect
 
 ch  = connection.create_channel
 # topic exchange name can be any string

@@ -2,15 +2,15 @@
 # encoding: utf-8
 
 require "rubygems"
-require "hot_bunnies"
+require "march_hare"
 
 puts "=> Demonstrating sender-selected distribution"
 puts
 
-conn = HotBunnies.connect
+conn = MarchHare.connect
 
 ch   = conn.create_channel
-x    = ch.direct("hot_bunnies.examples.ssd.exchange")
+x    = ch.direct("march_hare.examples.ssd.exchange")
 q1   = ch.queue("", :exclusive => true).bind(x, :routing_key => "one")
 q2   = ch.queue("", :exclusive => true).bind(x, :routing_key => "two")
 q3   = ch.queue("", :exclusive => true).bind(x, :routing_key => "three")

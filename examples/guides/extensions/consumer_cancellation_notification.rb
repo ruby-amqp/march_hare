@@ -2,12 +2,12 @@
 # encoding: utf-8
 
 require "rubygems"
-require "hot_bunnies"
+require "march_hare"
 
 puts "=> Demonstrating consumer cancellation notification"
 puts
 
-conn = HotBunnies.connect
+conn = MarchHare.connect
 
 ch   = conn.create_channel
 q    = ch.queue("", :exclusive => true)

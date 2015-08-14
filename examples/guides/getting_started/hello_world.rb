@@ -2,12 +2,12 @@
 # encoding: utf-8
 
 require "rubygems"
-require "hot_bunnies"
+require "march_hare"
 
-conn = HotBunnies.connect
+conn = MarchHare.connect
 
 ch = conn.create_channel
-q  = ch.queue("hot_bunnies.examples.hello_world", :auto_delete => true)
+q  = ch.queue("march_hare.examples.hello_world", :auto_delete => true)
 
 c  = q.subscribe do |metadata, payload|
   puts "Received #{payload}"

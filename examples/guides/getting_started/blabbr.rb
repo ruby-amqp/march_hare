@@ -2,12 +2,12 @@
 # encoding: utf-8
 
 require "rubygems"
-require "hot_bunnies"
+require "march_hare"
 
-conn = HotBunnies.connect
+conn = MarchHare.connect
 
 ch  = conn.create_channel
-x   = ch.fanout("hot_bunnies.nba.scores")
+x   = ch.fanout("march_hare.nba.scores")
 
 ch.queue("joe",   :auto_delete => true).bind(x).subscribe do |meta, payload|
   puts "#{payload} => joe"

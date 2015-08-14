@@ -2,16 +2,16 @@
 # encoding: utf-8
 
 require "rubygems"
-require "hot_bunnies"
+require "march_hare"
 
 puts "=> Demonstrating dead letter exchange"
 puts
 
-conn = HotBunnies.connect
+conn = MarchHare.connect
 
 ch   = conn.create_channel
 x    = ch.fanout("amq.fanout")
-dlx  = ch.fanout("hot_bunnies.examples.dlx.exchange")
+dlx  = ch.fanout("march_hare.examples.dlx.exchange")
 q    = ch.queue("", :exclusive => true, :arguments => {"x-dead-letter-exchange" => dlx.name}).bind(x)
 # dead letter queue
 dlq  = ch.queue("", :exclusive => true).bind(dlx)
