@@ -415,7 +415,9 @@ module MarchHare
     # @return RabbitMQ response
     # @see http://rubymarchhare.info/articles/echanges.html Exchanges and Publishing guide
     def exchange_declare(name, type, durable = false, auto_delete = false, internal = false, arguments = nil)
-      @delegate.exchange_declare(name, type, durable, auto_delete, internal, arguments)
+      converting_rjc_exceptions_to_ruby do
+        @delegate.exchange_declare(name, type, durable, auto_delete, internal, arguments)
+      end
     end
 
     # Binds an exchange to another exchange using exchange.bind method (RabbitMQ extension)
@@ -430,7 +432,9 @@ module MarchHare
     # @see http://rubymarchhare.info/articles/extensions.html RabbitMQ extensions guide
     # @see http://rubymarchhare.info/articles/bindings.html Bindings guide
     def exchange_bind(destination, source, routing_key, arguments = nil)
-      @delegate.exchange_bind(destination, source, routing_key, arguments)
+      converting_rjc_exceptions_to_ruby do
+        @delegate.exchange_bind(destination, source, routing_key, arguments)
+      end
     end
 
     # Unbinds an exchange from another exchange using exchange.unbind method (RabbitMQ extension)
@@ -445,7 +449,9 @@ module MarchHare
     # @see http://rubymarchhare.info/articles/extensions.html RabbitMQ extensions guide
     # @see http://rubymarchhare.info/articles/bindings.html Bindings guide
     def exchange_unbind(destination, source, routing_key, arguments = nil)
-      @delegate.exchange_unbind(destination, source, routing_key, arguments)
+      converting_rjc_exceptions_to_ruby do
+        @delegate.exchange_unbind(destination, source, routing_key, arguments)
+      end
     end
 
     # @endgroup
