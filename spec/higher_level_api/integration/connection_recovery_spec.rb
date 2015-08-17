@@ -4,6 +4,7 @@ require "rabbitmq/http/client"
 describe "Connection recovery" do
   let(:connection)  {  }
   let(:http_client) { RabbitMQ::HTTP::Client.new("http://127.0.0.1:15672") }
+  let(:amqp_uri) { "amqp://localhost:5672/%2F" }
 
   def close_all_connections!
     http_client.list_connections.each do |conn_info|
@@ -22,6 +23,15 @@ describe "Connection recovery" do
       c.close if c.open?
     end
   end
+  
+  def with_open_uri(c = MarchHare.connect(:uri => amqp_uri, :network_recovery_interval => 0.2), &block)
+    begin
+      block.call(c)
+    ensure
+      c.close if c.open?
+    end
+  end
+
 
   def ensure_queue_recovery(ch, q)
     q.purge
@@ -53,7 +63,7 @@ describe "Connection recovery" do
   #
   # Examples
   #
-
+  
   it "reconnects after grace period" do
     with_open do |c|
       close_all_connections!
@@ -65,6 +75,17 @@ describe "Connection recovery" do
     end
   end
 
+  it "when connecting with a URI, it reconnects after grace period" do
+    with_open_uri do |c|
+      close_all_connections!
+      sleep 0.1
+      expect(c).not_to be_open
+
+      wait_for_recovery
+      expect(c).to be_open
+    end
+  end
+  
   it "recovers channel" do
     with_open do |c|
       ch1 = c.create_channel

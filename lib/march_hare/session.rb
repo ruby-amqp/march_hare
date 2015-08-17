@@ -131,7 +131,7 @@ module MarchHare
       @host_selection_strategy         = opts[:host_selection_strategy] || @default_host_selection_strategy
 
       @connection       = if @uses_uri
-                            self.new_uri_connection_impl(opts[:uri])
+                            self.new_uri_connection_impl(@uri)
                           else
                             self.new_connection_impl(@hosts, @host_selection_strategy)
                           end
@@ -251,7 +251,7 @@ module MarchHare
       new_connection = converting_rjc_exceptions_to_ruby do
         reconnecting_on_network_failures(ms) do
           if @uses_uri
-            self.new_uri_connection_impl(options[:uri])
+            self.new_uri_connection_impl(@uri)
           else
             self.new_connection_impl(@hosts, @host_selection_strategy)
           end
