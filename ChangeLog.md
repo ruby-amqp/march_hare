@@ -12,7 +12,7 @@ Contributed by Thilo-Alexander Ginkel.
 
 ### Connection Recovery Fixed For Connections Using URIs
 
-Connection recovery was failing silently if the `:uri` option was used in `Connection#new`
+Connection recovery no longer fails silently if the `:uri` option was used in `Connection#new`.
 
 Contributed by Noah Magram. 
 
