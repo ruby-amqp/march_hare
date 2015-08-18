@@ -2,14 +2,21 @@ require "spec_helper"
 
 
 describe "Queue" do
-  context "with a server-generated name" do
-    let(:connection) { MarchHare.connect }
-    let(:channel)    { connection.create_channel }
+  let(:connection) { MarchHare.connect }
+  let(:channel)    { connection.create_channel }
 
-    after :each do
-      channel.close
-      connection.close
-    end
+  after :each do
+    channel.close
+    connection.close
+  end
+
+  it "cannot be created using a symbol as name" do
+    expect {
+      channel.queue(:not_valid_name)
+    }.to raise_error(ArgumentError)
+  end
+
+  context "with a server-generated name" do
 
     it "can be declared as auto-deleted" do
       q = channel.queue("", :auto_delete => true)

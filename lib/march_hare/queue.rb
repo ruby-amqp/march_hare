@@ -29,6 +29,8 @@ module MarchHare
     # @see http://rubymarchhare.info/articles/queues.html Queues and Consumers guide
     # @see http://rubymarchhare.info/articles/extensions.html RabbitMQ Extensions guide
     def initialize(channel, name, options={})
+      raise ArgumentError, 'queue name must be a string' unless name.is_a? String
+
       @channel = channel
       @name = name
       @options = {:durable => false, :exclusive => false, :auto_delete => false, :passive => false, :arguments => Hash.new}.merge(options)
