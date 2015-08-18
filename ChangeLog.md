@@ -1,4 +1,4 @@
-## Changes Betwee 2.11.0 and 2.12.0
+## Changes Between 2.11.0 and 2.12.0
 
 ### Ruby Exceptions Thrown by More Public Methods
 
@@ -9,6 +9,12 @@
 now raise Ruby exceptions instead of their Java counterparts.
 
 Contributed by Thilo-Alexander Ginkel.
+
+### Connection Recovery Fixed For Connections Using URIs
+
+Connection recovery was failing silently if the `:uri` option was used in `Connection#new`
+
+Contributed by Noah Magram. 
 
 
 ## Changes Between 2.10.0 and 2.11.0
