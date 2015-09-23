@@ -2,7 +2,6 @@ require "spec_helper"
 require "rabbitmq/http/client"
 
 describe "Exchange declaration error handling" do
-  let(:connection) {}
   let(:http_client) { RabbitMQ::HTTP::Client.new("http://127.0.0.1:15672") }
 
   def close_all_connections!
@@ -11,7 +10,7 @@ describe "Exchange declaration error handling" do
     end
   end
 
-  def with_open(c = MarchHare.connect(:network_recovery_interval => 5), &block)
+  def with_open(c = MarchHare.connect(automatically_recover: false), &block)
     begin
       block.call(c)
     ensure
