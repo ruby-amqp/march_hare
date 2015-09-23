@@ -23,7 +23,7 @@ describe "Connection recovery" do
       c.close if c.open?
     end
   end
-  
+
   def with_open_uri(c = MarchHare.connect(:uri => amqp_uri, :network_recovery_interval => 0.2), &block)
     begin
       block.call(c)
@@ -63,7 +63,7 @@ describe "Connection recovery" do
   #
   # Examples
   #
-  
+
   it "reconnects after grace period" do
     with_open do |c|
       close_all_connections!
@@ -85,7 +85,7 @@ describe "Connection recovery" do
       expect(c).to be_open
     end
   end
-  
+
   it "recovers channel" do
     with_open do |c|
       ch1 = c.create_channel
