@@ -1,3 +1,11 @@
+## Changes Between 2.13.0 and 2.14.0
+
+### RabbitMQ Java Client Upgrade
+
+RabbitMQ Java client dependency has been updated to `3.5.6`.
+
+
+
 ## Changes Between 2.12.0 and 2.13.0
 
 ### RabbitMQ Java Client Upgrade
