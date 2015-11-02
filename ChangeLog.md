@@ -1,4 +1,4 @@
-## Changes Between 2.13.0 and 2.14.0
+## Changes Between 2.13.0 and 2.15.0
 
 ### RabbitMQ Java Client Upgrade
 
