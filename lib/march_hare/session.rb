@@ -9,6 +9,7 @@ module MarchHare
   java_import com.rabbitmq.client.Connection
   java_import com.rabbitmq.client.BlockedListener
   java_import com.rabbitmq.client.NullTrustManager
+  java_import com.rabbitmq.client.DefaultSaslConfig
 
   java_import javax.net.ssl.SSLContext
   java_import javax.net.ssl.KeyManagerFactory
@@ -79,6 +80,7 @@ module MarchHare
         if options[:trust_manager]
           cf.use_ssl_protocol(tls, options[:trust_manager])
         elsif (cert_path = tls_certificate_path_from(options)) && (password = tls_certificate_password_from(options))
+          cf.setSaslConfig(DefaultSaslConfig::EXTERNAL);
           ctx = SSLContext.get_instance(tls)
           pwd = password.to_java.to_char_array
           begin
