@@ -1,3 +1,19 @@
+## Changes Between 2.16.0 and 2.17.0 (unreleased)
+
+### User-provided Consumer Tags
+
+It is now possible to provide a custom consumer tag instead of
+relying on RabbitMQ to generate one.
+
+GH issue: [#92](https://github.com/ruby-amqp/march_hare/issues/92)
+
+Contributed by Eger Andreas.
+
+### RabbitMQ Java Client Upgrade
+
+RabbitMQ Java client dependency has been updated to `3.6.2`.
+
+
 ## Changes Between 2.15.0 and 2.16.0
 
 ### RabbitMQ Java Client Upgrade
