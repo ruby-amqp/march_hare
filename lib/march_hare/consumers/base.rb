@@ -84,7 +84,7 @@ module MarchHare
     def recover_from_network_failure
       @terminated.set(false)
       @cancelled.set(false)
-      @consumer_tag = @channel.basic_consume(@queue.name, @auto_ack, self)
+      @consumer_tag = @channel.basic_consume(@queue.name, @auto_ack, @consumer_tag, self)
 
       @consumer_tag
     end
