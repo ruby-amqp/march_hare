@@ -25,6 +25,25 @@ describe "A consumer" do
     expect(consumer).not_to be_active
     expect(consumer).to be_cancelled
   end
+
+  it "has a consumer_tag" do
+    ch       = connection.create_channel
+    q        = ch.queue("", :exclusive => true)
+
+    consumer1 = q.subscribe(:blocking => false) { |_, _| nil }
+
+    sleep(1.0)
+    expect(consumer1.consumer_tag).to match(/^amq.ctag/)
+    consumer.cancel
+
+    custom_consumer_tag = "unique_consumer_tag_#{rand(1_000)}"
+    consumer2 = q.subscribe(:consumer_tag => custom_consumer_tag, :blocking => false) { |_, _| nil }
+
+    expect(consumer2.consumer_tag).to eq(custom_consumer_tag)
+
+    consumer.cancel
+    consumer2.cancel
+  end
 end
 
 

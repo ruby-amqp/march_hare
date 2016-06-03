@@ -180,7 +180,7 @@ module MarchHare
     end
 
     def subscribe_with(consumer, opts = {})
-      @consumer_tag     = @channel.basic_consume(@name, !(opts[:ack] || opts[:manual_ack]), consumer)
+      @consumer_tag = @channel.basic_consume(@name, !(opts[:ack] || opts[:manual_ack]), opts[:consumer_tag], consumer)
       consumer.consumer_tag = @consumer_tag
 
       @default_consumer = consumer
