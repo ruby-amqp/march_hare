@@ -34,14 +34,13 @@ describe "A consumer" do
 
     sleep(1.0)
     expect(consumer1.consumer_tag).to match(/^amq.ctag/)
-    consumer.cancel
+    consumer1.cancel
 
     custom_consumer_tag = "unique_consumer_tag_#{rand(1_000)}"
     consumer2 = q.subscribe(:consumer_tag => custom_consumer_tag, :blocking => false) { |_, _| nil }
 
     expect(consumer2.consumer_tag).to eq(custom_consumer_tag)
 
-    consumer.cancel
     consumer2.cancel
   end
 end
