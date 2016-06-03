@@ -614,7 +614,7 @@ module MarchHare
       end
     end
 
-    def basic_consume(queue, auto_ack, consumer_tag=nil, consumer)
+    def basic_consume(queue, auto_ack, consumer_tag = nil, consumer)
       consumer.auto_ack = auto_ack
       tag = converting_rjc_exceptions_to_ruby do
         if consumer_tag
