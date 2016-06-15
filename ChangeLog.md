@@ -1,4 +1,9 @@
-## Changes Between 2.16.0 and 2.17.0 (unreleased)
+## Changes Between 2.17.0 and 2.18.0 (unreleased)
+
+No changes yet.
+
+
+## Changes Between 2.16.0 and 2.17.0 (June 15th, 2016)
 
 ### User-provided Consumer Tags
 
