@@ -1,6 +1,8 @@
-## Changes Between 2.17.0 and 2.18.0 (unreleased)
+## Changes Between 2.17.0 and 2.18.0 (August 14th, 2016)
 
-No changes yet.
+### RabbitMQ Java Client Upgrade
+
+RabbitMQ Java client dependency has been updated to `3.6.5`.
 
 
 ## Changes Between 2.16.0 and 2.17.0 (June 15th, 2016)
