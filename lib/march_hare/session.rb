@@ -238,7 +238,7 @@ module MarchHare
 
     # @private
     def disable_automatic_recovery
-      @connetion.remove_shutdown_listener(@automatic_recovery_hook) if @automatic_recovery_hook
+      @connection.remove_shutdown_listener(@automatic_recovery_hook) if @automatic_recovery_hook
     end
 
     # Begins automatic connection recovery (typically only used internally
