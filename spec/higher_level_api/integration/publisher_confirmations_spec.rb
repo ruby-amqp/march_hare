@@ -1,4 +1,4 @@
-describe "Any channel" do
+RSpec.describe "Any channel" do
 
   #
   # Environment

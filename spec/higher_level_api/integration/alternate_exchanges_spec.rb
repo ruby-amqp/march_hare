@@ -1,4 +1,4 @@
-describe "Any exchange" do
+RSpec.describe "Any exchange" do
   let(:connection) { MarchHare.connect }
 
   after :each do

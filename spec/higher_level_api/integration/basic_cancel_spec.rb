@@ -1,4 +1,4 @@
-describe 'A consumer' do
+RSpec.describe 'A consumer' do
   let(:connection) { MarchHare.connect }
 
   after :each do

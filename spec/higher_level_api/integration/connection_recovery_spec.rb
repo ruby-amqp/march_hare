@@ -1,6 +1,6 @@
 require "rabbitmq/http/client"
 
-describe "Connection recovery" do
+RSpec.describe "Connection recovery" do
   let(:connection)  {  }
   let(:http_client) { RabbitMQ::HTTP::Client.new("http://127.0.0.1:15672") }
   let(:amqp_uri) { "amqp://localhost:5672/%2F" }

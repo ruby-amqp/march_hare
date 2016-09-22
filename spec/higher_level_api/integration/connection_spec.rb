@@ -1,7 +1,7 @@
 java_import java.util.concurrent.CountDownLatch
 java_import java.util.concurrent.TimeUnit
 
-describe "MarchHare.connect" do
+RSpec.describe "MarchHare.connect" do
 
   #
   # Examples
@@ -128,7 +128,7 @@ describe "MarchHare.connect" do
 end
 
 
-describe "MarchHare::Session#start" do
+RSpec.describe "MarchHare::Session#start" do
   it "is a no-op added for better compatibility with Bunny and to guard non-idempotent AMQConnection#start" do
     c = MarchHare.connect
     100.times do

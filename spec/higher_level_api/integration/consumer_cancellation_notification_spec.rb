@@ -1,4 +1,4 @@
-describe "Non-blocking consumer" do
+RSpec.describe "Non-blocking consumer" do
   let(:connection) do
     MarchHare.connect
   end
@@ -35,7 +35,7 @@ describe "Non-blocking consumer" do
 end
 
 
-describe "Blocking consumer" do
+RSpec.describe "Blocking consumer" do
   let(:connection) do
     MarchHare.connect
   end

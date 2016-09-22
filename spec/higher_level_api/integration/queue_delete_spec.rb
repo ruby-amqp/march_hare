@@ -1,4 +1,4 @@
-describe "Queue" do
+RSpec.describe "Queue" do
 
   #
   # Environment

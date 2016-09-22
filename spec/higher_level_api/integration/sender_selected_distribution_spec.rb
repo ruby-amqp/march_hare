@@ -1,4 +1,4 @@
-describe "Any AMQP 0.9.1 client using RabbitMQ" do
+RSpec.describe "Any AMQP 0.9.1 client using RabbitMQ" do
 
   #
   # Environment

@@ -1,4 +1,4 @@
-describe MarchHare::Exchange do
+RSpec.describe MarchHare::Exchange do
   let(:connection) { MarchHare.connect }
 
   after :each do

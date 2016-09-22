@@ -1,4 +1,4 @@
-describe "Queue" do
+RSpec.describe "Queue" do
   let(:connection) { MarchHare.connect }
   let(:channel)    { connection.create_channel }
 

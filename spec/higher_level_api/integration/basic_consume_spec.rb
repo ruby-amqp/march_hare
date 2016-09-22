@@ -1,4 +1,4 @@
-describe "A consumer" do
+RSpec.describe "A consumer" do
   let(:connection) { MarchHare.connect }
 
   after :each do
@@ -43,7 +43,7 @@ describe "A consumer" do
 end
 
 
-describe "Multiple non-exclusive consumers per queue" do
+RSpec.describe "Multiple non-exclusive consumers per queue" do
   let(:connection) { MarchHare.connect }
 
   after :each do
@@ -97,7 +97,7 @@ describe "Multiple non-exclusive consumers per queue" do
 end
 
 
-describe "A consumer" do
+RSpec.describe "A consumer" do
   let(:connection) { MarchHare.connect }
 
   after :each do

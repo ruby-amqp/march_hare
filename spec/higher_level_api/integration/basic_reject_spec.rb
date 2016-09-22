@@ -1,4 +1,4 @@
-describe MarchHare::Channel, "#reject" do
+RSpec.describe MarchHare::Channel, "#reject" do
   let(:connection) { MarchHare.connect }
 
   after :each do
