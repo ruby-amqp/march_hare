@@ -59,7 +59,7 @@ RSpec.describe "MarchHare.connect" do
       calls += 1
       MarchHare::JavaConcurrent::Executors.new_cached_thread_pool
     end
-    c1 = MarchHare.connect(:executor_factory => factory)
+    c1 = MarchHare.connect(:executor_factory => factory, :network_recovery_interval => 0)
     c1.close
     c1.automatically_recover
     c1.close
@@ -68,7 +68,7 @@ RSpec.describe "MarchHare.connect" do
 
 
   it "lets you specify fixed thread pool size" do
-    c = MarchHare.connect(:thread_pool_size => 20)
+    c = MarchHare.connect(:thread_pool_size => 20, :network_recovery_interval => 0)
     expect(c).to be_connected
     c.close
     expect(c).not_to be_connected
@@ -78,7 +78,7 @@ RSpec.describe "MarchHare.connect" do
   end
 
   it "lets you specify multiple hosts" do
-    c = MarchHare.connect(:hosts => ["127.0.0.1"])
+    c = MarchHare.connect(:hosts => ["127.0.0.1"], :network_recovery_interval => 0)
     expect(c).to be_connected
     c.close
     expect(c).not_to be_connected
