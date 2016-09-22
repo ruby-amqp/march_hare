@@ -522,7 +522,7 @@ module MarchHare
 
     # @private
     def maybe_shut_down_executor
-      @executor.shutdown if @executor
+      @executor.shutdown if defined?(@executor) && @executor
     end
 
     # Makes it easier to construct executor factories.

@@ -226,19 +226,19 @@ module MarchHare
     # Recovery feature.
     #
     def recover_prefetch_setting
-      basic_qos(@prefetch_count) if @prefetch_count
+      basic_qos(@prefetch_count) if defined?(@prefetch_count) && @prefetch_count
     end
 
     # Recovers publisher confirms mode. Used by the Automatic Network Failure
     # Recovery feature.
     def recover_confirm_mode
-      confirm_select if @confirm_mode
+      confirm_select if defined?(@confirm_mode) && @confirm_mode
     end
 
     # Recovers transaction mode. Used by the Automatic Network Failure
     # Recovery feature.
     def recover_tx_mode
-      tx_select if @tx_mode
+      tx_select if defined?(@tx_mode) && @tx_mode
     end
 
     # Recovers exchanges. Used by the Automatic Network Failure
