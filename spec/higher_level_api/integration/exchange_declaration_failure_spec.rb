@@ -1,4 +1,3 @@
-require "spec_helper"
 require "rabbitmq/http/client"
 
 describe "Exchange declaration error handling" do

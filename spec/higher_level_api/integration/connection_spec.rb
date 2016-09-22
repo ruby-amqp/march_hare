@@ -1,5 +1,3 @@
-require "spec_helper"
-
 java_import java.util.concurrent.CountDownLatch
 java_import java.util.concurrent.TimeUnit
 

@@ -1,5 +1,3 @@
-require "spec_helper"
-
 describe MarchHare::Channel, "#ack" do
   let(:connection) { MarchHare.connect }
 

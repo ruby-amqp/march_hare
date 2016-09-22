@@ -1,5 +1,3 @@
-require "spec_helper"
-
 describe "MarchHare.connect with TLS" do
 
   #

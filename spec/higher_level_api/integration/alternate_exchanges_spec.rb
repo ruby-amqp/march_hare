@@ -1,5 +1,3 @@
-require "spec_helper"
-
 describe "Any exchange" do
   let(:connection) { MarchHare.connect }
 

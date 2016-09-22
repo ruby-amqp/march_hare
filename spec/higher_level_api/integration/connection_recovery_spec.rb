@@ -1,4 +1,3 @@
-require "spec_helper"
 require "rabbitmq/http/client"
 
 describe "Connection recovery" do

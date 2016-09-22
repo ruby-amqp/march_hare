@@ -1,5 +1,3 @@
-require "spec_helper"
-
 describe 'A consumer' do
   let(:connection) { MarchHare.connect }
 

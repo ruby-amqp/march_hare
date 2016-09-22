@@ -1,6 +1,3 @@
-require "spec_helper"
-
-
 describe "Any queue" do
 
   #

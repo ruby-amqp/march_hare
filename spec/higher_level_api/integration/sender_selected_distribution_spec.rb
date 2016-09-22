@@ -1,5 +1,3 @@
-require "spec_helper"
-
 describe "Any AMQP 0.9.1 client using RabbitMQ" do
 
   #

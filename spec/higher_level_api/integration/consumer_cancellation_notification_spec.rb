@@ -1,5 +1,3 @@
-require "spec_helper"
-
 describe "Non-blocking consumer" do
   let(:connection) do
     MarchHare.connect

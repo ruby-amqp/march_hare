@@ -1,5 +1,3 @@
-require "spec_helper"
-
 describe MarchHare::Channel, "#reject" do
   let(:connection) { MarchHare.connect }
 

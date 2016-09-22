@@ -1,5 +1,3 @@
-require "spec_helper"
-
 describe "Direct exchange" do
   let(:connection) { MarchHare.connect }
   let(:channel)    { connection.create_channel }
