@@ -86,6 +86,23 @@ See [ChangeLog.md](ChangeLog.md).
 CI is hosted by [travis-ci.org](http://travis-ci.org)
 
 
+## Testing
+
+You'll need a running rabbitmq instance on your local machine to run the specs.
+
+To boot one via docker you can use:
+
+```bash
+$ docker run -p 5672:5672 -p 15672:15672 rabbitmq:3-management
+```
+
+And then you can run the specs using `rspec`:
+
+```bash
+$ bundle exec rspec
+```
+
+
 ## License
 
 MIT, see LICENSE in the repository root

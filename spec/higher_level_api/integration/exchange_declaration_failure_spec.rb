@@ -1,7 +1,6 @@
-require "spec_helper"
 require "rabbitmq/http/client"
 
-describe "Exchange declaration error handling" do
+RSpec.describe "Exchange declaration error handling" do
   let(:http_client) { RabbitMQ::HTTP::Client.new("http://127.0.0.1:15672") }
 
   def close_all_connections!

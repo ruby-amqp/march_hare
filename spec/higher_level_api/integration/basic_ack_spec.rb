@@ -1,6 +1,4 @@
-require "spec_helper"
-
-describe MarchHare::Channel, "#ack" do
+RSpec.describe MarchHare::Channel, "#ack" do
   let(:connection) { MarchHare.connect }
 
   after :each do

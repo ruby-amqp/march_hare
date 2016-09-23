@@ -1,6 +1,4 @@
-require "spec_helper"
-
-describe "Non-blocking consumer" do
+RSpec.describe "Non-blocking consumer" do
   let(:connection) do
     MarchHare.connect
   end
@@ -18,7 +16,7 @@ describe "Non-blocking consumer" do
     ch2 = connection.create_channel
     q   = ch2.queue(queue_name, :auto_delete => true)
 
-    q.subscribe(:on_cancellation => Proc.new { |ch, consumer| cancelled = true }) do |_, _|
+    q.subscribe(:on_cancellation => Proc.new { |_ch, consumer| cancelled = true }) do |_, _|
       # no-op
     end
 
@@ -37,7 +35,7 @@ describe "Non-blocking consumer" do
 end
 
 
-describe "Blocking consumer" do
+RSpec.describe "Blocking consumer" do
   let(:connection) do
     MarchHare.connect
   end
@@ -56,7 +54,7 @@ describe "Blocking consumer" do
       ch2 = connection.create_channel
       q   = ch2.queue(queue_name, :auto_delete => true)
 
-      q.subscribe(:on_cancellation => Proc.new { |ch, consumer| cancelled = true }, :block => true) do |_, _|
+      q.subscribe(:on_cancellation => Proc.new { |_ch, consumer| cancelled = true }, :block => true) do |_, _|
         # no-op
       end
     end

@@ -1,6 +1,4 @@
-require "spec_helper"
-
-describe "MarchHare.connect with TLS" do
+RSpec.describe "MarchHare.connect with TLS" do
 
   #
   # Examples

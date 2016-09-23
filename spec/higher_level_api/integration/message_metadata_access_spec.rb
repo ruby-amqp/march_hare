@@ -1,6 +1,4 @@
-require "spec_helper"
-
-describe "A consumer" do
+RSpec.describe "A consumer" do
   let(:connection) { MarchHare.connect }
   let(:channel)    { connection.create_channel }
 

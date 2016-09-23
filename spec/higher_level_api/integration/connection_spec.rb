@@ -1,9 +1,7 @@
-require "spec_helper"
-
 java_import java.util.concurrent.CountDownLatch
 java_import java.util.concurrent.TimeUnit
 
-describe "MarchHare.connect" do
+RSpec.describe "MarchHare.connect" do
 
   #
   # Examples
@@ -61,7 +59,7 @@ describe "MarchHare.connect" do
       calls += 1
       MarchHare::JavaConcurrent::Executors.new_cached_thread_pool
     end
-    c1 = MarchHare.connect(:executor_factory => factory)
+    c1 = MarchHare.connect(:executor_factory => factory, :network_recovery_interval => 0)
     c1.close
     c1.automatically_recover
     c1.close
@@ -70,7 +68,7 @@ describe "MarchHare.connect" do
 
 
   it "lets you specify fixed thread pool size" do
-    c = MarchHare.connect(:thread_pool_size => 20)
+    c = MarchHare.connect(:thread_pool_size => 20, :network_recovery_interval => 0)
     expect(c).to be_connected
     c.close
     expect(c).not_to be_connected
@@ -80,7 +78,7 @@ describe "MarchHare.connect" do
   end
 
   it "lets you specify multiple hosts" do
-    c = MarchHare.connect(:hosts => ["127.0.0.1"])
+    c = MarchHare.connect(:hosts => ["127.0.0.1"], :network_recovery_interval => 0)
     expect(c).to be_connected
     c.close
     expect(c).not_to be_connected
@@ -130,7 +128,7 @@ describe "MarchHare.connect" do
 end
 
 
-describe "MarchHare::Session#start" do
+RSpec.describe "MarchHare::Session#start" do
   it "is a no-op added for better compatibility with Bunny and to guard non-idempotent AMQConnection#start" do
     c = MarchHare.connect
     100.times do

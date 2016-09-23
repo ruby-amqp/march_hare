@@ -1,7 +1,4 @@
-require "spec_helper"
-
-
-describe "Queue" do
+RSpec.describe "Queue" do
 
   #
   # Environment
