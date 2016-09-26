@@ -165,6 +165,14 @@ module MarchHare
            else
              @connection.create_channel
            end
+      if jc.nil?
+        error_message = <<-MSG
+          Unable to create a channel. This is likely due to having a channel_max setting
+          on the rabbitmq broker (see https://www.rabbitmq.com/configure.html).
+          There are currently #{@channels.size} channels on this connection.
+        MSG
+        raise ::MarchHare::ChannelError.new(error_message, false)
+      end
 
       ch = Channel.new(self, jc)
       register_channel(ch)
