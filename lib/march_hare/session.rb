@@ -36,6 +36,7 @@ module MarchHare
     #
     # @param [Hash] options Connection options
     #
+    # @option options [Numeric] :executor_shutdown_timeout (30.0) when recovering from a network failure how long should we wait for the current threadpool to finish handling its messages
     # @option options [String] :host ("127.0.0.1") Hostname or IP address to connect to
     # @option options [Integer] :port (5672) Port RabbitMQ listens on
     # @option options [String] :username ("guest") Username
@@ -125,6 +126,8 @@ module MarchHare
       # executors cannot be restarted after shutdown,
       # so we really need a factory here. MK.
       @executor_factory = opts[:executor_factory] || build_executor_factory_from(opts)
+      # we expect this option to be specified in seconds
+      @executor_shutdown_timeout = opts.fetch(:executor_shutdown_timeout, 30.0)
 
       @hosts            = self.class.hosts_from(opts)
       @default_host_selection_strategy = lambda { |hosts| hosts.sample }
@@ -507,6 +510,7 @@ module MarchHare
 
       converting_rjc_exceptions_to_ruby do
         if @executor_factory
+          shut_down_executor_pool_and_await_timeout
           @executor = @executor_factory.call
           @cf.new_connection(@executor)
         else
@@ -520,6 +524,7 @@ module MarchHare
       @cf.uri = uri
       converting_rjc_exceptions_to_ruby do
         if @executor_factory
+          shut_down_executor_pool_and_await_timeout
           @executor = @executor_factory.call
           @cf.new_connection(@executor)
         else
@@ -531,6 +536,17 @@ module MarchHare
     # @private
     def maybe_shut_down_executor
       @executor.shutdown if defined?(@executor) && @executor
+    end
+
+    def shut_down_executor_pool_and_await_timeout
+      return unless @executor
+      ms_to_wait = (@executor_shutdown_timeout * 1000).to_i
+      @executor.shutdown()
+      unless @executor.awaitTermination(ms_to_wait, java.util.concurrent.TimeUnit::MILLISECONDS)
+        @executor.shutdownNow()
+      end
+    rescue java.lang.InterruptedException
+      #no op, just means we got a forced shutdown
     end
 
     # Makes it easier to construct executor factories.
