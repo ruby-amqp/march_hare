@@ -507,6 +507,7 @@ module MarchHare
 
       converting_rjc_exceptions_to_ruby do
         if @executor_factory
+          @executor.shutdown() if @executor
           @executor = @executor_factory.call
           @cf.new_connection(@executor)
         else
@@ -520,6 +521,7 @@ module MarchHare
       @cf.uri = uri
       converting_rjc_exceptions_to_ruby do
         if @executor_factory
+          @executor.shutdown() if @executor
           @executor = @executor_factory.call
           @cf.new_connection(@executor)
         else
