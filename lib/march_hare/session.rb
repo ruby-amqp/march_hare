@@ -268,7 +268,6 @@ module MarchHare
           end
         end
       end
-      @thread_pool = ThreadPools.dynamically_growing
       self.recover_shutdown_hooks(new_connection)
 
       # sorting channels by id means that the cases like the following:
