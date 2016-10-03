@@ -143,7 +143,7 @@ module MarchHare
       @channel.queue_purge(@name)
     end
 
-    def get(options = {:block => false})
+    def get(options = {})
       response = @channel.basic_get(@name, !options.fetch(:ack, false))
 
       if response
