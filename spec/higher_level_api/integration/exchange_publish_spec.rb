@@ -7,6 +7,7 @@ RSpec.describe MarchHare::Exchange do
 
   it 'allows a message timestamp to be included when publishing a message' do
     ch = connection.create_channel
+    ch.confirm_select
     queue = ch.queue('publish_spec', exclusive: true)
     timestamp = Time.new(2016)
 
@@ -16,6 +17,7 @@ RSpec.describe MarchHare::Exchange do
       properties: {timestamp: timestamp},
     )
 
+    expect(ch.wait_for_confirms).to be_truthy
     expect(queue.get.first.properties.timestamp).to eq timestamp.to_java
   end
 end
