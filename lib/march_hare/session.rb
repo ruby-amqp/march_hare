@@ -538,7 +538,7 @@ module MarchHare
     end
 
     def shut_down_executor_pool_and_await_timeout
-      return unless @executor
+      return unless defined?(@executor) && @executor
       ms_to_wait = (@executor_shutdown_timeout * 1000).to_i
       @executor.shutdown()
       unless @executor.awaitTermination(ms_to_wait, java.util.concurrent.TimeUnit::MILLISECONDS)

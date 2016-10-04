@@ -57,7 +57,7 @@ module MarchHare
     # @option opts [Boolean] :mandatory Should the message be returned if it cannot be routed to any queue?
     # @option opts [Hash] :properties Messages and delivery properties
     #
-    #  * :timestamp (Integer) A timestamp associated with this message
+    #  * :timestamp (Time) A timestamp associated with this message
     #  * :expiration (Integer) Expiration time after which the message will be deleted
     #  * :type (String) Message type, e.g. what type of event or command this message represents. Can be any string
     #  * :reply_to (String) Queue name other apps should send the response to
