@@ -1,3 +1,36 @@
+## Changes Between 2.18.0 and 2.19.0 (October 26th, 2016)
+
+### RabbitMQ Java Client Upgrade
+
+RabbitMQ Java client dependency has been updated to a milestone version of `3.6.6`
+to include a number of bug fixes early.
+
+
+### Thread Pool Leak
+
+GitHub issue: [#97](https://github.com/ruby-amqp/march_hare/issues/97).
+
+Contributed by Michael Reis.
+
+
+### Removed Unused Thread Pool
+
+March Hare relies on RabbitMQ Java client for consumer dispatch
+but one (unused) thread pool was still instantiated.
+
+GitHub issue: [#96](https://github.com/ruby-amqp/march_hare/issues/96).
+
+Contributed by Ivo Anjo.
+
+
+### Channel Allocation Failure Throws an Exception
+
+GitHub issue: [#98](https://github.com/ruby-amqp/march_hare/issues/98).
+
+Contributed by Michael Reis.
+
+
+
 ## Changes Between 2.17.0 and 2.18.0 (August 14th, 2016)
 
 ### RabbitMQ Java Client Upgrade
