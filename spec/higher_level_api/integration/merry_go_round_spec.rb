@@ -1,6 +1,4 @@
-require "spec_helper"
-
-describe "A message that is proxied by multiple intermediate consumers" do
+RSpec.describe "A message that is proxied by multiple intermediate consumers" do
   let(:c1) do
     MarchHare.connect
   end

@@ -71,7 +71,7 @@ March Hare supports JRuby 9.0.
 ## Supported JDK Versions
 
 The project is tested against OpenJDK 8, Oracle JDK 8 and is
-known to work well on OpenJDK 7 and Oracle JDK 7.
+known to work on OpenJDK 7 and Oracle JDK 7.
 
 
 ## Change Log
@@ -84,6 +84,24 @@ See [ChangeLog.md](ChangeLog.md).
 [![Continuous Integration status](https://secure.travis-ci.org/ruby-amqp/march_hare.png)](http://travis-ci.org/ruby-amqp/march_hare)
 
 CI is hosted by [travis-ci.org](http://travis-ci.org)
+
+
+## Testing
+
+You'll need a running RabbitMQ instance with all defaults and
+management plugin enabled on your local machine to run the specs.
+
+To boot one via docker you can use:
+
+```bash
+$ docker run -p 5672:5672 -p 15672:15672 rabbitmq:3-management
+```
+
+And then you can run the specs using `rspec`:
+
+```bash
+$ bundle exec rspec
+```
 
 
 ## License

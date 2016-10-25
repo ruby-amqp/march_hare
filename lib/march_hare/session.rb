@@ -36,6 +36,7 @@ module MarchHare
     #
     # @param [Hash] options Connection options
     #
+    # @option options [Numeric] :executor_shutdown_timeout (30.0) when recovering from a network failure how long should we wait for the current threadpool to finish handling its messages
     # @option options [String] :host ("127.0.0.1") Hostname or IP address to connect to
     # @option options [Integer] :port (5672) Port RabbitMQ listens on
     # @option options [String] :username ("guest") Username
@@ -125,6 +126,8 @@ module MarchHare
       # executors cannot be restarted after shutdown,
       # so we really need a factory here. MK.
       @executor_factory = opts[:executor_factory] || build_executor_factory_from(opts)
+      # we expect this option to be specified in seconds
+      @executor_shutdown_timeout = opts.fetch(:executor_shutdown_timeout, 30.0)
 
       @hosts            = self.class.hosts_from(opts)
       @default_host_selection_strategy = lambda { |hosts| hosts.sample }
@@ -165,6 +168,14 @@ module MarchHare
            else
              @connection.create_channel
            end
+      if jc.nil?
+        error_message = <<-MSG
+          Unable to create a channel. This is likely due to having a channel_max setting
+          on the rabbitmq broker (see https://www.rabbitmq.com/configure.html).
+          There are currently #{@channels.size} channels on this connection.
+        MSG
+        raise ::MarchHare::ChannelError.new(error_message, false)
+      end
 
       ch = Channel.new(self, jc)
       register_channel(ch)
@@ -238,7 +249,7 @@ module MarchHare
 
     # @private
     def disable_automatic_recovery
-      @connetion.remove_shutdown_listener(@automatic_recovery_hook) if @automatic_recovery_hook
+      @connection.remove_shutdown_listener(@automatic_recovery_hook) if @automatic_recovery_hook
     end
 
     # Begins automatic connection recovery (typically only used internally
@@ -257,7 +268,6 @@ module MarchHare
           end
         end
       end
-      @thread_pool = ThreadPools.dynamically_growing
       self.recover_shutdown_hooks(new_connection)
 
       # sorting channels by id means that the cases like the following:
@@ -499,6 +509,7 @@ module MarchHare
 
       converting_rjc_exceptions_to_ruby do
         if @executor_factory
+          shut_down_executor_pool_and_await_timeout
           @executor = @executor_factory.call
           @cf.new_connection(@executor)
         else
@@ -512,6 +523,7 @@ module MarchHare
       @cf.uri = uri
       converting_rjc_exceptions_to_ruby do
         if @executor_factory
+          shut_down_executor_pool_and_await_timeout
           @executor = @executor_factory.call
           @cf.new_connection(@executor)
         else
@@ -522,7 +534,18 @@ module MarchHare
 
     # @private
     def maybe_shut_down_executor
-      @executor.shutdown if @executor
+      @executor.shutdown if defined?(@executor) && @executor
+    end
+
+    def shut_down_executor_pool_and_await_timeout
+      return unless defined?(@executor) && @executor
+      ms_to_wait = (@executor_shutdown_timeout * 1000).to_i
+      @executor.shutdown()
+      unless @executor.awaitTermination(ms_to_wait, java.util.concurrent.TimeUnit::MILLISECONDS)
+        @executor.shutdownNow()
+      end
+    rescue java.lang.InterruptedException
+      #no op, just means we got a forced shutdown
     end
 
     # Makes it easier to construct executor factories.

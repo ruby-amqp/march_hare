@@ -1,6 +1,4 @@
-require "spec_helper"
-
-describe "Direct exchange" do
+RSpec.describe "Direct exchange" do
   let(:connection) { MarchHare.connect }
   let(:channel)    { connection.create_channel }
 
@@ -27,7 +25,7 @@ end
 
 
 
-describe "Fanout exchange" do
+RSpec.describe "Fanout exchange" do
   let(:connection) { MarchHare.connect }
   let(:channel)    { connection.create_channel }
 
@@ -56,7 +54,7 @@ end
 
 
 
-describe "Topic exchange" do
+RSpec.describe "Topic exchange" do
   let(:connection) { MarchHare.connect }
   let(:channel)    { connection.create_channel }
 
@@ -85,7 +83,7 @@ end
 
 
 
-describe "Headers exchange" do
+RSpec.describe "Headers exchange" do
   let(:connection) { MarchHare.connect }
   let(:channel)    { connection.create_channel }
 
@@ -115,7 +113,7 @@ end
 
 
 
-describe "Internal exchange" do
+RSpec.describe "Internal exchange" do
   let(:connection) { MarchHare.connect }
   let(:channel)    { connection.create_channel }
 
