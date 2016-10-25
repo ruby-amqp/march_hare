@@ -1,3 +1,9 @@
+## Changes Between 2.19.0 and 2.20.0 (unreleased)
+
+No changes yet.
+
+
+
 ## Changes Between 2.18.0 and 2.19.0 (October 26th, 2016)
 
 ### RabbitMQ Java Client Upgrade
