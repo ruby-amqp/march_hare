@@ -494,7 +494,7 @@ module MarchHare
     def reconnecting_on_network_failures(interval_in_ms, &fn)
       begin
         fn.call
-      rescue IOError, MarchHare::ConnectionRefused, java.io.IOException => e
+      rescue IOError, MarchHare::ConnectionRefused, java.io.IOException, java.util.concurrent.TimeoutException => e
         java.lang.Thread.sleep(interval_in_ms)
 
         retry
