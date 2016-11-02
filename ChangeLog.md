@@ -1,6 +1,26 @@
-## Changes Between 2.19.0 and 2.20.0 (unreleased)
+## Changes Between 2.20.0 and 2.21.0 (unreleased)
 
 No changes yet.
+
+
+
+## Changes Between 2.19.0 and 2.20.0 (November 2nd, 2016)
+
+### Connection Recovery Should Retry on Protocol Handshake Timeout
+
+When an intermediary such as HAproxy with no backends online
+(or a problematic server node) doesn't respond to a protocol header sent
+to it, RabbitMQ Java client will throw a generic operation timeout exception
+because the heartbeat mechanism is not yet enabled (it has not yet negotiated
+a timeout value for it!)
+
+March Hare should handle this exception and retry, as if it was an I/O or skipped heartbeats
+exception.
+
+Kudos to Andrew Cholakian and Jordan Sissel for digging this issue out.
+
+GitHub issues: [#107](https://github.com/ruby-amqp/march_hare/issues/107),
+               [logstash-plugins/logstash-input-rabbitmq#76](https://github.com/logstash-plugins/logstash-input-rabbitmq/issues/76#issuecomment-257722124)
 
 
 
