@@ -14,8 +14,8 @@ RSpec.describe "Any exchange" do
     ch = connection.create_channel
     q  = ch.queue("", :exclusive => true)
 
-    fe = ch.fanout("hot_bunnies.extensions.alternate_xchanges.fanout1")
-    de = ch.direct("hot_bunnies.extensions.alternate_xchanges.direct1", :arguments => {
+    fe = ch.fanout("march_hare.extensions.alternate_xchanges.fanout1")
+    de = ch.direct("march_hare.extensions.alternate_xchanges.direct1", :arguments => {
                                "alternate-exchange" => fe.name
                              })
 
