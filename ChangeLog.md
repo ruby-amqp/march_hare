@@ -1,4 +1,4 @@
-## Changes Between 2.21.0 and 3.0.0 (unreleased)
+## Changes Between 2.21.0 and 2.22.0 (unreleased)
 
 No changes yet.
 
