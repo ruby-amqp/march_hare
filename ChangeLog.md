@@ -1,6 +1,14 @@
-## Changes Between 2.20.0 and 2.21.0 (unreleased)
+## Changes Between 2.21.0 and 3.0.0 (unreleased)
 
 No changes yet.
+
+
+
+## Changes Between 2.20.0 and 2.21.0 (November 24th, 2016)
+
+### RabbitMQ Java Client Upgrade
+
+RabbitMQ Java client dependency has been updated to the final version of `3.6.6`.
 
 
 
