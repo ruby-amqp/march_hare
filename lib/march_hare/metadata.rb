@@ -43,7 +43,6 @@ module MarchHare
         :content_encoding,
         :content_type,
         :content_encoding,
-        :headers,
         :delivery_mode,
         :priority,
         :correlation_id,
@@ -59,7 +58,11 @@ module MarchHare
         define_method(properties_property) { @properties.__send__(properties_property) }
       end # each
     end
-
+    
+    def headers
+      deep_normalize_headers(@properties.headers)
+    end
+    
     def persistent?
       delivery_mode == 2
     end
@@ -70,6 +73,25 @@ module MarchHare
 
     def redelivery?
       redeliver
+    end
+    
+    # Turns LongString instances into String
+    private
+    LONG_STRING_TYPE = com.rabbitmq.client.LongString
+    def deep_normalize_headers(value)
+      if value.is_a?(java.util.Map)
+        new_map = {}
+        value.each {|k,v| new_map[k] = deep_ls_fix(v)}
+        new_map
+      elsif value.is_a?(java.util.List)
+        value.map {|v| deep_ls_fix(v)}
+      else
+        if value.java_kind_of?(LONG_STRING_TYPE)
+          value.to_s
+        else
+          value
+        end
+      end
     end
   end # Headers
 
