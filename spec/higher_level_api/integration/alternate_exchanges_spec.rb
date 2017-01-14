@@ -12,6 +12,7 @@ RSpec.describe "Any exchange" do
 
   it "can have an alternate exchange (a RabbitMQ-specific extension to AMQP 0.9.1)" do
     ch = connection.create_channel
+    ch.confirm_select
     q  = ch.queue("", :exclusive => true)
 
     fe = ch.fanout("march_hare.extensions.alternate_xchanges.fanout1")
@@ -21,6 +22,7 @@ RSpec.describe "Any exchange" do
 
     q.bind(fe)
     de.publish("1010", :routing_key => "", :mandatory => true)
+    ch.wait_for_confirms(1000)
 
     expect(q.message_count).to eq(1)
   end
