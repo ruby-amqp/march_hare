@@ -1,7 +1,16 @@
-## Changes Between 2.21.0 and 3.0.0 (unreleased)
+## Changes Between 2.22.0 and 3.0.0 (unreleased)
 
 No changes yet.
 
+
+
+## Changes Between 2.21.0 and 2.22.0 (January 14th, 2017)
+
+### Convert Long Protocol Strings to `java.lang.String`
+
+GitHub issue: [#109](https://github.com/ruby-amqp/march_hare/issues/109)
+
+Contributed by Andrew Cholakian.
 
 
 ## Changes Between 2.20.0 and 2.21.0 (November 24th, 2016)
