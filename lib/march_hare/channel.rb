@@ -813,7 +813,7 @@ module MarchHare
     # Waits until all outstanding publisher confirms arrive.
     #
     # Takes an optional timeout in milliseconds. Will raise
-    # an exception in timeout has occured.
+    # an exception in case a timeout has occured.
     #
     # @param [Integer] timeout Timeout in milliseconds
     # @return [Boolean] true if all confirms were positive,
