@@ -81,7 +81,7 @@ See [ChangeLog.md](ChangeLog.md).
 
 ## Continuous Integration
 
-[![Continuous Integration status](https://secure.travis-ci.org/ruby-amqp/march_hare.png)](http://travis-ci.org/ruby-amqp/march_hare)
+[![Continuous Integration status](https://secure.travis-ci.org/ruby-amqp/march_hare.svg)](http://travis-ci.org/ruby-amqp/march_hare)
 
 CI is hosted by [travis-ci.org](http://travis-ci.org)
 
