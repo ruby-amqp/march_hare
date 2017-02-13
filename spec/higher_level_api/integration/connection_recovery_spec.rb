@@ -6,16 +6,18 @@ RSpec.describe "Connection recovery" do
   let(:amqp_uri) { "amqp://localhost:5672/%2F" }
 
   def close_all_connections!
+    sleep 1.1
     http_client.list_connections.each do |conn_info|
       http_client.close_connection(conn_info.name)
     end
+    sleep 0.5
   end
 
   def wait_for_recovery
     sleep 2.0
   end
 
-  def with_open(c = MarchHare.connect(:network_recovery_interval => 0.2), &block)
+  def with_open(c = MarchHare.connect(network_recovery_interval: 0.2), &block)
     begin
       block.call(c)
     ensure
@@ -23,7 +25,7 @@ RSpec.describe "Connection recovery" do
     end
   end
 
-  def with_open_uri(c = MarchHare.connect(:uri => amqp_uri, :network_recovery_interval => 0.2), &block)
+  def with_open_uri(c = MarchHare.connect(uri: amqp_uri, network_recovery_interval: 0.2), &block)
     begin
       block.call(c)
     ensure
@@ -66,8 +68,6 @@ RSpec.describe "Connection recovery" do
   it "reconnects after grace period" do
     with_open do |c|
       close_all_connections!
-      sleep 0.1
-      expect(c).not_to be_open
 
       wait_for_recovery
       expect(c).to be_open
@@ -77,8 +77,6 @@ RSpec.describe "Connection recovery" do
   it "when connecting with a URI, it reconnects after grace period" do
     with_open_uri do |c|
       close_all_connections!
-      sleep 0.1
-      expect(c).not_to be_open
 
       wait_for_recovery
       expect(c).to be_open
@@ -90,8 +88,6 @@ RSpec.describe "Connection recovery" do
       ch1 = c.create_channel
       ch2 = c.create_channel
       close_all_connections!
-      sleep 0.1
-      expect(c).not_to be_open
 
       wait_for_recovery
       expect(ch1).to be_open
@@ -105,8 +101,6 @@ RSpec.describe "Connection recovery" do
       ch.prefetch = 11
       expect(ch.prefetch).to eq(11)
       close_all_connections!
-      sleep 0.1
-      expect(c).not_to be_open
 
       wait_for_recovery
       expect(ch).to be_open
@@ -121,8 +115,6 @@ RSpec.describe "Connection recovery" do
       ch.confirm_select
       expect(ch).to be_using_publisher_confirms
       close_all_connections!
-      sleep 0.1
-      expect(c).not_to be_open
 
       wait_for_recovery
       expect(ch).to be_open
@@ -136,8 +128,6 @@ RSpec.describe "Connection recovery" do
       ch.tx_select
       expect(ch).to be_using_tx
       close_all_connections!
-      sleep 0.1
-      expect(c).not_to be_open
 
       wait_for_recovery
       expect(ch).to be_open
@@ -150,8 +140,6 @@ RSpec.describe "Connection recovery" do
       ch = c.create_channel
       q  = ch.queue("bunny.tests.recovery.client-named#{rand}")
       close_all_connections!
-      sleep 0.1
-      expect(c).not_to be_open
 
       wait_for_recovery
       expect(ch).to be_open
@@ -166,8 +154,6 @@ RSpec.describe "Connection recovery" do
       ch = c.create_channel
       q  = ch.queue("", :exclusive => true)
       close_all_connections!
-      sleep 0.1
-      expect(c).not_to be_open
 
       wait_for_recovery
       expect(ch).to be_open
@@ -182,8 +168,6 @@ RSpec.describe "Connection recovery" do
       q  = ch.queue("", :exclusive => true)
       q.bind(x)
       close_all_connections!
-      sleep 0.1
-      expect(c).not_to be_open
 
       wait_for_recovery
       expect(ch).to be_open
@@ -199,8 +183,6 @@ RSpec.describe "Connection recovery" do
       x2 = ch.fanout("bunny.tests.recovery.fanout")
       x2.bind(x)
       close_all_connections!
-      sleep 0.1
-      expect(c).not_to be_open
 
       wait_for_recovery
       expect(ch).to be_open
@@ -218,8 +200,6 @@ RSpec.describe "Connection recovery" do
         delivered = true
       end
       close_all_connections!
-      sleep 0.1
-      expect(c).not_to be_open
 
       wait_for_recovery
       expect(ch).to be_open
@@ -242,8 +222,6 @@ RSpec.describe "Connection recovery" do
         end
       end
       close_all_connections!
-      sleep 0.1
-      expect(c).not_to be_open
 
       wait_for_recovery
       expect(ch).to be_open
@@ -264,8 +242,6 @@ RSpec.describe "Connection recovery" do
         qs << ch.queue("", :exclusive => true)
       end
       close_all_connections!
-      sleep 0.1
-      expect(c).not_to be_open
 
       wait_for_recovery
       expect(ch).to be_open

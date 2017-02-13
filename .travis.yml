@@ -1,7 +1,8 @@
 language: ruby
+cache: bundler
+before_script: "./bin/ci/before_build"
 script: "bundle exec rspec -c spec"
 rvm:
-  - jruby-1.7.26
   - jruby-9.1.6.0
 notifications:
   recipients:
@@ -9,3 +10,7 @@ notifications:
 
 services:
   - rabbitmq
+
+branches:
+  only:
+    - master
