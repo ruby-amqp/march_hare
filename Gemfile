@@ -14,5 +14,5 @@ group :development do
   gem "kramdown",  :platform => :jruby
   gem "redcarpet", :platform => :mri
 
-  gem "rabbitmq_http_api_client"
+  gem "rabbitmq_http_api_client", "~> 1.8.0"
 end
