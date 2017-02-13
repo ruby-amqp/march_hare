@@ -3,7 +3,7 @@ cache: bundler
 before_script: "./bin/ci/before_build"
 script: "bundle exec rspec -c spec"
 rvm:
-  - jruby-9.1.6.0
+  - jruby-9.1.7.0
 notifications:
   recipients:
     - michael@rabbitmq.com
