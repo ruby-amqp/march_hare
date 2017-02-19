@@ -1,7 +1,11 @@
 # encoding: utf-8
 
 require 'java'
-require 'ext/commons-io'
+
+# Java client logging depends on SLF4J
+require 'ext/slf4j-api'
+require 'ext/slf4j-simple'
+
 require 'ext/rabbitmq-client'
 
 require 'march_hare/version'

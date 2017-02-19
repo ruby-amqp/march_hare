@@ -9,6 +9,7 @@ module MarchHare
   java_import com.rabbitmq.client.Connection
   java_import com.rabbitmq.client.BlockedListener
   java_import com.rabbitmq.client.NullTrustManager
+  java_import com.rabbitmq.client.MissedHeartbeatException
 
   java_import javax.net.ssl.SSLContext
   java_import javax.net.ssl.KeyManagerFactory
@@ -121,6 +122,13 @@ module MarchHare
     # @private
     def initialize(connection_factory, opts = {})
       @cf               = connection_factory
+
+      # March Hare uses its own connection recovery implementation and
+      # as of Java client 4.x automatic recovery is enabled by
+      # default. MK.
+      @cf.automatic_recovery_enabled = false
+      @cf.topology_recovery_enabled  = false
+
       @uri              = opts[:uri]
       @uses_uri         = !(@uri.nil?)
       # executors cannot be restarted after shutdown,
@@ -239,12 +247,17 @@ module MarchHare
     # @private
     def add_automatic_recovery_hook
       fn = Proc.new do |_, signal|
-        if !signal.initiated_by_application
+        if should_initiate_connection_recovery?(signal)
           self.automatically_recover
         end
       end
 
       @automatic_recovery_hook = self.on_shutdown(&fn)
+    end
+
+    # @private
+    def should_initiate_connection_recovery?(signal)
+      !signal.initiated_by_application || signal.instance_of?(MissedHeartbeatException)
     end
 
     # @private
