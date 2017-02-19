@@ -321,6 +321,7 @@ module MarchHare
       #
       # So we stub out #start in case someone migrating from Bunny forgets to remove
       # the call to #start. MK.
+      self
     end
 
     def username
