@@ -1,14 +1,6 @@
 require "rabbitmq/http/client"
 
 RSpec.describe "Exchange declaration error handling" do
-  let(:http_client) { RabbitMQ::HTTP::Client.new("http://127.0.0.1:15672") }
-
-  def close_all_connections!
-    http_client.list_connections.each do |conn_info|
-      http_client.close_connection(conn_info.name)
-    end
-  end
-
   def with_open(c = MarchHare.connect(automatically_recover: false), &block)
     begin
       block.call(c)
@@ -24,10 +16,13 @@ RSpec.describe "Exchange declaration error handling" do
   it "does not throw Java exceptions" do
     with_open do |c|
       ch = c.create_channel
-      close_all_connections!
-      sleep 0.5
-      expect(c).not_to be_open
-      expect { ch.direct("direct.exchange.exception.test", :durable => false) }.to raise_exception(MarchHare::ChannelAlreadyClosed)
+
+      expect do
+        ch.direct("direct.exchange.exception.test", durable: false)
+        ch.direct("direct.exchange.exception.test", durable: true)
+        ch.direct("direct.exchange.exception.test", durable: false)
+        ch.direct("direct.exchange.exception.test", durable: true)
+      end.to raise_exception(MarchHare::PreconditionFailed)
     end
   end
 end
