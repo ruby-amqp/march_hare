@@ -23,6 +23,9 @@ RSpec.describe "Exchange declaration error handling" do
         ch.direct("direct.exchange.exception.test", durable: false)
         ch.direct("direct.exchange.exception.test", durable: true)
       end.to raise_exception(MarchHare::PreconditionFailed)
+
+      ch2 = c.create_channel
+      ch2.exchange_delete("direct.exchange.exception.test")
     end
   end
 end
