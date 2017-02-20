@@ -44,7 +44,7 @@ supported by the RabbitMQ team at [Pivotal](http://pivotal.io).
 
 ### With Bundler
 
-    gem "march_hare", "~> 2.22.0"
+    gem "march_hare", "~> 3.0.0"
 
 
 ## Documentation
@@ -65,7 +65,7 @@ that demonstrate various parts of the API.
 
 ## Supported Ruby Versions
 
-March Hare supports JRuby 9.0.
+March Hare supports JRuby 9.0 or later.
 
 
 ## Supported JDK Versions
