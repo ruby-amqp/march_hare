@@ -2,8 +2,7 @@ language: ruby
 cache: bundler
 before_script: "./bin/ci/before_build"
 script: "bundle exec rspec"
-rvm:
-  - jruby-9.1.8.0
+
 notifications:
   recipients:
     - michael@rabbitmq.com
