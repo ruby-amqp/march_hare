@@ -1,7 +1,7 @@
 #!/bin/sh
 
 CTL=${MARCH_HARE_RABBITMQCTL:="sudo rabbitmqctl"}
-PLUGINS=${LANGOHR_RABBITMQ_PLUGINS:="sudo rabbitmq-plugins"}
+PLUGINS=${MARCH_HARE_RABBITMQ_PLUGINS:="sudo rabbitmq-plugins"}
 
 $PLUGINS enable rabbitmq_management
 
