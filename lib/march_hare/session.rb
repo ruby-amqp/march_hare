@@ -10,6 +10,7 @@ module MarchHare
   java_import com.rabbitmq.client.BlockedListener
   java_import com.rabbitmq.client.NullTrustManager
   java_import com.rabbitmq.client.MissedHeartbeatException
+  java_import com.rabbitmq.client.Address
 
   java_import javax.net.ssl.SSLContext
   java_import javax.net.ssl.KeyManagerFactory
@@ -39,6 +40,7 @@ module MarchHare
     #
     # @option options [Numeric] :executor_shutdown_timeout (30.0) when recovering from a network failure how long should we wait for the current threadpool to finish handling its messages
     # @option options [String] :host ("127.0.0.1") Hostname or IP address to connect to
+    # @option options [Array] :hosts (["127.0.0.1"]) Array of hostnames or ips to connect to. The connection returned is the first in the array that succeeds.
     # @option options [Integer] :port (5672) Port RabbitMQ listens on
     # @option options [String] :username ("guest") Username
     # @option options [String] :password ("guest") Password
@@ -55,6 +57,10 @@ module MarchHare
 
       if options[:uri]
         cf.uri          = options[:uri]          if options[:uri]
+      elsif options[:hosts]
+        cf.virtual_host = vhost_from(options)    if include_vhost?(options)
+        cf.username     = username_from(options) if include_username?(options)
+        cf.password     = password_from(options) if include_password?(options)
       else
         cf.host         = hostname_from(options) if include_host?(options)
         cf.port         = options[:port].to_i    if options[:port]
@@ -138,14 +144,7 @@ module MarchHare
       @executor_shutdown_timeout = opts.fetch(:executor_shutdown_timeout, 30.0)
 
       @hosts            = self.class.hosts_from(opts)
-      @default_host_selection_strategy = lambda { |hosts| hosts.sample }
-      @host_selection_strategy         = opts[:host_selection_strategy] || @default_host_selection_strategy
-
-      @connection       = if @uses_uri
-                            self.new_uri_connection_impl(@uri)
-                          else
-                            self.new_connection_impl(@hosts, @host_selection_strategy)
-                          end
+      @connection       = build_new_connection
       @channels         = JavaConcurrent::ConcurrentHashMap.new
 
       # should automatic recovery from network failures be used?
@@ -273,13 +272,7 @@ module MarchHare
       java.lang.Thread.sleep(ms)
 
       new_connection = converting_rjc_exceptions_to_ruby do
-        reconnecting_on_network_failures(ms) do
-          if @uses_uri
-            self.new_uri_connection_impl(@uri)
-          else
-            self.new_connection_impl(@hosts, @host_selection_strategy)
-          end
-        end
+        reconnecting_on_network_failures(ms) { build_new_connection }
       end
       self.recover_shutdown_hooks(new_connection)
 
@@ -516,18 +509,21 @@ module MarchHare
     end
 
     # @private
-    def new_connection_impl(hosts, host_selector)
-      if hosts && !hosts.empty? && !@uses_uri
-        @cf.host = host_selector.call(hosts)
-      end
+    def build_new_connection
+      @uses_uri ? new_uri_connection_impl(@uri) : new_connection_impl(@hosts)
+    end
+
+    # @private
+    def new_connection_impl(hosts)
+      addresses = Address.parse_addresses(hosts.join(','))
 
       converting_rjc_exceptions_to_ruby do
         if @executor_factory
           shut_down_executor_pool_and_await_timeout
           @executor = @executor_factory.call
-          @cf.new_connection(@executor)
+          @cf.new_connection(@executor, addresses)
         else
-          @cf.new_connection
+          @cf.new_connection(addresses)
         end
       end
     end
