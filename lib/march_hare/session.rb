@@ -40,7 +40,8 @@ module MarchHare
     #
     # @option options [Numeric] :executor_shutdown_timeout (30.0) when recovering from a network failure how long should we wait for the current threadpool to finish handling its messages
     # @option options [String] :host ("127.0.0.1") Hostname or IP address to connect to
-    # @option options [Array] :hosts (["127.0.0.1"]) Array of hostnames or ips to connect to. The connection returned is the first in the array that succeeds.
+    # @option options [Array<String>] :hosts (["127.0.0.1"]) Array of hostnames or ips to connect to. The connection returned is the first in the array that succeeds.
+    # @option options [Array<String>] :addresses (["127.0.0.1:5672", "localhost:5673"]) Array of addresses to connect to. The connection returned is the first in the array that succeeds.
     # @option options [Integer] :port (5672) Port RabbitMQ listens on
     # @option options [String] :username ("guest") Username
     # @option options [String] :password ("guest") Password
@@ -57,7 +58,7 @@ module MarchHare
 
       if options[:uri]
         cf.uri          = options[:uri]          if options[:uri]
-      elsif options[:hosts]
+      elsif options[:hosts] || options[:addresses]
         cf.virtual_host = vhost_from(options)    if include_vhost?(options)
         cf.username     = username_from(options) if include_username?(options)
         cf.password     = password_from(options) if include_password?(options)
@@ -143,7 +144,7 @@ module MarchHare
       # we expect this option to be specified in seconds
       @executor_shutdown_timeout = opts.fetch(:executor_shutdown_timeout, 30.0)
 
-      @hosts            = self.class.hosts_from(opts)
+      @addresses        = self.class.adresses_from(opts)
       @connection       = build_new_connection
       @channels         = JavaConcurrent::ConcurrentHashMap.new
 
@@ -391,8 +392,8 @@ module MarchHare
     end
 
     # @private
-    def self.hosts_from(options)
-      options[:hosts] || [hostname_from(options)]
+    def self.adresses_from(options)
+      options[:addresses] || options[:hosts] || [hostname_from(options)]
     end
 
     # @private
@@ -510,20 +511,20 @@ module MarchHare
 
     # @private
     def build_new_connection
-      @uses_uri ? new_uri_connection_impl(@uri) : new_connection_impl(@hosts)
+      @uses_uri ? new_uri_connection_impl(@uri) : new_connection_impl(@addresses)
     end
 
     # @private
-    def new_connection_impl(hosts)
-      addresses = Address.parse_addresses(hosts.join(','))
+    def new_connection_impl(addresses)
+      addrs = Address.parse_addresses(addresses.join(','))
 
       converting_rjc_exceptions_to_ruby do
         if @executor_factory
           shut_down_executor_pool_and_await_timeout
           @executor = @executor_factory.call
-          @cf.new_connection(@executor, addresses)
+          @cf.new_connection(@executor, addrs)
         else
-          @cf.new_connection(addresses)
+          @cf.new_connection(addrs)
         end
       end
     end
