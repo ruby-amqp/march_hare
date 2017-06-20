@@ -87,6 +87,16 @@ RSpec.describe "MarchHare.connect" do
     c.close
   end
 
+  it "lets you specify multiple addresses" do
+    c = MarchHare.connect(addresses: ["127.0.0.1:5672"], network_recovery_interval: 0)
+    expect(c).to be_connected
+    c.close
+    expect(c).not_to be_connected
+    c.automatically_recover
+    expect(c).to be_connected
+    c.close
+  end
+
   it "lets you specify thread factory (e.g. for GAE)" do
     class ThreadFactory
       include java.util.concurrent.ThreadFactory

@@ -10,6 +10,7 @@ module MarchHare
   java_import com.rabbitmq.client.BlockedListener
   java_import com.rabbitmq.client.NullTrustManager
   java_import com.rabbitmq.client.MissedHeartbeatException
+  java_import com.rabbitmq.client.Address
 
   java_import javax.net.ssl.SSLContext
   java_import javax.net.ssl.KeyManagerFactory
@@ -39,6 +40,8 @@ module MarchHare
     #
     # @option options [Numeric] :executor_shutdown_timeout (30.0) when recovering from a network failure how long should we wait for the current threadpool to finish handling its messages
     # @option options [String] :host ("127.0.0.1") Hostname or IP address to connect to
+    # @option options [Array<String>] :hosts (["127.0.0.1"]) Array of hostnames or ips to connect to. The connection returned is the first in the array that succeeds.
+    # @option options [Array<String>] :addresses (["127.0.0.1:5672", "localhost:5673"]) Array of addresses to connect to. The connection returned is the first in the array that succeeds.
     # @option options [Integer] :port (5672) Port RabbitMQ listens on
     # @option options [String] :username ("guest") Username
     # @option options [String] :password ("guest") Password
@@ -55,6 +58,10 @@ module MarchHare
 
       if options[:uri]
         cf.uri          = options[:uri]          if options[:uri]
+      elsif options[:hosts] || options[:addresses]
+        cf.virtual_host = vhost_from(options)    if include_vhost?(options)
+        cf.username     = username_from(options) if include_username?(options)
+        cf.password     = password_from(options) if include_password?(options)
       else
         cf.host         = hostname_from(options) if include_host?(options)
         cf.port         = options[:port].to_i    if options[:port]
@@ -137,15 +144,8 @@ module MarchHare
       # we expect this option to be specified in seconds
       @executor_shutdown_timeout = opts.fetch(:executor_shutdown_timeout, 30.0)
 
-      @hosts            = self.class.hosts_from(opts)
-      @default_host_selection_strategy = lambda { |hosts| hosts.sample }
-      @host_selection_strategy         = opts[:host_selection_strategy] || @default_host_selection_strategy
-
-      @connection       = if @uses_uri
-                            self.new_uri_connection_impl(@uri)
-                          else
-                            self.new_connection_impl(@hosts, @host_selection_strategy)
-                          end
+      @addresses        = self.class.adresses_from(opts)
+      @connection       = build_new_connection
       @channels         = JavaConcurrent::ConcurrentHashMap.new
 
       # should automatic recovery from network failures be used?
@@ -273,13 +273,7 @@ module MarchHare
       java.lang.Thread.sleep(ms)
 
       new_connection = converting_rjc_exceptions_to_ruby do
-        reconnecting_on_network_failures(ms) do
-          if @uses_uri
-            self.new_uri_connection_impl(@uri)
-          else
-            self.new_connection_impl(@hosts, @host_selection_strategy)
-          end
-        end
+        reconnecting_on_network_failures(ms) { build_new_connection }
       end
       self.recover_shutdown_hooks(new_connection)
 
@@ -398,8 +392,8 @@ module MarchHare
     end
 
     # @private
-    def self.hosts_from(options)
-      options[:hosts] || [hostname_from(options)]
+    def self.adresses_from(options)
+      options[:addresses] || options[:hosts] || [hostname_from(options)]
     end
 
     # @private
@@ -516,18 +510,21 @@ module MarchHare
     end
 
     # @private
-    def new_connection_impl(hosts, host_selector)
-      if hosts && !hosts.empty? && !@uses_uri
-        @cf.host = host_selector.call(hosts)
-      end
+    def build_new_connection
+      @uses_uri ? new_uri_connection_impl(@uri) : new_connection_impl(@addresses)
+    end
+
+    # @private
+    def new_connection_impl(addresses)
+      addrs = Address.parse_addresses(addresses.join(','))
 
       converting_rjc_exceptions_to_ruby do
         if @executor_factory
           shut_down_executor_pool_and_await_timeout
           @executor = @executor_factory.call
-          @cf.new_connection(@executor)
+          @cf.new_connection(@executor, addrs)
         else
-          @cf.new_connection
+          @cf.new_connection(addrs)
         end
       end
     end
