@@ -75,7 +75,12 @@ module MarchHare
       cf.requested_heartbeat = heartbeat_from(options)
       cf.connection_timeout  = connection_timeout_from(options) if include_connection_timeout?(options)
 
-      cf.thread_factory      = thread_factory_from(options)    if include_thread_factory?(options)
+      cf.thread_factory =
+        if include_thread_factory?(options)
+          thread_factory_from(options)
+        else
+          ThreadPools.daemon_thread_factory
+        end
       cf.exception_handler   = exception_handler_from(options) if include_exception_handler?(options)
 
       tls = (options[:ssl] || options[:tls])
@@ -566,7 +571,7 @@ module MarchHare
       # a callable that creates a fixed size executor
       # of that size. MK.
       if n = opts[:thread_pool_size]
-        return Proc.new { MarchHare::ThreadPools.fixed_of_size(n) }
+        proc { MarchHare::ThreadPools.fixed_of_size(n, use_daemon_threads: true) }
       end
     end
 
