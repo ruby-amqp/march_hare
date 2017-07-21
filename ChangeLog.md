@@ -1,6 +1,8 @@
 ## Changes Between 3.0.0 and 3.1.0 (unreleased)
 
-No changes yet.
+### RabbitMQ Java Client Upgrade
+
+RabbitMQ Java client dependency has been updated to the final version of `4.2.0`.
 
 
 
