@@ -4,7 +4,15 @@
 
 RabbitMQ Java client dependency has been updated to the final version of `4.2.0`.
 
+### TLS/SSL (when certificate path and password is provided) 
 
+When a TLS/SSL certificate path and password is provided for a PKCS12 keystore, those certificates from that keystore will now also be used (by default) for the TLS/SSL trust instead of the `NullTrustManager`.  
+
+`options[:trust_manager]` is now available to be set when certificate path and password are provided for a PKCS12 keystore. 
+
+TLS/SSL 3.0.0 behavior when certificate path and password are provided for a PKCS12 keystore can be retained by setting `options[:trust_manager] = com.rabbitmq.client.NullTrustManager.new`.  
+
+Contributed by Jake Landis (elastic.co)
 
 ## Changes Between 2.22.0 and 3.0.0 (February 20th, 2017)
 
