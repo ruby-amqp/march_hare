@@ -15,6 +15,7 @@ module MarchHare
   java_import javax.net.ssl.SSLContext
   java_import javax.net.ssl.KeyManagerFactory
   java_import java.security.KeyStore
+  java_import javax.net.ssl.TrustManagerFactory
 
   # Connection to a RabbitMQ node.
   #
@@ -82,12 +83,11 @@ module MarchHare
       case tls
       when true then
         cf.use_ssl_protocol
-      when String then
+        when String then
         # TODO: logging
         $stdout.puts "Using TLS/SSL version #{tls}"
-        if options[:trust_manager]
-          cf.use_ssl_protocol(tls, options[:trust_manager])
-        elsif (cert_path = tls_certificate_path_from(options)) && (password = tls_certificate_password_from(options))
+        # Note: `options[:trust_manager] = com.rabbitmq.client.NullTrustManager.new` can be set to disable TLS verification.
+       if (cert_path = tls_certificate_path_from(options)) && (password = tls_certificate_password_from(options))
           ctx = SSLContext.get_instance(tls)
           pwd = password.to_java.to_char_array
           begin
@@ -98,7 +98,14 @@ module MarchHare
             kmf = KeyManagerFactory.get_instance("SunX509")
             kmf.init(ks, pwd)
 
-            ctx.init(kmf.get_key_managers, [NullTrustManager.new].to_java('javax.net.ssl.TrustManager'), nil)
+            if options[:trust_manager]
+              ctx.init(kmf.get_key_managers, [options[:trust_manager]], nil)
+            else
+              # use the key store as the trust store
+              tmf = TrustManagerFactory.get_instance(TrustManagerFactory.getDefaultAlgorithm());
+              tmf.init(ks)
+              ctx.init(kmf.get_key_managers, tmf.getTrustManagers(), nil)
+            end
 
             cf.use_ssl_protocol(ctx)
           rescue Java::JavaLang::Throwable => e
@@ -110,6 +117,8 @@ module MarchHare
           ensure
             is.close if is
           end
+        elsif options[:trust_manager]
+          cf.use_ssl_protocol(tls, options[:trust_manager])
         else
           cf.use_ssl_protocol(tls)
         end
