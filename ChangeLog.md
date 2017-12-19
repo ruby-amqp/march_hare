@@ -2,7 +2,7 @@
 
 ### RabbitMQ Java Client Upgrade
 
-RabbitMQ Java client dependency has been updated to the final version of `4.2.0`.
+RabbitMQ Java client dependency has been updated to the final version of `4.4.1`.
 
 ### TLS/SSL (when certificate path and password is provided) 
 
