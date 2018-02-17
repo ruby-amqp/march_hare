@@ -2,7 +2,7 @@
 
 ### RabbitMQ Java Client Upgrade
 
-RabbitMQ Java client dependency has been updated to the final version of `4.4.1`.
+RabbitMQ Java client dependency has been updated to the final version of `4.4.2`.
 
 ### TLS/SSL (when certificate path and password is provided) 
 
@@ -12,7 +12,15 @@ When a TLS/SSL certificate path and password is provided for a PKCS12 keystore, 
 
 TLS/SSL 3.0.0 behavior when certificate path and password are provided for a PKCS12 keystore can be retained by setting `options[:trust_manager] = com.rabbitmq.client.NullTrustManager.new`.  
 
-Contributed by Jake Landis (elastic.co)
+Contributed by Jake Landis (Elastic).
+
+### Improved Timeout Handling When Connecting
+
+`j.u.c.TimeoutException` is now handled better during connection
+initiation: more details will be provided to the user.
+
+Contributed by Per Lundberg.
+
 
 ## Changes Between 2.22.0 and 3.0.0 (February 20th, 2017)
 
