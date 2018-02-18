@@ -1,4 +1,10 @@
-## Changes Between 3.0.0 and 3.1.0 (unreleased)
+## Changes Between 3.1.0 and 4.0.0 (unreleased)
+
+No changes yet.
+
+
+
+## Changes Between 3.0.0 and 3.1.0 (Feb 18th, 2018)
 
 ### RabbitMQ Java Client Upgrade
 
