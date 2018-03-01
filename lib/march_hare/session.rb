@@ -402,11 +402,11 @@ module MarchHare
 
     # @private
     def self.adresses_from(options)
-      options[:addresses] || options[:hosts] || [address_with_port(options)]
+      options[:addresses] || options[:hosts] || [address_with_port_from(options)]
     end
 
     # @private
-    def self.address_with_port(options)
+    def self.address_with_port_from(options)
       address = hostname_from(options)
       address = "#{address}:#{options[:port]}" if options[:port]
       address
