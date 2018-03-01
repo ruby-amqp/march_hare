@@ -1,6 +1,12 @@
-## Changes Between 3.1.0 and 4.0.0 (unreleased)
+## Changes Between 3.1.0 and 3.1.1
 
-No changes yet.
+### Honor Overriden Port
+
+The `:port` option was unintentionally ignored in some cases.
+
+GitHub issue: [#131](https://github.com/ruby-amqp/march_hare/pull/131).
+
+Contributed by Tom Beck.
 
 
 
