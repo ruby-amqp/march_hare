@@ -78,6 +78,16 @@ RSpec.describe "MarchHare.connect" do
     c.close
   end
 
+  it "lets you specify host and port" do
+    expect {
+      MarchHare.connect(host: "127.0.0.1", port: 35672, network_recovery_interval: 0)
+    }.to raise_error(MarchHare::ConnectionRefused)
+
+    c = MarchHare.connect(host: "127.0.0.1", port: 5672, network_recovery_interval: 0)
+    expect(c).to be_connected
+    c.close
+  end
+
   it "lets you specify multiple hosts" do
     c = MarchHare.connect(hosts: ["127.0.0.1"], network_recovery_interval: 0)
     expect(c).to be_connected
