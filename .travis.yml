@@ -10,7 +10,7 @@ before_script:
 
 script: "bundle exec rspec"
 rvm:
-  - jruby-9.1.15.0
+  - jruby-9.1.17.0
 
 notifications:
   recipients:
