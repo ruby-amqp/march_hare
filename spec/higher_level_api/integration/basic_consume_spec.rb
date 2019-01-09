@@ -150,39 +150,39 @@ RSpec.describe "A consumer" do
       consumer3.cancel
     end
   end
-  
+
   describe "header consumption" do
     let(:connection) { MarchHare.connect }
     let(:channel)    { connection.create_channel }
-    
+
     it "should convert long headers" do
         queue    = channel.queue("", :exclusive => true)
 
         sleep(0.3)
-        
+
         expected_short = "short"
         expected_long = "l"*512
         expected_complex = "c"*1024
-        queue.publish("hello", :headers => { 
-          :long => expected_long, 
+        queue.publish("hello", :headers => {
+          :long => expected_long,
           :short => expected_short,
           :complex => {:foo => [{:bar => expected_complex}]}
         })
         sleep(0.3)
         received_mutex = Mutex.new
         received = nil
-        
+
         queue.subscribe do |metadata, message|
           received_mutex.synchronize { received = {:metadata => metadata, :message => message} }
         end
-        
+
         received = nil;
-        10.times do 
+        100.times do
           receive_happened = received_mutex.synchronize { !!received }
           break if receive_happened
-          sleep 0.3
+          sleep 0.1
         end
-        
+
         headers = received[:metadata].headers
         expect(headers["short"]).to eq(expected_short)
         expect(headers["long"]).to eq(expected_long)
