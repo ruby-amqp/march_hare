@@ -99,14 +99,14 @@ module MarchHare
     def self.convert(e, unwrap_io_exception = true)
       case e
       when java.net.SocketException then
-        IOError.new
+        IOError.new(e.message)
       when java.io.IOException then
         c = e.cause
 
         if c && unwrap_io_exception
           convert(c, false)
         else
-          IOError.new
+          IOError.new(e.message)
         end
       when com.rabbitmq.client.AlreadyClosedException then
         ChannelAlreadyClosed.new(e.reason)

@@ -144,6 +144,11 @@ module MarchHare
     alias client session
     alias connection session
 
+    # @return [::Logger] Logger instance from the connection
+    def logger
+      @connection.logger
+    end
+
     # @return [Integer] Channel id
     def channel_number
       @delegate.channel_number
@@ -187,6 +192,8 @@ module MarchHare
 
     # @private
     def automatically_recover(session, java_connection)
+      logger.debug("channel: begin automatic connection recovery")
+
       jch = java_connection.create_channel(id)
 
       self.revive_with(jch)
@@ -247,10 +254,11 @@ module MarchHare
     def recover_exchanges
       @exchanges.values.each do |x|
         begin
+          logger.debug("channel: recover exchange #{x.name}")
           x.recover_from_network_failure
         rescue Exception => e
-          # TODO: logger
-          $stderr.puts "Caught exception when recovering exchange #{x.name}"
+          logger.info("Caught exception when recovering exchange #{x.name}")
+          logger.error(e)
         end
       end
     end
@@ -260,10 +268,11 @@ module MarchHare
     def recover_queues
       @queues.values.each do |q|
         begin
+          logger.debug("channel: recover queue #{q.name}")
           q.recover_from_network_failure
         rescue Exception => e
-          # TODO: logger
-          $stderr.puts "Caught exception when recovering queue #{q.name}"
+          logger.info "Caught exception when recovering queue #{q.name}"
+          logger.error(e)
         end
       end
     end
@@ -273,11 +282,12 @@ module MarchHare
     def recover_consumers
       @consumers.values.each do |c|
         begin
+          logger.debug("channel: recover consumer #{c.consumer_tag}")
           self.unregister_consumer(c.consumer_tag)
           c.recover_from_network_failure
         rescue Exception => e
-          # TODO: logger
-          $stderr.puts "Caught exception when recovering consumer #{c.consumer_tag}"
+          logger.info "Caught exception when recovering consumer #{c.consumer_tag}"
+          logger.error(e)
         end
       end
     end
@@ -924,6 +934,7 @@ module MarchHare
 
     # @private
     def deregister_queue(queue)
+      logger.debug("channel: deregister queue #{queue.name}")
       @queues.delete(queue.name)
     end
 
@@ -934,6 +945,7 @@ module MarchHare
 
     # @private
     def register_queue(queue)
+      logger.debug("channel: register queue #{queue.name}")
       @queues[queue.name] = queue
     end
 
@@ -944,21 +956,25 @@ module MarchHare
 
     # @private
     def deregister_exchange(exchange)
+      logger.debug("channel: deregister exchange #{exchange.name}")
       @exchanges.delete(exchange.name)
     end
 
     # @private
     def register_exchange(exchange)
+      logger.debug("channel: register exchange #{exchange.name}")
       @exchanges[exchange.name] = exchange
     end
 
     # @private
     def register_consumer(consumer_tag, consumer)
+      logger.debug("channel: register consumer #{consumer_tag}")
       @consumers[consumer_tag] = consumer
     end
 
     # @private
     def unregister_consumer(consumer_tag)
+      logger.debug("channel: unregister consumer #{consumer_tag}")
       @consumers.delete(consumer_tag)
     end
 

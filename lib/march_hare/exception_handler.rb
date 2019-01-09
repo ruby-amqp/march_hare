@@ -1,0 +1,3 @@
+require "march_hare/exception_handler/rubify_java_exception_handler"
+require "march_hare/exception_handler/forgiving_exception_handler"
+require "march_hare/exception_handler/strict_exception_handler"
