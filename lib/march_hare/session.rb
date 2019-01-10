@@ -615,7 +615,7 @@ module MarchHare
 
     # @private
     def init_default_exception_handler(logger)
-      StrictExceptionHandler.new(logger)
+      ExceptionHandler.new(logger)
     end
 
     # @private

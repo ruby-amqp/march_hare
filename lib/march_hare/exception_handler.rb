@@ -1,3 +1,17 @@
-require "march_hare/exception_handler/rubify_java_exception_handler"
-require "march_hare/exception_handler/forgiving_exception_handler"
-require "march_hare/exception_handler/strict_exception_handler"
+module MarchHare
+  class ExceptionHandler < com.rabbitmq.client.impl.ForgivingExceptionHandler
+    def initialize(logger)
+      super()
+      @logger = logger
+    end
+
+    def log(msg, error)
+      logger.error(msg)
+      logger.error(error)
+    end
+
+    private
+
+    attr_reader :logger
+  end
+end
