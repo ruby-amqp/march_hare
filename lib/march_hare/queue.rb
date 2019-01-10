@@ -259,7 +259,7 @@ module MarchHare
     # @private
     def recover_bindings
       @bindings.each do |b|
-        @channel.logger.info "Recovering binding #{b.inspect}"
+        @channel.logger.debug("Recovering binding #{b.inspect}")
         self.bind(b[:exchange], b)
       end
     end

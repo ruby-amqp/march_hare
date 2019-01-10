@@ -257,7 +257,7 @@ module MarchHare
           logger.debug("channel: recover exchange #{x.name}")
           x.recover_from_network_failure
         rescue Exception => e
-          logger.info("Caught exception when recovering exchange #{x.name}")
+          logger.error("Caught exception when recovering exchange #{x.name}")
           logger.error(e)
         end
       end
@@ -271,7 +271,7 @@ module MarchHare
           logger.debug("channel: recover queue #{q.name}")
           q.recover_from_network_failure
         rescue Exception => e
-          logger.info "Caught exception when recovering queue #{q.name}"
+          logger.error("Caught exception when recovering queue #{q.name}")
           logger.error(e)
         end
       end
@@ -286,7 +286,7 @@ module MarchHare
           self.unregister_consumer(c.consumer_tag)
           c.recover_from_network_failure
         rescue Exception => e
-          logger.info "Caught exception when recovering consumer #{c.consumer_tag}"
+          logger.error("Caught exception when recovering consumer #{c.consumer_tag}")
           logger.error(e)
         end
       end

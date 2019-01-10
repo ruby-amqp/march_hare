@@ -193,7 +193,7 @@ module MarchHare
 
           @channel.register_exchange(self)
         rescue Exception => e
-          @channel.logger.info "Caught #{e.inspect} while redeclaring and registering exchange #{@name}!"
+          @channel.logger.error("Caught Exception while redeclaring and registering exchange #{@name}!")
           @channel.logger.error(e)
         end
       end
