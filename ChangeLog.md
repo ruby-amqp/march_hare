@@ -1,4 +1,11 @@
-## Changes Between 3.1.0 and 3.2.0 (unreleased)
+## Changes Between 3.1.0 and 4.0.0 (unreleased)
+
+### RabbitMQ Java Client Upgrade
+
+This is a potentially **breaking change**.
+
+RabbitMQ Java client dependency has been updated to the final version of `5.x`, which
+**requires JDK 8**.
 
 ### Ruby Logger Support
 
