@@ -1,6 +1,13 @@
-## Changes Between 3.1.0 and 4.0.0 (unreleased)
+## Changes Between 3.1.0 and 3.2.0 (unreleased)
 
-No changes yet.
+### Ruby Logger Support
+
+March Hare can now use a Ruby logger via the `:logger` option, which will also integrate with the Java
+client's `ExceptionHandler` implementations.
+
+GitHub issues: [ruby-amqp/march_hare#35](https://github.com/ruby-amqp/march_hare/issues/35), [ruby-amqp/march_hare#136](https://github.com/ruby-amqp/march_hare/pull/136)
+
+Contributed by [Andreas Eger](https://github.com/andreaseger).
 
 
 
