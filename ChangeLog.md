@@ -4,7 +4,7 @@
 
 This is a potentially **breaking change**.
 
-RabbitMQ Java client dependency has been updated to the final version of `5.x`, which
+RabbitMQ Java client dependency has been updated to a `5.x` release, which
 **requires JDK 8**.
 
 ### Ruby Logger Support
