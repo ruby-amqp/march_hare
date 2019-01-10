@@ -10,7 +10,7 @@ module MarchHare
   java_import com.rabbitmq.client.ConnectionFactory
   java_import com.rabbitmq.client.Connection
   java_import com.rabbitmq.client.BlockedListener
-  java_import com.rabbitmq.client.NullTrustManager
+  java_import com.rabbitmq.client.TrustEverythingTrustManager
   java_import com.rabbitmq.client.MissedHeartbeatException
   java_import com.rabbitmq.client.Address
 
@@ -89,7 +89,8 @@ module MarchHare
         cf.use_ssl_protocol
       when String then
         opts[:logger].info("Using TLS/SSL version #{tls}") if opts[:logger]
-        # Note: `options[:trust_manager] = com.rabbitmq.client.NullTrustManager.new` can be set to disable TLS verification.
+        # Note: `options[:trust_manager] = com.rabbitmq.client.TrustEverythingTrustManager.new`
+        # can be set to effectively disable TLS verification.
         if (cert_path = tls_certificate_path_from(options)) && (password = tls_certificate_password_from(options))
           ctx = SSLContext.get_instance(tls)
           pwd = password.to_java.to_char_array
