@@ -2,7 +2,9 @@
 require "march_hare/shutdown_listener"
 require "set"
 require "march_hare/thread_pools"
+require "march_hare/exception_handler"
 require "java"
+require "logger"
 
 module MarchHare
   java_import com.rabbitmq.client.ConnectionFactory
@@ -52,6 +54,9 @@ module MarchHare
     #                                   This will switch port to 5671 by default.
     # @option options [String] :tls_certificate_path Path to a PKCS12 certificate.
     # @option options [java.util.concurrent.ThreadFactory] :thread_factory Thread factory RabbitMQ Java client will use (useful in restricted PaaS platforms such as GAE)
+    # @option options [Logger] :logger The logger.  If missing, one is created using :log_file and :log_level.
+    # @option options [IO, String] :log_file The file or path to use when creating a logger.  Defaults to STDOUT.
+    # @option options [Integer] :log_level The log level to use when creating a logger.  Defaults to LOGGER::WARN
     #
     # @see http://rubymarchhare.info/articles/connecting.html Connecting to RabbitMQ guide
     def self.connect(options = {})
@@ -77,17 +82,15 @@ module MarchHare
       cf.connection_timeout  = connection_timeout_from(options) if include_connection_timeout?(options)
 
       cf.thread_factory      = thread_factory_from(options)    if include_thread_factory?(options)
-      cf.exception_handler   = exception_handler_from(options) if include_exception_handler?(options)
 
       tls = (options[:ssl] || options[:tls])
       case tls
       when true then
         cf.use_ssl_protocol
-        when String then
-        # TODO: logging
-        $stdout.puts "Using TLS/SSL version #{tls}"
+      when String then
+        opts[:logger].info("Using TLS/SSL version #{tls}") if opts[:logger]
         # Note: `options[:trust_manager] = com.rabbitmq.client.NullTrustManager.new` can be set to disable TLS verification.
-       if (cert_path = tls_certificate_path_from(options)) && (password = tls_certificate_password_from(options))
+        if (cert_path = tls_certificate_path_from(options)) && (password = tls_certificate_password_from(options))
           ctx = SSLContext.get_instance(tls)
           pwd = password.to_java.to_char_array
           begin
@@ -134,10 +137,18 @@ module MarchHare
     # @return [Array<MarchHare::Channel>] Channels opened on this connection
     attr_reader :channels
 
+    # @return [::Logger] Logger instance
+    attr_reader :logger
+
 
     # @private
     def initialize(connection_factory, opts = {})
       @cf               = connection_factory
+
+      log_file                   = opts[:log_file] || STDOUT
+      log_level                  = opts[:log_level] || ENV["MARCH_HARE_LOG_LEVEL"] || Logger::WARN
+      @logger                    = opts.fetch(:logger, init_default_logger(log_file, log_level))
+      @cf.exception_handler      = opts.fetch(:exception_handler, init_default_exception_handler(@logger))
 
       # March Hare uses its own connection recovery implementation and
       # as of Java client 4.x automatic recovery is enabled by
@@ -277,6 +288,8 @@ module MarchHare
     # Begins automatic connection recovery (typically only used internally
     # to recover from network failures)
     def automatically_recover
+      @logger.debug("session: begin automatic connection recovery")
+
       ms = @network_recovery_interval * 1000
       # recovering immediately makes little sense. Wait a bit first. MK.
       java.lang.Thread.sleep(ms)
@@ -302,8 +315,7 @@ module MarchHare
         begin
           ch.automatically_recover(self, new_connection)
         rescue Exception, java.io.IOException => e
-          # TODO: logging
-          $stderr.puts e
+          @logger.error(e)
         end
       end
 
@@ -312,6 +324,7 @@ module MarchHare
 
     # @private
     def recover_shutdown_hooks(connection)
+      @logger.debug("session: recover_shutdown_hooks")
       @shutdown_hooks.each do |sh|
         connection.add_shutdown_listener(sh)
       end
@@ -484,16 +497,6 @@ module MarchHare
       !!opts[:thread_factory]
     end
 
-    # @private
-    def self.exception_handler_from(opts)
-      opts[:exception_handler]
-    end
-
-    # @private
-    def self.include_exception_handler?(opts)
-      !!opts[:exception_handler]
-    end
-
     # Executes a block, catching Java exceptions RabbitMQ Java client throws and
     # transforms them to Ruby exceptions that are then re-raised.
     #
@@ -520,6 +523,7 @@ module MarchHare
 
     # @private
     def reconnecting_on_network_failures(interval_in_ms, &fn)
+      @logger.debug("session: reconnecting_on_network_failures")
       begin
         fn.call
       rescue IOError, MarchHare::ConnectionRefused, java.io.IOException, java.util.concurrent.TimeoutException => e
@@ -531,6 +535,7 @@ module MarchHare
 
     # @private
     def build_new_connection
+      @logger.debug("session: build_new_connection")
       @uses_uri ? new_uri_connection_impl(@uri) : new_connection_impl(@addresses)
     end
 
@@ -606,6 +611,32 @@ module MarchHare
     # @private
     def tls_certificate_password_from(opts)
       self.class.tls_certificate_password_from(opts)
+    end
+
+    # @private
+    def init_default_exception_handler(logger)
+      ExceptionHandler.new(logger)
+    end
+
+    # @private
+    def init_default_logger(logfile, level)
+      lgr = ::Logger.new(logfile)
+      lgr.level    = normalize_log_level(level)
+      lgr.progname = self.to_s
+      lgr
+    end
+
+    # @private
+    def normalize_log_level(level)
+      case level
+      when :debug, Logger::DEBUG, "debug" then Logger::DEBUG
+      when :info,  Logger::INFO,  "info"  then Logger::INFO
+      when :warn,  Logger::WARN,  "warn"  then Logger::WARN
+      when :error, Logger::ERROR, "error" then Logger::ERROR
+      when :fatal, Logger::FATAL, "fatal" then Logger::FATAL
+      else
+        Logger::WARN
+      end
     end
 
     # Ruby blocks-based BlockedListener that handles

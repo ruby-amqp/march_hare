@@ -40,6 +40,7 @@ RSpec.describe "Connection recovery" do
 
   def close_all_outstanding_connections
     xs = @connections.select { |c| c.open? }
+    return if xs.size.zero?
     puts "Recovery example group: have #{xs.size} tracked connections to ensure closed..."
     xs.each do |c|
       c.close if c.open?

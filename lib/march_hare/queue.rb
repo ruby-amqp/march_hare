@@ -233,6 +233,7 @@ module MarchHare
 
     # @private
     def declare!
+      @channel.logger.debug("queue: declare! #{@name}")
       response = if @options[:passive]
                  then @channel.queue_declare_passive(@name)
                  else @channel.queue_declare(@name, @options[:durable], @options[:exclusive], @options[:auto_delete], @options[:arguments])
@@ -258,8 +259,7 @@ module MarchHare
     # @private
     def recover_bindings
       @bindings.each do |b|
-        # TODO: use a logger
-        # puts "Recovering binding #{b.inspect}"
+        @channel.logger.debug("Recovering binding #{b.inspect}")
         self.bind(b[:exchange], b)
       end
     end
