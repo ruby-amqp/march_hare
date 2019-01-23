@@ -7,7 +7,7 @@ cache: bundler
 before_script:
   - ./bin/ci/install_on_debian.sh
   - until sudo lsof -i:5672; do echo "Waiting for RabbitMQ to start..."; sleep 1; done
-  - ./bin/ci/before_script.sh
+  - ./bin/ci/before_build.sh
 
 script: "bundle exec rspec"
 rvm:
