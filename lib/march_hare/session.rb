@@ -177,6 +177,7 @@ module MarchHare
                                end
       @network_recovery_interval = opts.fetch(:network_recovery_interval, DEFAULT_NETWORK_RECOVERY_INTERVAL)
       @shutdown_hooks            = Array.new
+      @blocked_connection_hooks  = Array.new
 
       if @automatically_recover
         self.add_automatic_recovery_hook
@@ -251,16 +252,24 @@ module MarchHare
 
     # Defines a connection.blocked handler
     def on_blocked(&block)
-      self.add_blocked_listener(BlockBlockedUnblockedListener.for_blocked(block))
+      listener = BlockBlockedUnblockedListener.for_blocked(block)
+      @blocked_connection_hooks << listener
+
+      self.add_blocked_listener(listener)
     end
 
     # Defines a connection.unblocked handler
     def on_unblocked(&block)
-      self.add_blocked_listener(BlockBlockedUnblockedListener.for_unblocked(block))
+      listener = BlockBlockedUnblockedListener.for_unblocked(block)
+      @blocked_connection_hooks << listener
+
+      self.add_blocked_listener(listener)
     end
 
     # Clears all callbacks defined with #on_blocked and #on_unblocked.
     def clear_blocked_connection_callbacks
+      @blocked_connection_hooks.clear
+
       @connection.clear_blocked_listeners
     end
 
@@ -299,6 +308,7 @@ module MarchHare
         reconnecting_on_network_failures(ms) { build_new_connection }
       end
       self.recover_shutdown_hooks(new_connection)
+      self.recover_connection_block_hooks(new_connection)
 
       # sorting channels by id means that the cases like the following:
       #
@@ -328,6 +338,14 @@ module MarchHare
       @logger.debug("session: recover_shutdown_hooks")
       @shutdown_hooks.each do |sh|
         connection.add_shutdown_listener(sh)
+      end
+    end
+
+    # @private
+    def recover_connection_block_hooks(connection)
+      @logger.debug("session: recover_connection_block_hooks")
+      @blocked_connection_hooks.each do |listener|
+        connection.add_blocked_listener(listener)
       end
     end
 
