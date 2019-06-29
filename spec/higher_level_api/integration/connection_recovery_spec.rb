@@ -298,4 +298,37 @@ RSpec.describe "Connection recovery" do
       c.close
     end
   end
+
+  it 'fires on_recovery_start hooks' do
+    with_open do |c|
+      recovery_start_hook_called = false
+      c.on_recovery_start do |session|
+        recovery_start_hook_called = true
+        expect(session).to eq(c)
+      end
+
+      close_all_connections!
+
+      wait_for_recovery
+
+      expect(recovery_start_hook_called).to be true
+    end
+  end
+
+  it 'fires on_recovery hooks' do
+    with_open do |c|
+      recovery_hook_called = false
+
+      c.on_recovery do |session|
+        recovery_hook_called = true
+        expect(session).to eq(c)
+      end
+
+      close_all_connections!
+
+      wait_for_recovery
+
+      expect(recovery_hook_called).to be true
+    end
+  end
 end

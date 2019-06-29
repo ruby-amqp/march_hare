@@ -177,6 +177,8 @@ module MarchHare
                                end
       @network_recovery_interval = opts.fetch(:network_recovery_interval, DEFAULT_NETWORK_RECOVERY_INTERVAL)
       @shutdown_hooks            = Array.new
+      @blocked_connection_hooks  = Array.new
+      @connection_recovery_hooks = Array.new
 
       if @automatically_recover
         self.add_automatic_recovery_hook
@@ -251,19 +253,41 @@ module MarchHare
 
     # Defines a connection.blocked handler
     def on_blocked(&block)
-      self.add_blocked_listener(BlockBlockedUnblockedListener.for_blocked(block))
+      listener = BlockBlockedUnblockedListener.for_blocked(block)
+      @blocked_connection_hooks << listener
+
+      self.add_blocked_listener(listener)
     end
 
     # Defines a connection.unblocked handler
     def on_unblocked(&block)
-      self.add_blocked_listener(BlockBlockedUnblockedListener.for_unblocked(block))
+      listener = BlockBlockedUnblockedListener.for_unblocked(block)
+      @blocked_connection_hooks << listener
+
+      self.add_blocked_listener(listener)
     end
 
     # Clears all callbacks defined with #on_blocked and #on_unblocked.
     def clear_blocked_connection_callbacks
+      @blocked_connection_hooks.clear
+
       @connection.clear_blocked_listeners
     end
 
+    def on_recovery_start(&block)
+      listener = RecoveryListener.for_start(block)
+      @connection_recovery_hooks << listener
+    end
+
+    def on_recovery(&block)
+      listener = RecoveryListener.for_finish(block)
+      @connection_recovery_hooks << listener
+    end
+
+    # Clears all callbacks defined with #on_recovery_started and #on_recovery
+    def clear_connection_recovery_callbacks
+      @connection_recovery_hooks.clear
+    end
 
     # @private
     def add_automatic_recovery_hook
@@ -291,6 +315,8 @@ module MarchHare
     def automatically_recover
       @logger.debug("session: begin automatic connection recovery")
 
+      fire_recovery_start_hooks
+
       ms = @network_recovery_interval * 1000
       # recovering immediately makes little sense. Wait a bit first. MK.
       java.lang.Thread.sleep(ms)
@@ -299,6 +325,7 @@ module MarchHare
         reconnecting_on_network_failures(ms) { build_new_connection }
       end
       self.recover_shutdown_hooks(new_connection)
+      self.recover_connection_block_hooks(new_connection)
 
       # sorting channels by id means that the cases like the following:
       #
@@ -321,6 +348,10 @@ module MarchHare
       end
 
       @connection = new_connection
+
+      fire_recovery_hooks
+
+      @connection
     end
 
     # @private
@@ -328,6 +359,14 @@ module MarchHare
       @logger.debug("session: recover_shutdown_hooks")
       @shutdown_hooks.each do |sh|
         connection.add_shutdown_listener(sh)
+      end
+    end
+
+    # @private
+    def recover_connection_block_hooks(connection)
+      @logger.debug("session: recover_connection_block_hooks")
+      @blocked_connection_hooks.each do |listener|
+        connection.add_blocked_listener(listener)
       end
     end
 
@@ -640,6 +679,20 @@ module MarchHare
       end
     end
 
+    # @private
+    def fire_recovery_start_hooks
+      @connection_recovery_hooks.each do |recovery_listener|
+        recovery_listener.handle_recovery_started(self)
+      end
+    end
+
+    # @private
+    def fire_recovery_hooks
+      @connection_recovery_hooks.each do |recovery_listener|
+        recovery_listener.handle_recovery(self)
+      end
+    end
+
     # Ruby blocks-based BlockedListener that handles
     # connection.blocked and connection.unblocked.
     # @private
@@ -678,5 +731,32 @@ module MarchHare
       end
     end
 
+    # Ruby blocks-based RecoveryListener that handles
+    # connection recovery_started and recovery
+    class RecoveryListener
+      NOOP_FN1 = Proc.new { |_| }
+      private_constant :NOOP_FN1
+
+      def self.for_start(block)
+        new(block, NOOP_FN1)
+      end
+
+      def self.for_finish(block)
+        new(NOOP_FN1, block)
+      end
+
+      def initialize(before_recovery, after_recovery)
+        @recovery_start_hook = before_recovery
+        @recovery_hook = after_recovery
+      end
+
+      def handle_recovery_started(recoverable)
+        @recovery_start_hook.call(recoverable)
+      end
+
+      def handle_recovery(recoverable)
+        @recovery_hook.call(recoverable)
+      end
+    end
   end
 end
