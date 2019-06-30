@@ -7,6 +7,15 @@ This is a potentially **breaking change**.
 RabbitMQ Java client dependency has been updated to a `5.x` release, which
 **requires JDK 8**.
 
+### Blocked Connection Notification Hook Recovery
+
+Connections now keep track of their [`connection.[un]blocked`]() hooks and recovery them as part
+of connection recovery sequence.
+
+GitHub issue: [ruby-amqp/march_hare#142](https://github.com/ruby-amqp/march_hare/pull/142).
+
+Contributed by [Ry Biesemeyer](https://github.com/yaauie) (Elastic).
+
 ### Ruby Logger Support
 
 March Hare can now use a Ruby logger via the `:logger` option, which will also integrate with the Java
@@ -24,13 +33,13 @@ Contributed by [Andreas Eger](https://github.com/andreaseger).
 
 RabbitMQ Java client dependency has been updated to the final version of `4.4.2`.
 
-### TLS/SSL (when certificate path and password is provided) 
+### TLS/SSL (when certificate path and password is provided)
 
-When a TLS/SSL certificate path and password is provided for a PKCS12 keystore, those certificates from that keystore will now also be used (by default) for the TLS/SSL trust instead of the `NullTrustManager`.  
+When a TLS/SSL certificate path and password is provided for a PKCS12 keystore, those certificates from that keystore will now also be used (by default) for the TLS/SSL trust instead of the `NullTrustManager`.
 
-`options[:trust_manager]` is now available to be set when certificate path and password are provided for a PKCS12 keystore. 
+`options[:trust_manager]` is now available to be set when certificate path and password are provided for a PKCS12 keystore.
 
-TLS/SSL 3.0.0 behavior when certificate path and password are provided for a PKCS12 keystore can be retained by setting `options[:trust_manager] = com.rabbitmq.client.NullTrustManager.new`.  
+TLS/SSL 3.0.0 behavior when certificate path and password are provided for a PKCS12 keystore can be retained by setting `options[:trust_manager] = com.rabbitmq.client.NullTrustManager.new`.
 
 Contributed by Jake Landis (Elastic).
 
@@ -181,7 +190,7 @@ Contributed by Thilo-Alexander Ginkel.
 
 Connection recovery no longer fails silently if the `:uri` option was used in `Connection#new`.
 
-Contributed by Noah Magram. 
+Contributed by Noah Magram.
 
 
 ## Changes Between 2.10.0 and 2.11.0
