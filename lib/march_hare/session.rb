@@ -281,19 +281,11 @@ module MarchHare
     def on_recovery_start(&block)
       listener = RecoveryListener.for_start(block)
       @connection_recovery_hooks << listener
-
-      self.add_recovery_listener(listener)
     end
 
     def on_recovery(&block)
       listener = RecoveryListener.for_finish(block)
       @connection_recovery_hooks << listener
-
-      self.add_recovery_listener(listener)
-    end
-
-    def add_recovery_listener(listener)
-      @connection.add_recovery_listener(listener)
     end
 
     # Clears all callbacks defined with #on_recovery_started and #on_recovery
