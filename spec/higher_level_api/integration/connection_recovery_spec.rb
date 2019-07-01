@@ -17,7 +17,7 @@ RSpec.describe "Connection recovery" do
   end
 
   def wait_for_recovery
-    sleep 2.0
+    sleep 3.0
   end
 
   def with_open(c = MarchHare.connect(network_recovery_interval: 0.6), &block)
