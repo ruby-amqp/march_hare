@@ -579,7 +579,7 @@ module MarchHare
 
     # @private
     def build_new_connection
-      @logger.debug("session: build_new_connection")
+      @logger.debug("session: instantiating a new connection")
       @uses_uri ? new_uri_connection_impl(@uri) : new_connection_impl(@addresses)
     end
 
@@ -685,6 +685,7 @@ module MarchHare
 
     # @private
     def fire_recovery_start_hooks
+      @logger.debug "Have #{@connection_recovery_hooks.size} recovery start hooks to run"
       @connection_recovery_hooks.each do |recovery_listener|
         recovery_listener.handle_recovery_started(self)
       end
@@ -692,6 +693,7 @@ module MarchHare
 
     # @private
     def fire_recovery_hooks
+      @logger.debug "Have #{@connection_recovery_hooks.size} recovery completion hooks to run"
       @connection_recovery_hooks.each do |recovery_listener|
         recovery_listener.handle_recovery(self)
       end

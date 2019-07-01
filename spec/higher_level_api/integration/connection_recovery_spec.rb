@@ -9,15 +9,23 @@ RSpec.describe "Connection recovery" do
   let(:amqp_uri) { "amqp://localhost:5672/%2F" }
 
   def close_all_connections!
+    # wait for stats to refresh, make sure to run bin/ci/before_build.sh as well!
     sleep 1.1
     http_client.list_connections.each do |conn_info|
+      puts "Closing connection #{conn_info.name}..."
       http_client.close_connection(conn_info.name)
     end
     sleep 0.5
   end
 
   def wait_for_recovery
-    sleep 3.0
+    # wait for stats to refresh, make sure to run bin/ci/before_build.sh as well!
+    sleep 1.1
+    while http_client.list_connections.size == 0
+      sleep 0.1
+    end
+    # wait for recovery to finish on the client side
+    sleep 0.5
   end
 
   def with_open(c = MarchHare.connect(network_recovery_interval: 0.6), &block)
@@ -260,9 +268,7 @@ RSpec.describe "Connection recovery" do
       ch = c.create_channel
       q  = ch.queue("", exclusive: true)
       n.times do
-        q.subscribe do |_, _, _|
-          delivered = true
-        end
+        q.subscribe { |_, _, _| }
       end
       close_all_connections!
 
@@ -308,7 +314,6 @@ RSpec.describe "Connection recovery" do
       end
 
       close_all_connections!
-
       wait_for_recovery
 
       expect(recovery_start_hook_called).to be true
@@ -325,7 +330,6 @@ RSpec.describe "Connection recovery" do
       end
 
       close_all_connections!
-
       wait_for_recovery
 
       expect(recovery_hook_called).to be true
