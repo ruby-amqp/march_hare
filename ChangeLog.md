@@ -1,10 +1,15 @@
-## Changes Between 3.1.0 and 4.0.0 (unreleased)
+## Changes Between 4.0.0 and 4.1.0 (unreleased)
+
+No changes yet.
+
+
+## Changes Between 3.1.0 and 4.0.0 (July 1st, 2019)
 
 ### RabbitMQ Java Client Upgrade
 
 This is a potentially **breaking change**.
 
-RabbitMQ Java client dependency has been updated to a `5.x` release, which
+RabbitMQ Java client dependency has been updated to a `5.7.x` release, which
 **requires JDK 8**.
 
 ### Blocked Connection Notification Hook Recovery
@@ -24,7 +29,6 @@ client's `ExceptionHandler` implementations.
 GitHub issues: [ruby-amqp/march_hare#35](https://github.com/ruby-amqp/march_hare/issues/35), [ruby-amqp/march_hare#136](https://github.com/ruby-amqp/march_hare/pull/136)
 
 Contributed by [Andreas Eger](https://github.com/andreaseger).
-
 
 
 ## Changes Between 3.0.0 and 3.1.0 (Feb 18th, 2018)
