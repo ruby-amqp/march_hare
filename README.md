@@ -27,10 +27,8 @@ March Hare is not
 
 ## Project Maturity
 
-March Hare is not a young project. Extracted from a platform that
-transports more than a terabyte of data over RabbitMQ every day, it
-has been around as an open source project since mid-2011 and has
-reached 2.0 in late 2013.
+March Hare is not a young project. Extracted from production systems, it
+has been around as an open source project since 2011.
 
 It is based on the RabbitMQ Java client, which is officially
 supported by the RabbitMQ team at [Pivotal](http://pivotal.io).
@@ -44,7 +42,7 @@ supported by the RabbitMQ team at [Pivotal](http://pivotal.io).
 
 ### With Bundler
 
-    gem "march_hare", "~> 3.1.1"
+    gem "march_hare", "~> 4.0.1"
 
 
 ## Documentation
@@ -70,8 +68,7 @@ March Hare supports JRuby 9.0 or later.
 
 ## Supported JDK Versions
 
-The project is tested against OpenJDK 8, Oracle JDK 8 and is
-known to work on OpenJDK 7 and Oracle JDK 7.
+March Hare requires JDK 8 or later.
 
 
 ## Change Log
@@ -94,13 +91,13 @@ management plugin enabled on your local machine to run the specs.
 To boot one via docker you can use:
 
 ```bash
-$ docker run -p 5672:5672 -p 15672:15672 rabbitmq:3-management
+docker run -p 5672:5672 -p 15672:15672 rabbitmq:3-management
 ```
 
 And then you can run the specs using `rspec`:
 
 ```bash
-$ bundle exec rspec
+bundle exec rspec
 ```
 
 
@@ -111,4 +108,4 @@ MIT, see LICENSE in the repository root
 
 ## Copyright
 
-Theo Hultberg, Michael Klishin, 2011-2017.
+Theo Hultberg, Michael Klishin, 2011-2019.
