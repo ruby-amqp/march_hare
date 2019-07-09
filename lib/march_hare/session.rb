@@ -570,7 +570,7 @@ module MarchHare
       rescue java.net.SocketException
         raise ConnectionRefused.new("Connection failed due to a socket exception. #{endpoint_info_from(@cf)}")
       rescue java.util.concurrent.TimeoutException
-        raise ConnectionRefused.new("Connection timed out.  #{endpoint_info_from(@cf)}")
+        raise ConnectionRefused.new("Connection timed out. #{endpoint_info_from(@cf)}")
       rescue com.rabbitmq.client.AuthenticationFailureException
         raise AuthenticationFailureError.new(@cf.username, @cf.virtual_host, @cf.password.bytesize)
       rescue com.rabbitmq.client.PossibleAuthenticationFailureException
