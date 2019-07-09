@@ -165,7 +165,7 @@ module MarchHare
       # we expect this option to be specified in seconds
       @executor_shutdown_timeout = opts.fetch(:executor_shutdown_timeout, 30.0)
 
-      @addresses        = self.class.adresses_from(opts)
+      @addresses        = self.class.addresses_from(opts)
       @connection       = build_new_connection
       @channels         = JavaConcurrent::ConcurrentHashMap.new
 
@@ -458,7 +458,7 @@ module MarchHare
     end
 
     # @private
-    def self.adresses_from(options)
+    def self.addresses_from(options)
       options[:addresses] || options[:hosts] || [address_with_port_from(options)]
     end
 
@@ -541,6 +541,19 @@ module MarchHare
       !!opts[:thread_factory]
     end
 
+    # @private
+    def endpoint_info_from(cf)
+      if @uses_uri
+        uri_without_credentials = URI.parse(@uri).tap do |u|
+          u.password = "REDACTED"
+          u.to_s
+        end
+        "Target URI: #{uri_without_credentials}"
+      else
+        "Target host list: #{@addresses.join(', ')}, target virtual host: #{cf.virtual_host}, username: #{cf.username}"
+      end
+    end
+
     # Executes a block, catching Java exceptions RabbitMQ Java client throws and
     # transforms them to Ruby exceptions that are then re-raised.
     #
@@ -548,19 +561,19 @@ module MarchHare
     def converting_rjc_exceptions_to_ruby(&block)
       begin
         block.call
-      rescue java.net.ConnectException => e
-        raise ConnectionRefused.new("Connection to #{@cf.host}:#{@cf.port} refused")
-      rescue java.net.NoRouteToHostException => e
-        raise ConnectionRefused.new("Connection to #{@cf.host}:#{@cf.port} failed: no route to host")
-      rescue java.net.UnknownHostException => e
-        raise ConnectionRefused.new("Connection to #{@cf.host}:#{@cf.port} refused: host unknown")
-      rescue java.net.SocketException => e
-        raise ConnectionRefused.new("Connection to #{@cf.host}:#{@cf.port} failed")
-      rescue java.util.concurrent.TimeoutException => e
-        raise ConnectionRefused.new("Connection to #{@cf.host}:#{@cf.port} failed: timeout")
-      rescue com.rabbitmq.client.AuthenticationFailureException => e
+      rescue java.net.ConnectException
+        raise ConnectionRefused.new("Connection was refused. #{endpoint_info_from(@cf)}")
+      rescue java.net.NoRouteToHostException
+        raise ConnectionRefused.new("Connection failed: no route to target host. #{endpoint_info_from(@cf)}")
+      rescue java.net.UnknownHostException
+        raise ConnectionRefused.new("Connection refused: target host unknown (cannot be resolved). #{endpoint_info_from(@cf)}")
+      rescue java.net.SocketException
+        raise ConnectionRefused.new("Connection failed due to a socket exception. #{endpoint_info_from(@cf)}")
+      rescue java.util.concurrent.TimeoutException
+        raise ConnectionRefused.new("Connection timed out.  #{endpoint_info_from(@cf)}")
+      rescue com.rabbitmq.client.AuthenticationFailureException
         raise AuthenticationFailureError.new(@cf.username, @cf.virtual_host, @cf.password.bytesize)
-      rescue com.rabbitmq.client.PossibleAuthenticationFailureException => e
+      rescue com.rabbitmq.client.PossibleAuthenticationFailureException
         raise PossibleAuthenticationFailureError.new(@cf.username, @cf.virtual_host, @cf.password.bytesize)
       end
     end
@@ -570,7 +583,7 @@ module MarchHare
       @logger.debug("session: reconnecting_on_network_failures")
       begin
         fn.call
-      rescue IOError, MarchHare::ConnectionRefused, java.io.IOException, java.util.concurrent.TimeoutException => e
+      rescue IOError, MarchHare::ConnectionRefused, java.io.IOException, java.util.concurrent.TimeoutException
         java.lang.Thread.sleep(interval_in_ms)
 
         retry
@@ -579,8 +592,13 @@ module MarchHare
 
     # @private
     def build_new_connection
-      @logger.debug("session: instantiating a new connection")
-      @uses_uri ? new_uri_connection_impl(@uri) : new_connection_impl(@addresses)
+      if @uses_uri
+        @logger.debug("session: instantiating a new connection using a URI")
+        new_uri_connection_impl(@uri)
+      else
+        @logger.debug("session: instantiating a new connection using a set of addresses: #{@addresses.join(',')}")
+        new_connection_impl(@addresses)
+      end
     end
 
     # @private
