@@ -42,7 +42,7 @@ supported by the RabbitMQ team at [Pivotal](http://pivotal.io).
 
 ### With Bundler
 
-    gem "march_hare", "~> 4.0"
+    gem "march_hare", "~> 4.1"
 
 
 ## Documentation
