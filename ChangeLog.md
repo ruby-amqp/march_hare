@@ -1,6 +1,16 @@
-## Changes Between 4.0.0 and 4.1.0 (unreleased)
+## Changes Between 4.1.0 and 4.2.0 (unreleased)
 
 No changes yet.
+
+
+## Changes Between 4.0.0 and 4.1.0 (July 9, 2019)
+
+### Corrected Log Messages on Connection Failure
+
+When TCP connection failed or timed out, March Hare reported default host and port
+instead of a list of addresses compiled from user-provided options.
+
+GitHub issue: [ruby-amqp/march_hare#133](https://github.com/ruby-amqp/march_hare/issues/133).
 
 
 ## Changes Between 3.1.0 and 4.0.0 (July 1st, 2019)
