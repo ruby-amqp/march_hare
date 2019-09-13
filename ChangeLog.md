@@ -1,6 +1,17 @@
-## Changes Between 4.1.0 and 4.2.0 (unreleased)
+## Changes Between 4.1.1 and 4.1.2 (in development)
 
 No changes yet.
+
+
+## Changes Between 4.1.0 and 4.1.1 (September 13, 2019)
+
+### Don't Fail with a NameError When TLS is Configurred Using a String
+
+When TLS connection was configured using a string, it failed with a `NameError`.
+
+Contributed by Colin Surprenant.
+
+GitHub issue: [ruby-amqp/march_hare#145](https://github.com/ruby-amqp/march_hare/pull/145)
 
 
 ## Changes Between 4.0.0 and 4.1.0 (July 9, 2019)
