@@ -88,7 +88,7 @@ module MarchHare
       when true then
         cf.use_ssl_protocol
       when String then
-        opts[:logger].info("Using TLS/SSL version #{tls}") if opts[:logger]
+        options[:logger].info("Using TLS/SSL version #{tls}") if options[:logger]
         # Note: `options[:trust_manager] = com.rabbitmq.client.TrustEverythingTrustManager.new`
         # can be set to effectively disable TLS verification.
         if (cert_path = tls_certificate_path_from(options)) && (password = tls_certificate_password_from(options))
