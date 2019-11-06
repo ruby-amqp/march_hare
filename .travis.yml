@@ -17,9 +17,6 @@ notifications:
   recipients:
     - michael@rabbitmq.com
 
-services:
-  - rabbitmq
-
 branches:
   only:
     - master
