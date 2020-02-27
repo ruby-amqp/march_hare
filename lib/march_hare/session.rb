@@ -103,7 +103,7 @@ module MarchHare
             kmf.init(ks, pwd)
 
             if options[:trust_manager]
-	      tm_a = options[:trust_manager].kind_of?(Array) ? options[:trust_manager] : [options[:trust_manager]]
+              tm_a = options[:trust_manager].kind_of?(Array) ? options[:trust_manager] : [options[:trust_manager]]
               ctx.init(kmf.get_key_managers, tm_a, nil)
             else
               # use the key store as the trust store
