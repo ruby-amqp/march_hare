@@ -28,7 +28,7 @@ RSpec.describe "MarchHare.connect" do
   context "when connection fails due to RabbitMQ node not running" do
     it "raises an exception" do
       expect {
-        MarchHare.connect(hostname: "localhost", port: 77668)
+        MarchHare.connect(hostname: "localhost", port: 65534)
       }.to raise_error(MarchHare::ConnectionRefused)
     end
   end
