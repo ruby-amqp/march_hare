@@ -103,7 +103,7 @@ module MarchHare
             kmf.init(ks, pwd)
 
             if options[:trust_manager]
-              ctx.init(kmf.get_key_managers, [options[:trust_manager]], nil)
+              ctx.init(kmf.get_key_managers, Array(options[:trust_manager]), nil)
             else
               # use the key store as the trust store
               tmf = TrustManagerFactory.get_instance(TrustManagerFactory.getDefaultAlgorithm());
@@ -111,6 +111,7 @@ module MarchHare
               ctx.init(kmf.get_key_managers, tmf.getTrustManagers(), nil)
             end
 
+            cf.set_sasl_config(options[:sasl_config]) if options[:sasl_config]
             cf.use_ssl_protocol(ctx)
           rescue Java::JavaLang::Throwable => e
             message = e.message
