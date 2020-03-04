@@ -41,6 +41,16 @@ RSpec.describe "MarchHare.connect" do
     end
   end
 
+  context "when connection manually closed" do
+    it "raises an exception on #automatically_recover" do
+      c = MarchHare.connect(uri: "amqp://127.0.0.1")
+      c.close
+      expect {
+        c.automatically_recover
+      }.to raise_error(MarchHare::ConnectionClosedException)
+    end
+  end
+
   it "handles amqp:// URIs w/o path part" do
     c = MarchHare.connect(uri: "amqp://127.0.0.1")
 
@@ -61,7 +71,7 @@ RSpec.describe "MarchHare.connect" do
     end
     c = MarchHare.connect(executor_factory: factory, network_recovery_interval: 0)
     c.close
-    c.automatically_recover
+    c.reopen
     c.close
     expect(calls).to eq(2)
   end
@@ -72,7 +82,7 @@ RSpec.describe "MarchHare.connect" do
     expect(c).to be_connected
     c.close
     expect(c).not_to be_connected
-    c.automatically_recover
+    c.reopen
     sleep 0.5
     expect(c).to be_connected
     c.close
@@ -93,7 +103,7 @@ RSpec.describe "MarchHare.connect" do
     expect(c).to be_connected
     c.close
     expect(c).not_to be_connected
-    c.automatically_recover
+    c.reopen
     sleep 0.5
     expect(c).to be_connected
     c.close
@@ -104,7 +114,7 @@ RSpec.describe "MarchHare.connect" do
     expect(c).to be_connected
     c.close
     expect(c).not_to be_connected
-    c.automatically_recover
+    c.reopen
     sleep 0.5
     expect(c).to be_connected
     c.close

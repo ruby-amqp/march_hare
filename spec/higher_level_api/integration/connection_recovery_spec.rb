@@ -10,7 +10,7 @@ RSpec.describe "Connection recovery" do
 
   def close_all_connections!
     # wait for stats to refresh, make sure to run bin/ci/before_build.sh as well!
-    sleep 0.7
+    sleep 1.7
     http_client.list_connections.each do |conn_info|
       puts "Closing connection #{conn_info.name}..."
       http_client.close_connection(conn_info.name)

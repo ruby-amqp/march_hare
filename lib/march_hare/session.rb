@@ -180,6 +180,7 @@ module MarchHare
       @shutdown_hooks            = Array.new
       @blocked_connection_hooks  = Array.new
       @connection_recovery_hooks = Array.new
+      @was_explicitly_closed     = false
 
       if @automatically_recover
         self.add_automatic_recovery_hook
@@ -225,8 +226,16 @@ module MarchHare
         ch.close
       end
 
+      @was_explicitly_closed = true
       maybe_shut_down_executor
       @connection.close
+    rescue com.rabbitmq.client.AlreadyClosedException
+      @logger.debug("close: connection already closed")
+    end
+
+    def reopen
+      @was_explicitly_closed = false
+      automatically_recover
     end
 
     # @return [Boolean] true if connection is open, false otherwise
@@ -318,7 +327,8 @@ module MarchHare
     # Begins automatic connection recovery (typically only used internally
     # to recover from network failures)
     def automatically_recover
-      @logger.debug("session: begin automatic connection recovery")
+      raise ConnectionClosedException if @was_explicitly_closed
+      @logger.debug("session: begin automatic connection recovery #{Thread.current.inspect}")
 
       fire_recovery_start_hooks
 
@@ -583,6 +593,7 @@ module MarchHare
     def reconnecting_on_network_failures(interval_in_ms, &fn)
       @logger.debug("session: reconnecting_on_network_failures")
       begin
+        return if @was_explicitly_closed
         fn.call
       rescue IOError, MarchHare::ConnectionRefused, java.io.IOException, java.util.concurrent.TimeoutException
         java.lang.Thread.sleep(interval_in_ms)
