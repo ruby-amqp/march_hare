@@ -16,6 +16,12 @@ module MarchHare
   class ConnectionRefused < NetworkException
   end
 
+  class ConnectionClosedException < Exception
+    def initialize(message='')
+      super("Connection was explicitly closed and cannot be reopened. Create a new Connection instead. #{message}")
+    end
+  end
+
   class ChannelLevelException < Exception
     attr_reader :channel_close
 
