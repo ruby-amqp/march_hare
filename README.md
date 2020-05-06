@@ -20,15 +20,13 @@ and [Bunny](http://rubybunny.info).
 March Hare is not
 
  * A replacement for the RabbitMQ Java client
- * An attempt to re-create 100% of the amqp gem API on top of the Java client
- * A "work queue" like Resque
- * A cure for cancer
+ * A replacement for Bunny, the most popular Ruby RabbitMQ client
+ * A long running "work queue" service
 
 
 ## Project Maturity
 
-March Hare is not a young project. Extracted from production systems, it
-has been around as an open source project since 2011.
+March Hare has been around since 2011 and can be considered a mature library.
 
 It is based on the [RabbitMQ Java client](https://www.rabbitmq.com/java-client.html), which is officially
 supported by the [RabbitMQ team at VMware](https://github.com/rabbitmq/).
@@ -111,4 +109,4 @@ MIT, see LICENSE in the repository root
 
 ## Copyright
 
-Theo Hultberg, Michael Klishin, 2011-2019.
+Theo Hultberg, Michael Klishin, 2011-2020.
