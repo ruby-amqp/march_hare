@@ -6,6 +6,12 @@ Contributed by @andreaseger.
 
 GitHub issue: [ruby-amqp/march_hare#149](https://github.com/ruby-amqp/march_hare/pull/149)
 
+### Connection Could Fail with an Exception
+
+Contributed by @colinsurprenant.
+
+GitHub issue: [ruby-amqp/march_hare#145](https://github.com/ruby-amqp/march_hare/pull/145)
+
 ### SASL Config Option
 
 Contributed by @ctpaterson.
