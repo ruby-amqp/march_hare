@@ -1,4 +1,8 @@
-## Changes Between 4.1.0 and 4.2.0 (unreleased)
+## Changes Between 4.2.0 and 4.3.0 (unreleased)
+
+No changes yet.
+
+## Changes Between 4.1.0 and 4.2.0 (May 6, 2020)
 
 ### Connection Closure Could Get Stuck in a Recovery Loop
 
@@ -17,6 +21,10 @@ GitHub issue: [ruby-amqp/march_hare#145](https://github.com/ruby-amqp/march_hare
 Contributed by @ctpaterson.
 
 GitHub issue: [ruby-amqp/march_hare#148](https://github.com/ruby-amqp/march_hare/pull/148)
+
+### RabbitMQ Java Client Upgrade
+
+RabbitMQ Java client dependency has been updated to a `5.9.x` release.
 
 ### Test Case Used a Port Out of the Common Ephemeral Port Range
 

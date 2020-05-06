@@ -30,20 +30,23 @@ March Hare is not
 March Hare is not a young project. Extracted from production systems, it
 has been around as an open source project since 2011.
 
-It is based on the RabbitMQ Java client, which is officially
-supported by the RabbitMQ team at [Pivotal](http://pivotal.io).
+It is based on the [RabbitMQ Java client](https://www.rabbitmq.com/java-client.html), which is officially
+supported by the [RabbitMQ team at VMware](https://github.com/rabbitmq/).
 
 
 ## Installation, Dependency
 
 ### With Rubygems
 
-    gem install march_hare
+``` shell
+gem install march_hare
+```
 
 ### With Bundler
 
-    gem "march_hare", "~> 4.1"
-
+``` ruby
+gem "march_hare", "~> 4.2"
+```
 
 ## Documentation
 
