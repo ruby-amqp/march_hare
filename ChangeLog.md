@@ -1,6 +1,28 @@
 ## Changes Between 4.1.0 and 4.2.0 (unreleased)
 
-No changes yet.
+### Connection Closure Could Get Stuck in a Recovery Loop
+
+Contributed by @andreaseger.
+
+GitHub issue: [ruby-amqp/march_hare#149](https://github.com/ruby-amqp/march_hare/pull/149)
+
+### SASL Config Option
+
+Contributed by @ctpaterson.
+
+GitHub issue: [ruby-amqp/march_hare#148](https://github.com/ruby-amqp/march_hare/pull/148)
+
+### Test Case Used a Port Out of the Common Ephemeral Port Range
+
+Contributed by @ctpaterson.
+
+GitHub issue: [ruby-amqp/march_hare#147](https://github.com/ruby-amqp/march_hare/pull/147)
+
+### CI Matrix Updates
+
+Contributed by @olleolleolle.
+
+GitHub issue: [ruby-amqp/march_hare#146](https://github.com/ruby-amqp/march_hare/pull/146)
 
 
 ## Changes Between 4.0.0 and 4.1.0 (July 9, 2019)
