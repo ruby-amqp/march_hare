@@ -1,6 +1,13 @@
 ## Changes Between 4.2.0 and 4.3.0 (unreleased)
 
-No changes yet.
+### SLF4J Dependency Bump
+
+This dependency bump addresses a vulnerability in SLF4J `1.7.25`.
+
+Contributed by Alexandru @IscencoAlex Iscenco.
+
+GitHub issue: [ruby-amqp/march_hare#152](https://github.com/ruby-amqp/march_hare/pull/152)
+
 
 ## Changes Between 4.1.0 and 4.2.0 (May 6, 2020)
 
