@@ -1,4 +1,9 @@
-## Changes Between 4.2.0 and 4.3.0 (unreleased)
+## Changes Between 4.3.0 and 4.4.0 (under development)
+
+No changes yet.
+
+
+## Changes Between 4.2.0 and 4.3.0 (September 30, 2020)
 
 ### SLF4J Dependency Bump
 
