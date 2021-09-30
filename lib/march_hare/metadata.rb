@@ -86,7 +86,7 @@ module MarchHare
       elsif value.is_a?(java.util.List)
         value.map {|v| deep_normalize_headers(v)}
       else
-        if value.java_kind_of?(LONG_STRING_TYPE)
+        if value.kind_of?(LONG_STRING_TYPE)
           value.to_s
         else
           value
