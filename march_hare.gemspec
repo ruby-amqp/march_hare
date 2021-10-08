@@ -15,10 +15,7 @@ Gem::Specification.new do |s|
   s.summary     = %q{RabbitMQ client for JRuby built around the official RabbitMQ Java client}
   s.description = %q{RabbitMQ client for JRuby built around the official RabbitMQ Java client}
 
-  s.rubyforge_project = 'march_hare'
-
   s.files         = `git ls-files -- lib`.split("\n")
-  s.test_files    = `git ls-files -- {spec}/*`.split("\n")
 
   s.require_paths = %w(lib)
 end
