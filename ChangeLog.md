@@ -1,3 +1,8 @@
+## Unreleased
+
+Replace `java_kind_of?` with `kind_of?` to support `JRuby-9.3.0.0`.
+
+
 ## Changes Between 4.3.0 and 4.4.0 (under development)
 
 No changes yet.
