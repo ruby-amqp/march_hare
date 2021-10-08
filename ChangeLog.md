@@ -1,11 +1,10 @@
-## Unreleased
-
-Replace `java_kind_of?` with `kind_of?` to support `JRuby-9.3.0.0`.
-
-
 ## Changes Between 4.3.0 and 4.4.0 (under development)
 
-No changes yet.
+### JRuby 9.3 Support
+
+Replaced `java_kind_of?` with `kind_of?` to support `JRuby-9.3.0.0`.
+
+Contributed by @ThomasKoppensteiner.
 
 
 ## Changes Between 4.2.0 and 4.3.0 (September 30, 2020)
