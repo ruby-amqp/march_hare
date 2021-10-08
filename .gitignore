@@ -4,7 +4,6 @@ Gemfile.lock
 pkg/*
 .DS_Store
 .rvmrc
-bin/*
 doc/*
 .yardoc/*
 debug/*
