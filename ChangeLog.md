@@ -1,4 +1,8 @@
-## Changes Between 4.3.0 and 4.4.0 (under development)
+## Changes Between 4.4.0 and 4.5.0 (under development)
+
+No changes yet.
+
+## Changes Between 4.3.0 and 4.4.0 (October 9, 2021)
 
 ### JRuby 9.3 Support
 
