@@ -109,4 +109,5 @@ MIT, see LICENSE in the repository root
 
 ## Copyright
 
-Theo Hultberg, Michael Klishin, and contributors (c) 2011-2021
+(c) 2011-2013 Theo Hultberg
+(c) 2013-2021 Michael S. Klishin and contributors
