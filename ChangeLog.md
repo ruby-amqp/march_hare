@@ -1,6 +1,17 @@
-## Changes Between 4.4.0 and 4.5.0 (under development)
+## Changes Between 4.5.0 and 4.6.0 (under development)
 
 No changes yet.
+
+## Changes Between 4.4.0 and 4.5.0 (Sep 11, 2022)
+
+### RabbitMQ Java Client Upgrade
+
+RabbitMQ Java client dependency has been updated to a `5.16.x` release.
+
+### SLF4J Dependency Bump
+
+This dependency bump addresses a vulnerability in SLF4J `1.7.36`.
+
 
 ## Changes Between 4.3.0 and 4.4.0 (October 9, 2021)
 
