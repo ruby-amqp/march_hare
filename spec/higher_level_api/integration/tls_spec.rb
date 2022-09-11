@@ -16,7 +16,7 @@ RSpec.describe "MarchHare.connect with TLS" do
         :port                     => 5671,
         :tls_certificate_path     => "./spec/tls/client_key.p12",
         :tls_certificate_password => ENV.fetch("PKCS12_PASSWORD", "bunnies"))
-      ch = c.create_channel
+      _ch = c.create_channel
       c.close
     end
   end

@@ -131,7 +131,7 @@ RSpec.describe "MarchHare.connect" do
 
     c  = MarchHare.connect(thread_factory: ThreadFactory.new)
     expect(c).to be_connected
-    ch = c.create_channel
+    _ch = c.create_channel
     c.close
   end
 

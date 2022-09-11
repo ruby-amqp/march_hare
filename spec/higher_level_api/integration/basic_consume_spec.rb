@@ -59,10 +59,10 @@ RSpec.describe "Multiple non-exclusive consumers per queue" do
       mailbox2         = []
       mailbox3         = []
 
-      all_received     = java.util.concurrent.CountDownLatch.new(n)
-      consumer_channel = connection.create_channel
+      all_received = java.util.concurrent.CountDownLatch.new(n)
+      consumer_ch  = connection.create_channel
 
-      q                = ch.queue("", :exclusive => true)
+      q                = consumer_ch.queue("", :exclusive => true)
 
       consumer1        = q.subscribe(:blocking => false) do |metadata, payload|
         mailbox1 << payload
@@ -112,10 +112,10 @@ RSpec.describe "A consumer" do
       mailbox2         = []
       mailbox3         = []
 
-      all_received     = java.util.concurrent.CountDownLatch.new(n)
-      consumer_channel = connection.create_channel
+      all_received = java.util.concurrent.CountDownLatch.new(n)
+      consumer_ch  = connection.create_channel
 
-      q                = ch.queue("", :exclusive => true)
+      q                = consumer_ch.queue("", :exclusive => true)
 
       fn               = lambda do |metadata, payload|
         mailbox1 << payload

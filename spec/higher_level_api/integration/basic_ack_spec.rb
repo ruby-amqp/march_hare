@@ -15,7 +15,7 @@ RSpec.describe MarchHare::Channel, "#ack" do
       x.publish("bunneth", :routing_key => q.name)
       sleep(0.25)
       expect(q.message_count).to eq(1)
-      meta, content = q.pop(:ack => true)
+      meta, _content = q.pop(:ack => true)
 
       ch.ack(meta.delivery_tag, true)
       expect(meta.delivery_tag.to_i).to eq(1)

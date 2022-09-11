@@ -18,7 +18,7 @@ RSpec.describe "Direct exchange" do
 
     sleep(0.3)
 
-    mc, cc = queue.status
+    mc, _cc = queue.status
     expect(mc).to eq(1)
   end
 end
@@ -47,7 +47,7 @@ RSpec.describe "Fanout exchange" do
 
     sleep(0.5)
 
-    mc, cc = queue.status
+    mc, _cc = queue.status
     expect(mc).to eq(3)
   end
 end
@@ -76,7 +76,7 @@ RSpec.describe "Topic exchange" do
 
     sleep(0.5)
 
-    mc, cc = queue.status
+    mc, _cc = queue.status
     expect(mc).to eq(2)
   end
 end
@@ -106,7 +106,7 @@ RSpec.describe "Headers exchange" do
 
     sleep(0.3)
 
-    mc, cc = queue.status
+    mc, _cc = queue.status
     expect(mc).to eq(1)
   end
 end

@@ -78,7 +78,6 @@ RSpec.describe 'A consumer' do
 
   context "that DOES block the caller and never receives any messages" do
     it 'can be cancelled' do
-      x  = connection.create_channel.default_exchange
       q  = connection.create_channel.queue("", :exclusive => true)
 
       consumer_exited = false

@@ -18,7 +18,7 @@ RSpec.describe "A consumer" do
     @payload = "Hello, world!"
     @meta    = nil
 
-    consumer = queue.subscribe(:blocking => false) do |metadata, payload|
+    _ = queue.subscribe(:blocking => false) do |metadata, payload|
       begin
         # we will run assertions on the main thread because RSpec uses exceptions
         # for its purposes every once in a while. MK.
@@ -102,7 +102,7 @@ RSpec.describe "A consumer" do
     @payload = "Hello, world!"
     @meta    = nil
 
-    consumer = queue.subscribe(:blocking => false) do |metadata, payload|
+    _ = queue.subscribe(:blocking => false) do |metadata, payload|
       begin
         # we will run assertions on the main thread because RSpec uses exceptions
         # for its purposes every once in a while. MK.
