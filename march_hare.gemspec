@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.platform    = 'java'
   s.authors     = ['Theo Hultberg', 'Michael S. Klishin']
   s.email       = ['theo@burtcorp.com', 'michael@rabbitmq.com']
-  s.homepage    = 'http://rubymarchhare.info'
+  s.homepage    = 'https://github.com/ruby-amqp/march_hare'
   s.summary     = %q{RabbitMQ client for JRuby built around the official RabbitMQ Java client}
   s.description = %q{RabbitMQ client for JRuby built around the official RabbitMQ Java client}
 
