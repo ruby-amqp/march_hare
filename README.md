@@ -50,16 +50,13 @@ gem "march_hare", "~> 4.4"
 
 ### Guides
 
-[MarchHare documentation guides](http://rubymarchhare.info) are mostly complete.
+[MarchHare documentation guides](https://github.com/ruby-amqp/march_hare/tree/master/docs/guides) are now
+a part of this repository and can be read directly on GitHub.
 
 ### Examples
 
 Several [code examples](./examples) are available. Our [test suite](./spec/higher_level_api/integration) also has many code examples
 that demonstrate various parts of the API.
-
-### Reference
-
-[API reference](http://reference.rubymarchhare.info) is available.
 
 
 ## Supported Ruby Versions
@@ -110,4 +107,4 @@ MIT, see LICENSE in the repository root
 ## Copyright
 
 (c) 2011-2013 Theo Hultberg
-(c) 2013-2021 Michael S. Klishin and contributors
+(c) 2013-2022 Michael S. Klishin and contributors
