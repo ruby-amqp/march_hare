@@ -43,7 +43,7 @@ gem install march_hare
 ### With Bundler
 
 ``` ruby
-gem "march_hare", "~> 4.4"
+gem "march_hare", "~> 4.5"
 ```
 
 ## Documentation
