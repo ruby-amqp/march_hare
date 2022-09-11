@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require 'java'
+require 'java' unless defined?(TruffleRuby)
 
 # Java client logging depends on SLF4J
 require 'ext/slf4j-api'
