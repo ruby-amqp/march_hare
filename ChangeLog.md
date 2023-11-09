@@ -1,6 +1,8 @@
 ## Changes Between 4.5.0 and 4.6.0 (under development)
 
-No changes yet.
+### RabbitMQ Java Client Upgrade
+
+RabbitMQ Java client dependency has been updated to a `5.20.x` release.
 
 ## Changes Between 4.4.0 and 4.5.0 (Sep 11, 2022)
 
