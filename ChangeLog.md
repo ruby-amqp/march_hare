@@ -1,4 +1,4 @@
-## Changes Between 4.5.0 and 4.6.0 (under development)
+## Changes Between 4.5.0 and 4.6.0 (Nov 10, 2023)
 
 ### RabbitMQ Java Client Upgrade
 
