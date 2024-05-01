@@ -135,6 +135,13 @@ RSpec.describe "MarchHare.connect" do
     c.close
   end
 
+  it "lets you specify a maximum inbound message size" do
+    c = MarchHare.connect(max_inbound_message_body_size: 64000)
+    expect(c).to be_connected
+    c.close
+  end
+
+
   it "lets you specify exception handler" do
     class ExceptionHandler < com.rabbitmq.client.impl.DefaultExceptionHandler
       include com.rabbitmq.client.ExceptionHandler

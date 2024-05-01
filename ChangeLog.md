@@ -1,3 +1,9 @@
+## Changes Between 4.6.0 and 4.7.0 (under development)
+
+### Support for setting maximum inbound message size
+
+Add configuration option to set the `maxInboundMessageBodySize` on the ConnectionFactory
+
 ## Changes Between 4.5.0 and 4.6.0 (Nov 10, 2023)
 
 ### RabbitMQ Java Client Upgrade
