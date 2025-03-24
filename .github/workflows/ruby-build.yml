@@ -3,6 +3,10 @@ name: Ruby-Build
 on:
   push:
     branches: [main]
+    paths:
+      - "lib"
+      - "spec"
+      - "Gemfile"
   pull_request:
     branches: [main]
 
