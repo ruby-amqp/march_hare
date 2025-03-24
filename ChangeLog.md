@@ -1,4 +1,9 @@
-## Changes Between 4.6.0 and 4.7.0 (in development)
+## Changes Between 4.7.0 and 4.8.0 (in development)
+
+No changes yet.
+
+
+## Changes Between 4.6.0 and 4.7.0 (Mar 23, 2025)
 
 This release adopts some of the API refinement and improvements
 from Bunny.
@@ -51,10 +56,10 @@ Contributed by @robbavey.
 
 GitHub issue: [#164](https://github.com/ruby-amqp/march_hare/pull/164).
 
-
 ### RabbitMQ Java Client Upgrade
 
 RabbitMQ Java client dependency has been updated to a `5.25.x` release.
+
 
 ## Changes Between 4.5.0 and 4.6.0 (Nov 10, 2023)
 
