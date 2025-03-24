@@ -273,7 +273,7 @@ module MarchHare
       @channel.logger.debug("queue: declare! #{@name}, type: #{@type}")
       response = if @options[:passive]
                  then @channel.queue_declare_passive(@name)
-                 else @channel.queue_declare(@name, @options[:durable], @options[:exclusive], @options[:auto_delete], @arguments)
+                 else @channel.queue_declare(@name, @durable, @exclusive, @auto_delete, @arguments)
                  end
       @name = response.queue
     end
