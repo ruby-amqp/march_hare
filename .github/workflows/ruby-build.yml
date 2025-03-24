@@ -2,18 +2,17 @@ name: Ruby-Build
 
 on:
   push:
-    branches: [ master ]
+    branches: [main]
   pull_request:
-    branches: [ master ]
+    branches: [main]
 
 jobs:
   test:
-
     runs-on: ubuntu-latest
 
     services:
       rabbitmq:
-        image: rabbitmq:3-management
+        image: rabbitmq:4-management
         ports:
           - 5672:5672
           - 15672:15672
@@ -25,18 +24,19 @@ jobs:
         ruby-version:
           - jruby-9.2
           - jruby-9.3
+          - jruby-9.4
           - jruby-head
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: ${{ matrix.ruby-version }}
-        bundler-cache: true # runs 'bundle install' and caches installed gems automatically
-    - name: Set up RabbitMQ
-      run: |
-        until sudo lsof -i:5672; do echo "Waiting for RabbitMQ to start..."; sleep 1; done
-        ./bin/ci/before_build_docker.sh
-    - name: Run tests
-      run: bundle exec rspec spec
+      - uses: actions/checkout@v2
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+      - name: Set up RabbitMQ
+        run: |
+          until sudo lsof -i:5672; do echo "Waiting for RabbitMQ to start..."; sleep 1; done
+          ./bin/ci/before_build_docker.sh
+      - name: Run tests
+        run: bundle exec rspec spec
