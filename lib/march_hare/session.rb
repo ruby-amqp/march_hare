@@ -57,6 +57,7 @@ module MarchHare
     # @option options [Logger] :logger The logger.  If missing, one is created using :log_file and :log_level.
     # @option options [IO, String] :log_file The file or path to use when creating a logger.  Defaults to STDOUT.
     # @option options [Integer] :log_level The log level to use when creating a logger.  Defaults to LOGGER::WARN
+    # @option options [Integer] :max_inbound_message_body_size Maximum allowed size of an incoming message body. Defaults to 64MiB
     #
     # @see http://rubymarchhare.info/articles/connecting.html Connecting to RabbitMQ guide
     def self.connect(options = {})
@@ -82,6 +83,8 @@ module MarchHare
       cf.connection_timeout  = connection_timeout_from(options) if include_connection_timeout?(options)
 
       cf.thread_factory      = thread_factory_from(options)    if include_thread_factory?(options)
+
+      cf.max_inbound_message_body_size = options[:max_inbound_message_body_size].to_i if options[:max_inbound_message_body_size]
 
       tls = (options[:ssl] || options[:tls])
       case tls

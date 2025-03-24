@@ -43,10 +43,18 @@ ch = connection.create_channel.configure do |new_ch|
 end
 ```
 
+### Support for Setting Maximum Inbound Message Size
+
+A new configuration option, `:max_inbound_message_body_size`, sets the maximum inbound message size limit on the Java client's `ConnectionFactory`.
+
+Contributed by @robbavey.
+
+GitHub issue: [#164](https://github.com/ruby-amqp/march_hare/pull/164).
+
+
 ### RabbitMQ Java Client Upgrade
 
 RabbitMQ Java client dependency has been updated to a `5.25.x` release.
-
 
 ## Changes Between 4.5.0 and 4.6.0 (Nov 10, 2023)
 
