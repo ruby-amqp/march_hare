@@ -1,8 +1,9 @@
 # March Hare, a JRuby RabbitMQ Client
 
-March Hare is an idiomatic, fast and well-maintained (J)Ruby DSL on top of the [RabbitMQ Java client](http://www.rabbitmq.com/api-guide.html). It strives to combine
-strong parts of the Java client with over 4 years of experience using and developing [Ruby amqp gem](http://rubyamqp.info)
-and [Bunny](http://rubybunny.info).
+March Hare is an idiomatic, fast and well-maintained (J)Ruby DSL on top of the [RabbitMQ Java client](https://www.rabbitmq.com/client-libraries/java-api-guide). 
+
+It strives to combine strong parts of the Java client with over many years of experience with other client libraries,
+both for Ruby and other languages.
 
 ## Why March Hare
 
@@ -43,7 +44,7 @@ gem install march_hare
 ### With Bundler
 
 ``` ruby
-gem "march_hare", "~> 4.5"
+gem "march_hare", "~> 4.7"
 ```
 
 ## Documentation
@@ -107,4 +108,4 @@ MIT, see LICENSE in the repository root
 ## Copyright
 
 (c) 2011-2013 Theo Hultberg
-(c) 2013-2022 Michael S. Klishin and contributors
+(c) 2013-2025 Michael S. Klishin and contributors
