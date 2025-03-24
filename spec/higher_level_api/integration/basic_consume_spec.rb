@@ -157,8 +157,7 @@ RSpec.describe "A consumer" do
 
     it "should convert long headers" do
         queue    = channel.temporary_queue()
-
-        sleep(0.3)
+        sleep(1)
 
         expected_short = "short"
         expected_long = "l"*512
@@ -168,7 +167,7 @@ RSpec.describe "A consumer" do
           :short => expected_short,
           :complex => {:foo => [{:bar => expected_complex}]}
         })
-        sleep(0.3)
+        sleep(0.5)
         received_mutex = Mutex.new
         received = nil
 
@@ -177,7 +176,7 @@ RSpec.describe "A consumer" do
         end
 
         received = nil;
-        100.times do
+        200.times do
           receive_happened = received_mutex.synchronize { !!received }
           break if receive_happened
           sleep 0.1
