@@ -156,7 +156,7 @@ RSpec.describe "A consumer" do
     let(:channel)    { connection.create_channel }
 
     it "should convert long headers" do
-        queue    = channel.queue("", :exclusive => true)
+        queue    = channel.temporary_queue()
 
         sleep(0.3)
 

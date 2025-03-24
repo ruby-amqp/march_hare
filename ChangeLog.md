@@ -1,3 +1,53 @@
+## Changes Between 4.6.0 and 4.7.0 (in development)
+
+This release adopts some of the API refinement and improvements
+from Bunny.
+
+### New Queue Helpers
+
+Several helpers for declaring queues for different kinds of use cases:
+
+ * `Bunny::Channel#temporary_queue` for server-named exclusive queues
+ * `Bunny::Channel#durable_queue` for durable queues of any type
+ * `Bunny::Channel#quorum_queue` for quorum queues
+ * `Bunny::Channel#stream` for streams
+
+### Queue Type Constants
+
+A number queue type constants are now available:
+
+ * `MarchHare::Queue::Types::CLASSIC`
+ * `MarchHare::Queue::Types::QUORUM`
+ * `MarchHare::Queue::Types::STREAM`
+
+### Channel Configuration Block
+
+`MarchHare::Channel.configure` is a function that allows for the newly opened
+channel to be configured with a block.
+
+```ruby
+ch = connection.create_channel.configure do |new_ch|
+  new_ch.prefetch(500)
+end
+```
+
+### A Way to Opt-in For Explicit Consumer Cancellation Before Channel Closure
+
+`MarchHare::Channel#cancel_consumers_before_closing!` is a method that allows for the cancellation of all consumers before channel closure.
+
+```ruby
+ch = connection.create_channel.configure do |new_ch|
+  new_ch.prefetch(500)
+  # `MarchHare::Channel#close` now will explicitly cancel all consumers before closing the channel
+  new_ch.cancel_consumers_before_closing!
+end
+```
+
+### RabbitMQ Java Client Upgrade
+
+RabbitMQ Java client dependency has been updated to a `5.25.x` release.
+
+
 ## Changes Between 4.5.0 and 4.6.0 (Nov 10, 2023)
 
 ### RabbitMQ Java Client Upgrade

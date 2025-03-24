@@ -14,7 +14,6 @@ RSpec.describe "Queue" do
   end
 
   context "with a server-generated name" do
-
     it "can be declared as auto-deleted" do
       q = channel.queue("", :auto_delete => true)
       expect(q).to be_auto_delete
@@ -53,6 +52,46 @@ RSpec.describe "Queue" do
       sleep(2.1)
 
       expect(q.get).to be_nil
+      q.delete
+    end
+  end
+
+  context "declared as temporary" do
+    it "is declared as exclusive" do
+      q = channel.temporary_queue()
+      expect(q).to be_exclusive
+      expect(q).not_to be_durable
+      q.delete
+    end
+  end
+
+  context "declared as durable" do
+    it "is declared as such" do
+      q = channel.durable_queue("bunny.durable.123")
+      expect(q).to be_durable
+      expect(q).not_to be_exclusive
+      q.delete
+    end
+  end
+
+  context "declared as quorum" do
+    it "is declared as durable and non-exclusive" do
+      q = channel.quorum_queue("bunny.qq.1", arguments: {
+        "x-quorum-initial-group-size" => 3
+      })
+      expect(q).to be_durable
+      expect(q).not_to be_exclusive
+      q.delete
+    end
+  end
+
+  context "declared as stream" do
+    it "is declared as durable and non-exclusive" do
+      q = channel.stream("bunny.sq.1", arguments: {
+        "x-max-length-bytes"              => 20_000_000_000,
+        "x-stream-max-segment-size-bytes" => 100_000_000      })
+      expect(q).to be_durable
+      expect(q).not_to be_exclusive
       q.delete
     end
   end
