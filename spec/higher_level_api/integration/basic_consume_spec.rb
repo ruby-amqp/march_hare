@@ -83,7 +83,7 @@ RSpec.describe "Multiple non-exclusive consumers per queue" do
         ch.default_exchange.publish("Message #{i}", :routing_key => q.name)
       end
 
-      all_received.await
+      all_received.await(10, java.util.concurrent.TimeUnit::SECONDS)
 
       expect(mailbox1.size).to be >= 33
       expect(mailbox2.size).to be >= 33
@@ -139,7 +139,7 @@ RSpec.describe "A consumer" do
         ch.default_exchange.publish("Message #{i}", :routing_key => q.name)
       end
 
-      all_received.await
+      all_received.await(10, java.util.concurrent.TimeUnit::SECONDS)
 
       expect(mailbox1.size).to be >= 33
       expect(mailbox2.size).to be >= 33
@@ -156,9 +156,8 @@ RSpec.describe "A consumer" do
     let(:channel)    { connection.create_channel }
 
     it "should convert long headers" do
-        queue    = channel.queue("", :exclusive => true)
-
-        sleep(0.3)
+        queue    = channel.temporary_queue()
+        sleep(1)
 
         expected_short = "short"
         expected_long = "l"*512
@@ -168,22 +167,17 @@ RSpec.describe "A consumer" do
           :short => expected_short,
           :complex => {:foo => [{:bar => expected_complex}]}
         })
-        sleep(0.3)
-        received_mutex = Mutex.new
-        received = nil
+        delivery = nil
+        latch = java.util.concurrent.CountDownLatch.new(1)
 
         queue.subscribe do |metadata, message|
-          received_mutex.synchronize { received = {:metadata => metadata, :message => message} }
+          delivery = {:metadata => metadata, :message => message}
+          latch.count_down
         end
 
-        received = nil;
-        100.times do
-          receive_happened = received_mutex.synchronize { !!received }
-          break if receive_happened
-          sleep 0.1
-        end
+        latch.await(10, java.util.concurrent.TimeUnit::SECONDS)
 
-        headers = received[:metadata].headers
+        headers = delivery[:metadata].headers
         expect(headers["short"]).to eq(expected_short)
         expect(headers["long"]).to eq(expected_long)
         expect(headers["complex"]["foo"][0]["bar"]).to eq(expected_complex)

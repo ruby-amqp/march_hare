@@ -132,6 +132,11 @@ module MarchHare
       @confirm_hooks  = Array.new
       @recoveries_counter = JavaConcurrent::AtomicInteger.new(0)
 
+      # An opt-in setting that instructs the channel to cancel all consumers
+      # before closing. This helps reduce the probability of in-flight deliveries
+      # right before channel closure.
+      @cancel_consumers_before_closing = false
+
       on_shutdown do |ch, cause|
         ch.gracefully_shut_down_consumers
       end
@@ -161,12 +166,33 @@ module MarchHare
       @delegate.open?
     end
 
+    def closed?
+      !open?
+    end
+
     # Closes the channel.
     #
     # Closed channels can no longer be used. Closed channel id is
     # returned back to the pool of available ids and may be used by
     # a different channel opened later.
     def close(code = 200, reason = "Goodbye")
+      # This is a best-effort attempt to cancel all consumers before closing the channel.
+      # Retries are extremely unlikely to succeed, and the channel itself is about to be closed,
+      # so we don't bother retrying.
+      if self.cancel_consumers_before_closing?
+       # cancelling a consumer involves using the same mutex, so avoid holding the lock
+        keys = @consumers.keys
+        keys.each do |ctag|
+          begin
+            self.basic_cancel(ctag)
+          rescue Bunny::Exception
+            # ignore
+          rescue Bunny::ClientTimeout
+            # ignore
+          end
+        end
+      end
+
       v = @delegate.close(code, reason)
 
       @consumers.each do |tag, consumer|
@@ -176,6 +202,21 @@ module MarchHare
       @connection.unregister_channel(self)
 
       v
+    end
+
+
+    def configure(&block)
+      block.call(self) if block_given?
+
+      self
+    end
+
+    def cancel_consumers_before_closing!
+      @cancel_consumers_before_closing = true
+    end
+
+    def cancel_consumers_before_closing?
+      !!@cancel_consumers_before_closing
     end
 
     # Defines a shutdown event callback. Shutdown events are
@@ -482,12 +523,91 @@ module MarchHare
     # @return [MarchHare::Queue] Queue that was declared or looked up in the cache
     # @see http://rubymarchhare.info/articles/queues.html Queues and Consumers guide
     # @see http://rubymarchhare.info/articles/extensions.html RabbitMQ Extensions guide
-    def queue(name, options={})
+    def queue(name, options = {})
       dq = Queue.new(self, name, options).tap do |q|
         q.declare!
       end
 
       self.register_queue(dq)
+    end
+
+    # Declares a new client-named quorum queue.
+    #
+    # @param [String] name Queue name. Empty (server-generated) names are not supported by this method.
+    # @param  [Hash]  opts  Queue properties and other options. Durability, exclusivity, auto-deletion options will be ignored.
+    #
+    # @option opts [Hash] :arguments ({}) Optional arguments (x-arguments)
+    #
+    # @return [MarchHare::Queue] Queue that was declared or looked up in the cache
+    # @see #durable_queue
+    # @see #queue
+    # @api public
+    def quorum_queue(name, opts = {})
+      throw ArgumentError.new("quorum queue name must not be nil") if name.nil?
+      throw ArgumentError.new("quorum queue name must not be empty (server-named QQs do not make sense)") if name.empty?
+
+      durable_queue(name, Queue::Types::QUORUM, opts)
+    end
+
+    # Declares a new client-named stream (that Bunny can use as if it was a queue).
+    # Note that Bunny would still use AMQP 0-9-1 to perform operations on this "queue".
+    # To use stream-specific operations and to gain from stream protocol efficiency and partitioning,
+    # use a Ruby client for the RabbitMQ stream protocol.
+    #
+    # @param [String] name Stream name. Empty (server-generated) names are not supported by this method.
+    # @param  [Hash]  opts  Queue properties and other options. Durability, exclusivity, auto-deletion options will be ignored.
+    #
+    # @option opts [Hash] :arguments ({}) Optional arguments (x-arguments)
+    #
+    #
+    # @return [MarchHare::Queue] Queue that was declared or looked up in the cache
+    # @see #durable_queue
+    # @see #queue
+    # @api public
+    def stream(name, opts = {})
+      throw ArgumentError.new("stream name must not be nil") if name.nil?
+      throw ArgumentError.new("stream name must not be empty (server-named QQs do not make sense)") if name.empty?
+
+      durable_queue(name, Queue::Types::STREAM, opts)
+    end
+
+    # Declares a new server-named queue that is automatically deleted when the
+    # connection is closed.
+    #
+    # @param [String] name Queue name. Empty (server-generated) names are not supported by this method.
+    # @param  [Hash]  opts  Queue properties and other options. Durability, exclusivity, auto-deletion options will be ignored.
+    #
+    # @option opts [Hash] :arguments ({}) Optional arguments (x-arguments)
+    #
+    # @return [MarchHare::Queue] Queue that was declared or looked up in the cache
+    # @see #queue
+    # @api public
+    def durable_queue(name, type = Queue::Types::CLASSIC, opts = {})
+      throw ArgumentError.new("queue name must not be nil") if name.nil?
+      throw ArgumentError.new("queue name must not be empty (server-named durable queues do not make sense)") if name.empty?
+
+      final_opts = opts.merge({
+        :type        => type,
+        :durable     => true,
+        # exclusive or auto-delete QQs do not make much sense
+        :exclusive   => false,
+        :auto_delete => false
+      })
+
+      self.queue(name, final_opts)
+    end
+
+    # Declares a new server-named queue that is automatically deleted when the
+    # connection is closed.
+    #
+    # @return [MarchHare::Queue] Queue that was declared or looked up in the cache
+    # @see #queue
+    # @api public
+    def temporary_queue(opts = {})
+      temporary_queue_opts = {
+        :exclusive => true
+      }
+      queue("", opts.merge(temporary_queue_opts))
     end
 
     # Declares a queue using queue.declare AMQP 0.9.1 method.
@@ -636,6 +756,13 @@ module MarchHare
       self.register_consumer(tag, consumer)
 
       tag
+    end
+
+    def basic_cancel(consumer_tag)
+      converting_rjc_exceptions_to_ruby do
+        @delegate.basic_cancel(consumer_tag)
+      end
+      self.unregister_consumer(consumer_tag)
     end
 
     def basic_qos(prefetch_count)

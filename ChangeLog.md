@@ -1,8 +1,60 @@
-## Changes Between 4.6.0 and 4.7.0 (under development)
+## Changes Between 4.6.0 and 4.7.0 (in development)
 
-### Support for setting maximum inbound message size
+This release adopts some of the API refinement and improvements
+from Bunny.
 
-Add configuration option to set the `maxInboundMessageBodySize` on the ConnectionFactory
+### New Queue Helpers
+
+Several helpers for declaring queues for different kinds of use cases:
+
+ * `Bunny::Channel#temporary_queue` for server-named exclusive queues
+ * `Bunny::Channel#durable_queue` for durable queues of any type
+ * `Bunny::Channel#quorum_queue` for quorum queues
+ * `Bunny::Channel#stream` for streams
+
+### Queue Type Constants
+
+A number queue type constants are now available:
+
+ * `MarchHare::Queue::Types::CLASSIC`
+ * `MarchHare::Queue::Types::QUORUM`
+ * `MarchHare::Queue::Types::STREAM`
+
+### Channel Configuration Block
+
+`MarchHare::Channel.configure` is a function that allows for the newly opened
+channel to be configured with a block.
+
+```ruby
+ch = connection.create_channel.configure do |new_ch|
+  new_ch.prefetch(500)
+end
+```
+
+### A Way to Opt-in For Explicit Consumer Cancellation Before Channel Closure
+
+`MarchHare::Channel#cancel_consumers_before_closing!` is a method that allows for the cancellation of all consumers before channel closure.
+
+```ruby
+ch = connection.create_channel.configure do |new_ch|
+  new_ch.prefetch(500)
+  # `MarchHare::Channel#close` now will explicitly cancel all consumers before closing the channel
+  new_ch.cancel_consumers_before_closing!
+end
+```
+
+### Support for Setting Maximum Inbound Message Size
+
+A new configuration option, `:max_inbound_message_body_size`, sets the maximum inbound message size limit on the Java client's `ConnectionFactory`.
+
+Contributed by @robbavey.
+
+GitHub issue: [#164](https://github.com/ruby-amqp/march_hare/pull/164).
+
+
+### RabbitMQ Java Client Upgrade
+
+RabbitMQ Java client dependency has been updated to a `5.25.x` release.
 
 ## Changes Between 4.5.0 and 4.6.0 (Nov 10, 2023)
 

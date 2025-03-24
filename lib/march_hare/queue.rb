@@ -11,6 +11,27 @@ module MarchHare
   # @see http://rubymarchhare.info/articles/queues.html Queues and Consumers guide
   # @see http://rubymarchhare.info/articles/extensions.html RabbitMQ Extensions guide
   class Queue
+    #
+    # API
+    #
+
+    module Types
+      QUORUM  = "quorum"
+      CLASSIC = "classic"
+      STREAM  = "stream"
+
+      KNOWN = [CLASSIC, QUORUM, STREAM]
+
+      def self.known?(q_type)
+        KNOWN.include?(q_type)
+      end
+    end
+
+    module XArgs
+      MAX_LENGTH = "x-max-length",
+      QUEUE_TYPE = "x-queue-type"
+    end
+
     # @return [MarchHare::Channel] Channel this queue uses
     attr_reader :channel
     # @return [String] Queue name
@@ -33,13 +54,20 @@ module MarchHare
 
       @channel = channel
       @name = name
-      @options = {:durable => false, :exclusive => false, :auto_delete => false, :passive => false, :arguments => Hash.new}.merge(options)
+      @options = {:durable => false, :exclusive => false, :auto_delete => false, :passive => false, :arguments => Hash.new, :type => Types::CLASSIC}.merge(options)
 
+      @type         = @options[:type].to_s
       @durable      = @options[:durable]
       @exclusive    = @options[:exclusive]
       @server_named = @name.empty?
       @auto_delete  = @options[:auto_delete]
-      @arguments    = @options[:arguments]
+
+      @arguments        = if @type and !@type.empty? then
+        (@options[:arguments] || {}).merge({XArgs::QUEUE_TYPE => @type})
+      else
+        @options[:arguments]
+      end
+      verify_type!(@arguments)
 
       @bindings     = Set.new
     end
@@ -73,8 +101,6 @@ module MarchHare
     def arguments
       @arguments
     end
-
-
 
     # Binds queue to an exchange
     #
@@ -225,6 +251,18 @@ module MarchHare
     # Implementation
     #
 
+    def self.verify_type!(args0 = {})
+      # be extra defensive
+      args = args0 || {}
+      q_type = args["x-queue-type"] || args[:"x-queue-type"]
+      throw ArgumentError.new(
+        "unsupported queue type #{q_type.inspect}, supported ones: #{Types::KNOWN.join(', ')}") if (q_type and !Types.known?(q_type))
+    end
+
+    def verify_type!(args)
+      self.class.verify_type!(args)
+    end
+
     # @return [Boolean] true if this queue is a pre-defined one (amq.direct, amq.fanout, amq.match and so on)
     def predefined?
       @name.start_with?("amq.")
@@ -232,10 +270,10 @@ module MarchHare
 
     # @private
     def declare!
-      @channel.logger.debug("queue: declare! #{@name}")
+      @channel.logger.debug("queue: declare! #{@name}, type: #{@type}")
       response = if @options[:passive]
                  then @channel.queue_declare_passive(@name)
-                 else @channel.queue_declare(@name, @options[:durable], @options[:exclusive], @options[:auto_delete], @options[:arguments])
+                 else @channel.queue_declare(@name, @durable, @exclusive, @auto_delete, @arguments)
                  end
       @name = response.queue
     end
