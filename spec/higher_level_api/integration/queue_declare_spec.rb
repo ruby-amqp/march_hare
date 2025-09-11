@@ -75,10 +75,50 @@ RSpec.describe "Queue" do
   end
 
   context "declared as quorum" do
-    it "is declared as durable and non-exclusive" do
-      q = channel.quorum_queue("bunny.qq.1", arguments: {
+    it "is declared as durable and non-exclusive via MarchHare::Channel#quorum_queue" do
+      q = channel.quorum_queue("march_hare.qq.#{rand}", arguments: {
         "x-quorum-initial-group-size" => 3
       })
+      expect(q).to be_durable
+      expect(q).not_to be_exclusive
+      q.delete
+    end
+
+    it "is declared as durable and non-exclusive via MarchHare::Channel#queue with :type" do
+      q = channel.queue("march_hare.qq.#{rand}", type: "quorum")
+      expect(q).to be_durable
+      expect(q).not_to be_exclusive
+      q.delete
+    end
+
+    it "is declared as durable and non-exclusive via MarchHare::Channel#queue with x-queue-type" do
+      q = channel.queue("march_hare.qq.#{rand}", arguments: {
+        "x-queue-type" => "quorum",
+        "x-quorum-initial-group-size" => 3
+      })
+      expect(q).to be_durable
+      expect(q).not_to be_exclusive
+      q.delete
+    end
+
+    it "is declared as a quorum queue" do
+      q_name = "march_hare.qq.property_equivalence_check"
+      q = channel.quorum_queue(q_name)
+
+      # property equivalence check should not fail for these…
+      _ = channel.queue(q_name, type: "quorum")
+      _ = channel.queue(q_name, arguments: {
+        "x-queue-type" => "quorum"
+      })
+
+      # …but finally fails here
+      expect do
+        one_off_ch = connection.create_channel
+        one_off_ch.queue(q_name, arguments: {
+          "x-queue-type" => "classic"
+        })
+      end.to raise_error(MarchHare::PreconditionFailed)
+
       expect(q).to be_durable
       expect(q).not_to be_exclusive
       q.delete

@@ -54,16 +54,23 @@ module MarchHare
 
       @channel = channel
       @name = name
-      @options = {:durable => false, :exclusive => false, :auto_delete => false, :passive => false, :arguments => Hash.new, :type => Types::CLASSIC}.merge(options)
+      @options = {:durable => false, :exclusive => false, :auto_delete => false, :passive => false, :arguments => Hash.new}.merge(options)
 
-      @type         = @options[:type].to_s
-      @durable      = @options[:durable]
+      args = @options[:arguments] || {}
+      @type         = @options.fetch(:type, args.fetch(XArgs::QUEUE_TYPE, Types::CLASSIC)).to_s
+      @durable      = if @type == Types::QUORUM or @type == Types::STREAM
+        true
+      else
+        @options[:durable]
+      end
+
       @exclusive    = @options[:exclusive]
       @server_named = @name.empty?
       @auto_delete  = @options[:auto_delete]
 
       @arguments        = if @type and !@type.empty? then
-        (@options[:arguments] || {}).merge({XArgs::QUEUE_TYPE => @type})
+        args = @options[:arguments] || {}
+        {XArgs::QUEUE_TYPE => @type}.merge(args)
       else
         @options[:arguments]
       end
