@@ -1,5 +1,5 @@
 # encoding: utf-8
 
 module MarchHare
-  VERSION = "4.8.0"
+  VERSION = "4.9.0-dev"
 end
