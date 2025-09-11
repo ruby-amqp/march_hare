@@ -1,6 +1,21 @@
-## Changes Between 4.7.0 and 4.8.0 (in development)
+## Changes Between 4.4.0 and 4.9.0 (in development)
 
 No changes yet.
+
+
+## Changes Between 4.7.0 and 4.8.0 (Sep 11, 2025)
+
+### `MarchHare::Channel#queue` Ignored `x-queue-type`
+
+When the [optional `x-queue-type` argument](https://www.rabbitmq.com/docs/queues#optional-arguments) was
+used, it ended up being ignored. This did not affect the dedicated `:type` option or
+a dedicated helper method, `MarchHare::Queue#quorum_queue`.
+
+GitHub issue: [#165](https://github.com/ruby-amqp/march_hare/pull/165).
+
+### RabbitMQ Java Client Upgrade
+
+RabbitMQ Java client dependency has been updated to a `5.26.x` release.
 
 
 ## Changes Between 4.6.0 and 4.7.0 (Mar 23, 2025)
