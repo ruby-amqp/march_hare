@@ -20,10 +20,37 @@ module MarchHare
       CLASSIC = "classic"
       STREAM  = "stream"
 
+      # Not a queue type of its own: omits the x-queue-type argument so that the
+      # node applies its default queue type. Never transmitted.
+      #
+      # @see https://www.rabbitmq.com/docs/vhosts#default-queue-type
+      BROKER_DEFAULT = "broker_default"
+
       KNOWN = [CLASSIC, QUORUM, STREAM]
 
       def self.known?(q_type)
         KNOWN.include?(q_type)
+      end
+
+      # @return [Boolean] true if q_type defers the queue type to the node's default
+      def self.broker_default?(q_type)
+        s = q_type.to_s
+        s.empty? || s == BROKER_DEFAULT
+      end
+
+      # @param [Boolean] allow_broker_default Accept BROKER_DEFAULT, for which nil is
+      #                                       returned: such queues are declared without
+      #                                       an x-queue-type argument
+      # @return [String, nil] the validated queue type
+      def self.validate!(q_type, allow_broker_default: false)
+        return nil if allow_broker_default and broker_default?(q_type)
+
+        s = q_type.to_s
+        return s if known?(s)
+
+        supported = KNOWN.join(', ')
+        supported += ", or #{BROKER_DEFAULT} to leave the type to the node's default queue type" if allow_broker_default
+        raise ArgumentError, "unsupported queue type #{q_type.inspect}, supported ones: #{supported}"
       end
     end
 
@@ -36,6 +63,9 @@ module MarchHare
     attr_reader :channel
     # @return [String] Queue name
     attr_reader :name
+    # @return [String, nil] Queue type this queue was declared with, or nil when the
+    #                       type was left to the node's default queue type
+    attr_reader :type
 
     # @param [MarchHare::Channel] channel_or_connection Channel this queue will use.
     # @param [String] name                          Queue name. Pass an empty string to make RabbitMQ generate a unique one.
@@ -45,8 +75,15 @@ module MarchHare
     # @option opts [Boolean] :auto_delete (false)  Should this queue be automatically deleted when the last consumer disconnects?
     # @option opts [Boolean] :exclusive (false)    Should this queue be exclusive (only can be used by this connection, removed when the connection is closed)?
     # @option opts [Boolean] :arguments ({})       Additional optional arguments (typically used by RabbitMQ extensions and plugins)
+    # @option opts [String, nil] :type ("classic") Queue type: "classic", "quorum", "stream", or
+    #                                              "broker_default" (also nil or "") to omit the
+    #                                              x-queue-type argument and leave the type to the node's
+    #                                              default queue type. Unlike "quorum" and "stream" it
+    #                                              does not imply durability, and it cannot be combined
+    #                                              with an x-queue-type argument.
     #
     # @see MarchHare::Channel#queue
+    # @see MarchHare::Queue::Types
     # @see http://rubymarchhare.info/articles/queues.html Queues and Consumers guide
     # @see http://rubymarchhare.info/articles/extensions.html RabbitMQ Extensions guide
     def initialize(channel, name, options={})
@@ -56,25 +93,19 @@ module MarchHare
       @name = name
       @options = {:durable => false, :exclusive => false, :auto_delete => false, :passive => false, :arguments => Hash.new}.merge(options)
 
-      args = @options[:arguments] || {}
-      @type         = @options.fetch(:type, args.fetch(XArgs::QUEUE_TYPE, Types::CLASSIC)).to_s
+      args          = @options[:arguments] || {}
+      # A nil type sends no x-queue-type, leaving the type to the node's default
+      @type         = resolve_type!(args)
       @durable      = if @type == Types::QUORUM or @type == Types::STREAM
         true
       else
         @options[:durable]
       end
+      @arguments    = compose_arguments(args)
 
       @exclusive    = @options[:exclusive]
       @server_named = @name.empty?
       @auto_delete  = @options[:auto_delete]
-
-      @arguments        = if @type and !@type.empty? then
-        args = @options[:arguments] || {}
-        {XArgs::QUEUE_TYPE => @type}.merge(args)
-      else
-        @options[:arguments]
-      end
-      verify_type!(@arguments)
 
       @bindings     = Set.new
     end
@@ -258,16 +289,54 @@ module MarchHare
     # Implementation
     #
 
-    def self.verify_type!(args0 = {})
+    # Reads the x-queue-type argument, which callers can key by string or symbol.
+    #
+    # @return [String, nil] the queue type in an x-argument map, if any
+    def self.type_argument(args0 = {})
       # be extra defensive
       args = args0 || {}
-      q_type = args["x-queue-type"] || args[:"x-queue-type"]
-      throw ArgumentError.new(
-        "unsupported queue type #{q_type.inspect}, supported ones: #{Types::KNOWN.join(', ')}") if (q_type and !Types.known?(q_type))
+      args[XArgs::QUEUE_TYPE] || args[:"x-queue-type"]
+    end
+
+    def self.verify_type!(args0 = {})
+      q_type = type_argument(args0)
+      Types.validate!(q_type) if q_type
     end
 
     def verify_type!(args)
       self.class.verify_type!(args)
+    end
+
+    # Resolves the queue type from the :type option and the x-queue-type argument.
+    # The option wins, except that its blank spellings defer to the argument.
+    #
+    # @return [String, nil] the queue type, or nil to leave it to the node's default
+    def resolve_type!(args)
+      arg_type  = self.class.type_argument(args)
+      # an x-queue-type argument goes on the wire whether or not :type overrides it
+      Types.validate!(arg_type) if arg_type
+      requested = @options.fetch(:type, arg_type || Types::CLASSIC)
+
+      if arg_type and Types.broker_default?(requested)
+        if requested.to_s == Types::BROKER_DEFAULT
+          raise ArgumentError, "cannot combine type: #{Types::BROKER_DEFAULT.inspect} with an " \
+                               "explicit #{XArgs::QUEUE_TYPE.inspect} argument (#{arg_type.inspect})"
+        end
+        # nil and "" are older spellings of BROKER_DEFAULT, but an explicit argument still wins
+        requested = arg_type
+      end
+
+      Types.validate!(requested, :allow_broker_default => true)
+    end
+
+    # @return [Hash] x-arguments to declare with, carrying the resolved queue type
+    def compose_arguments(args)
+      return args unless @type
+
+      merged = {XArgs::QUEUE_TYPE => @type}.merge(args)
+      # the symbol spelling, if any, was folded into the string-keyed entry above
+      merged.delete(:"x-queue-type")
+      merged
     end
 
     # @return [Boolean] true if this queue is a pre-defined one (amq.direct, amq.fanout, amq.match and so on)

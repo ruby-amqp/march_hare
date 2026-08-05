@@ -125,6 +125,49 @@ RSpec.describe "Queue" do
     end
   end
 
+  context "declared with the broker default queue type" do
+    # The resulting queue type depends on the virtual host's (or node's) default queue
+    # type, so these assert what the client sends rather than what it gets back.
+    it "does not send an x-queue-type argument" do
+      q = channel.queue("march_hare.dqt.#{rand}",
+                        durable: true,
+                        type: MarchHare::Queue::Types::BROKER_DEFAULT)
+      expect(q.arguments).not_to have_key("x-queue-type")
+      expect(q.type).to be_nil
+      q.delete
+    end
+
+    it "leaves durability to the caller" do
+      q = channel.queue("march_hare.dqt.#{rand}",
+                        type: MarchHare::Queue::Types::BROKER_DEFAULT)
+      expect(q).not_to be_durable
+      q.delete
+    end
+
+    it "can be declared via MarchHare::Channel#durable_queue" do
+      q = channel.durable_queue("march_hare.dqt.#{rand}",
+                                MarchHare::Queue::Types::BROKER_DEFAULT)
+      expect(q.arguments).not_to have_key("x-queue-type")
+      expect(q).to be_durable
+      q.delete
+    end
+
+    it "is named in the error raised for an unsupported type" do
+      expect do
+        channel.queue("march_hare.dqt.#{rand}", durable: true, type: "default")
+      end.to raise_error(ArgumentError, /broker_default/)
+    end
+
+    it "is rejected when combined with an explicit x-queue-type argument" do
+      expect do
+        channel.queue("march_hare.dqt.#{rand}",
+                      durable: true,
+                      type: MarchHare::Queue::Types::BROKER_DEFAULT,
+                      arguments: {"x-queue-type" => "quorum"})
+      end.to raise_error(ArgumentError)
+    end
+  end
+
   context "declared as stream" do
     it "is declared as durable and non-exclusive" do
       q = channel.stream("bunny.sq.1", arguments: {
