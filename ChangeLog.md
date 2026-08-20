@@ -1,6 +1,14 @@
 ## Changes Between 4.8.0 and 4.9.0 (in development)
 
-No changes yet.
+### RabbitMQ Java Client Upgrade
+
+RabbitMQ Java client dependency has been updated to `5.33.0`, which addresses
+[CVE-2026-63336](https://github.com/rabbitmq/rabbitmq-java-client/security/advisories/GHSA-5m9f-rphj-c435).
+
+As of this version, the RabbitMQ Java client depends on Netty for its transport
+layer implementation, so several Netty JARs are now bundled with March Hare as a result.
+
+GitHub issue: [#169](https://github.com/ruby-amqp/march_hare/issues/169).
 
 
 ## Changes Between 4.7.0 and 4.8.0 (Sep 11, 2025)

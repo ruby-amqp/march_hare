@@ -6,6 +6,14 @@ require 'java' unless defined?(TruffleRuby)
 require 'ext/slf4j-api'
 require 'ext/slf4j-simple'
 
+# Modern RabbitMQ Java client depends on Netty
+require 'ext/netty-common'
+require 'ext/netty-buffer'
+require 'ext/netty-resolver'
+require 'ext/netty-transport'
+require 'ext/netty-codec-base'
+require 'ext/netty-handler'
+
 require 'ext/rabbitmq-client'
 
 require 'march_hare/version'
