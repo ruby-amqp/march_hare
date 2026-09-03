@@ -17,7 +17,6 @@ jobs:
   test:
     name: RabbitMQ ${{ matrix.rabbitmq }}, ${{ matrix.ruby }}
     runs-on: ubuntu-latest
-    # jruby-head is informational: it must not fail the build
     continue-on-error: ${{ matrix.ruby == 'jruby-head' }}
 
     env:
@@ -45,8 +44,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Pin the JVM instead of inheriting whatever the runner image ships:
-      # a runner JDK older than the one JRuby was built with fails to load it
+      # A runner JDK older than the JRuby build cannot load it
       - name: Set up the JDK
         uses: actions/setup-java@v4
         with:

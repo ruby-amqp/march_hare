@@ -32,8 +32,7 @@ jobs:
         with:
           persist-credentials: false
 
-      # March Hare only ships a java platform gem but the gemspec hardcodes
-      # the platform, so the gem can be built and pushed from CRuby
+      # The gemspec hardcodes the java platform, so CRuby can build this gem
       - name: Set up Ruby
         uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
         with:
