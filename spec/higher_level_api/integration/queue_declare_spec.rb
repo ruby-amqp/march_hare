@@ -15,33 +15,33 @@ RSpec.describe "Queue" do
 
   context "with a server-generated name" do
     it "can be declared as auto-deleted" do
-      q = channel.queue("", :auto_delete => true)
+      q = channel.queue("", :auto_delete => true, :exclusive => true)
       expect(q).to be_auto_delete
       q.delete
     end
 
     it "can be declared as auto-deleted and non-durable" do
-      q = channel.queue("", :auto_delete => true, :durable => false)
+      q = channel.queue("", :auto_delete => true, :durable => false, :exclusive => true)
       expect(q).to be_auto_delete
       expect(q).not_to be_durable
       q.delete
     end
 
     it "can be declared as NON-auto-deleted" do
-      q = channel.queue("", :auto_delete => false)
+      q = channel.queue("", :auto_delete => false, :exclusive => true)
       expect(q).not_to be_auto_delete
       expect(q).not_to be_durable
       q.delete
     end
 
     it "can be declared as NON-durable" do
-      q = channel.queue("", :durable => false)
+      q = channel.queue("", :durable => false, :exclusive => true)
       expect(q).not_to be_durable
       q.delete
     end
 
     it "can be declared with additional attributes like x-message-ttle" do
-      q = channel.queue("", :durable => false, :arguments => { 'x-message-ttl' => 2000 })
+      q = channel.queue("", :durable => false, :exclusive => true, :arguments => { 'x-message-ttl' => 2000 })
       x = channel.exchange("", :type => :direct)
 
       100.times do |i|

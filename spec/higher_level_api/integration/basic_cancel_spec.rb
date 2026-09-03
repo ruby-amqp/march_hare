@@ -105,7 +105,7 @@ RSpec.describe 'A consumer' do
 
   context 'that is cancelled' do
     it 'will not raise errors when cancelled again' do
-      queue = connection.create_channel.queue('')
+      queue = connection.create_channel.queue('', :exclusive => true)
       consumer = queue.build_consumer(:block => true) { |headers, message| }
       thread = Thread.new do
         queue.subscribe_with(consumer, :block => true)

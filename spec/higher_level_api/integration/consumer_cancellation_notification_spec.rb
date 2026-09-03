@@ -14,7 +14,7 @@ RSpec.describe "Non-blocking consumer" do
 
     ch = connection.create_channel
     ch2 = connection.create_channel
-    q   = ch2.queue(queue_name, :auto_delete => true)
+    q   = ch2.queue(queue_name, :auto_delete => true, :durable => true)
 
     q.subscribe(:on_cancellation => Proc.new { |_ch, consumer| cancelled = true }) do |_, _|
       # no-op
@@ -25,7 +25,7 @@ RSpec.describe "Non-blocking consumer" do
     x.publish("abc", :routing_key => queue_name)
 
     sleep 0.5
-    ch.queue(queue_name, :auto_delete => true).delete
+    ch.queue(queue_name, :auto_delete => true, :durable => true).delete
 
     sleep 0.5
     expect(cancelled).to eq(true)

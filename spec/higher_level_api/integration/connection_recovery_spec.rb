@@ -189,7 +189,7 @@ RSpec.describe "Connection recovery" do
   it "recovers client-named queues" do
     with_open do |c|
       ch = c.create_channel
-      q  = ch.queue("bunny.tests.recovery.client-named#{rand}")
+      q  = ch.queue("bunny.tests.recovery.client-named#{rand}", durable: true)
       close_all_connections!
 
       wait_for_recovery

@@ -15,7 +15,7 @@ RSpec.describe "Queue" do
 
   context "that exists" do
     it "can be deleted" do
-      q    = channel.queue("")
+      q    = channel.queue("", :exclusive => true)
       q.delete
     end
   end
@@ -23,7 +23,7 @@ RSpec.describe "Queue" do
   context "that DOES NOT exist" do
     it "raises NO exception (as of RabbitMQ 3.2)" do
       ch = connection.create_channel
-      q  = ch.queue("")
+      q  = ch.queue("", :exclusive => true)
 
       q.delete(true, true)
       # No exception as of RabbitMQ 3.2. MK.

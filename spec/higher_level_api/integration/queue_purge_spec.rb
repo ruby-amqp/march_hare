@@ -19,7 +19,7 @@ RSpec.describe "Any queue" do
 
   it "can be purged" do
     exchange = channel.exchange("amq.fanout", :type => :fanout, :durable => true, :auto_delete => false)
-    queue    = channel.queue("", :auto_delete => true)
+    queue    = channel.queue("", :auto_delete => true, :exclusive => true)
     exchange.publish("")
     expect(queue.get).to be_nil
     queue.purge
