@@ -45,6 +45,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Pin the JVM instead of inheriting whatever the runner image ships:
+      # a runner JDK older than the one JRuby was built with fails to load it
+      - name: Set up the JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
       - name: Set up ${{ matrix.ruby }}
         uses: ruby/setup-ruby@v1
         with:
