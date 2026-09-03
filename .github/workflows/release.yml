@@ -1,0 +1,61 @@
+name: Push gem
+
+on:
+  push:
+    tags:
+      - "v[0-9]*"
+
+permissions:
+  contents: read
+
+jobs:
+  push:
+    name: Push March Hare to RubyGems.org
+    # Tags pushed in a fork must not attempt a release
+    if: github.repository == 'ruby-amqp/march_hare'
+    runs-on: ubuntu-latest
+
+    concurrency:
+      group: push-gem
+      cancel-in-progress: false
+
+    environment:
+      name: release
+      url: https://rubygems.org/gems/march_hare
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # March Hare only ships a java platform gem but the gemspec hardcodes
+      # the platform, so the gem can be built and pushed from CRuby
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
+        with:
+          ruby-version: "4.0"
+
+      - name: Verify the tag matches MarchHare::VERSION
+        env:
+          TAG: ${{ github.ref_name }}
+        run: test "$TAG" = "v$(ruby -Ilib -rmarch_hare/version -e 'print MarchHare::VERSION')"
+
+      - name: Configure trusted publishing credentials
+        uses: rubygems/configure-rubygems-credentials@dc5a8d8553e6ee01fc26761a49e99e733d17954a # v2.1.0
+
+      - name: Build the gem
+        env:
+          TAG: ${{ github.ref_name }}
+        run: gem build march_hare.gemspec --output "march_hare-${TAG#v}-java.gem"
+
+      - name: Push to RubyGems.org
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          GEM="march_hare-${TAG#v}-java.gem"
+          gem exec sigstore-cli:0.2.3 sign "$GEM" --bundle "${GEM}.sigstore.json"
+          gem push --attestation "${GEM}.sigstore.json" "$GEM"

@@ -1,23 +1,31 @@
 name: CI
 
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
-    branches: [main]
-    paths:
-      - ".github/workflows/*"
-      - "lib/**"
-      - "spec/**"
-      - "Gemfile"
+    branches:
+      - "main"
   pull_request:
-    branches: [main]
+    branches:
+      - "main"
+  workflow_dispatch:
 
 jobs:
   test:
+    name: RabbitMQ ${{ matrix.rabbitmq }}, ${{ matrix.ruby }}
     runs-on: ubuntu-latest
+    # jruby-head is informational: it must not fail the build
+    continue-on-error: ${{ matrix.ruby == 'jruby-head' }}
+
+    env:
+      CI: true
 
     services:
       rabbitmq:
-        image: rabbitmq:4-management
+        image: rabbitmq:${{ matrix.rabbitmq }}-management
         ports:
           - 5672:5672
           - 15672:15672
@@ -26,21 +34,38 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby-version:
-          - jruby-9.3
+        ruby:
+          - jruby-10.1
           - jruby-9.4
           - jruby-head
+        rabbitmq:
+          - "4.3"
+          - "4.2"
 
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Ruby
+      - uses: actions/checkout@v4
+
+      - name: Set up ${{ matrix.ruby }}
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: ${{ matrix.ruby-version }}
-          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+
+      - name: Wait for RabbitMQ to start
+        run: until sudo lsof -i:5672; do echo "Waiting for RabbitMQ to start..."; sleep 1; done
+
       - name: Set up RabbitMQ
-        run: |
-          until sudo lsof -i:5672; do echo "Waiting for RabbitMQ to start..."; sleep 1; done
-          ./bin/ci/before_build_docker.sh
+        run: ./bin/ci/before_build_docker.sh
+
       - name: Run tests
         run: bundle exec rspec spec
+
+  test_all:
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    name: Test (matrix)
+    needs: [test]
+    steps:
+      - name: Check test matrix status
+        if: ${{ needs.test.result != 'success' }}
+        run: exit 1
