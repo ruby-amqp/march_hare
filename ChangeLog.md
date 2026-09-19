@@ -1,4 +1,4 @@
-## Changes Between 4.8.0 and 4.9.0 (in development)
+## Changes Between 4.8.0 and 4.9.0 (Sep 18, 2026)
 
 ### RabbitMQ Java Client Upgrade
 
