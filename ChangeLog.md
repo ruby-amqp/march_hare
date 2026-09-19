@@ -2,7 +2,7 @@
 
 ### RabbitMQ Java Client Upgrade
 
-RabbitMQ Java client dependency has been updated to `5.33.0`, which addresses
+RabbitMQ Java client dependency has been updated to `5.36.0`, which addresses
 [CVE-2026-63336](https://github.com/rabbitmq/rabbitmq-java-client/security/advisories/GHSA-5m9f-rphj-c435).
 
 As of this version, the RabbitMQ Java client depends on Netty for its transport
