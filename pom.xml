@@ -12,7 +12,7 @@
     namespace, so that other JRuby gems shipping their own Netty version do not conflict.</description>
 
   <!--
-    Run `mvn package` to regenerate lib/ext/march-hare-all.jar after bumping dependency versions.
+    Run `mvn package` to regenerate lib/ext/rabbitmq-client-netty-shaded.jar after bumping dependency versions.
     The output JAR is committed to git so gem consumers do not need Maven.
   -->
 
