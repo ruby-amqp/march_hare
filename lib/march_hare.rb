@@ -6,15 +6,11 @@ require 'java' unless defined?(TruffleRuby)
 require 'ext/slf4j-api'
 require 'ext/slf4j-simple'
 
-# Modern RabbitMQ Java client depends on Netty
-require 'ext/netty-common'
-require 'ext/netty-buffer'
-require 'ext/netty-resolver'
-require 'ext/netty-transport'
-require 'ext/netty-codec-base'
-require 'ext/netty-handler'
-
-require 'ext/rabbitmq-client'
+# Single shaded JAR bundling the RabbitMQ Java client together with all Netty
+# dependencies.  Netty classes are relocated from io.netty.* to
+# com.rabbitmq.marchhare.shaded.netty.* so they cannot conflict with other gems
+# (e.g. Logstash plugins) that bundle a different Netty version on the same JVM.
+require 'ext/rabbitmq-client-netty-shaded'
 
 require 'march_hare/version'
 require 'march_hare/exceptions'

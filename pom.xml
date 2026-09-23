@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.rabbitmq</groupId>
+  <artifactId>march-hare-shaded</artifactId>
+  <version>1.0.0</version>
+  <packaging>jar</packaging>
+  <description>Shaded JAR bundling the RabbitMQ Java client with Netty relocated to a private
+    namespace, so that other JRuby gems shipping their own Netty version do not conflict.</description>
+
+  <!--
+    Run `mvn package` to regenerate lib/ext/march-hare-all.jar after bumping dependency versions.
+    The output JAR is committed to git so gem consumers do not need Maven.
+  -->
+
+  <dependencies>
+    <dependency>
+      <groupId>com.rabbitmq</groupId>
+      <artifactId>amqp-client</artifactId>
+      <!-- Keep in sync with ChangeLog.md / version bump commits -->
+      <version>5.36.0</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.6.0</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <createDependencyReducedPom>false</createDependencyReducedPom>
+              <!-- Write directly into lib/ext so the gemspec git ls-files picks it up -->
+              <outputFile>${project.basedir}/lib/ext/rabbitmq-client-netty-shaded.jar</outputFile>
+
+              <relocations>
+                <!--
+                  Relocate every io.netty class to a private package so that other gems
+                  bundling a different Netty version do not clash with ours.
+                  The RabbitMQ client's internal references are rewritten automatically.
+                -->
+                <relocation>
+                  <pattern>io.netty</pattern>
+                  <shadedPattern>com.rabbitmq.marchhare.shaded.netty</shadedPattern>
+                </relocation>
+              </relocations>
+
+              <transformers>
+                <!-- Merge META-INF/services/* entries from all shaded JARs -->
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer"/>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer"/>
+              </transformers>
+
+              <filters>
+                <!--
+                  SLF4J API is kept as a separate JAR (lib/ext/slf4j-api.jar) so that
+                  the RabbitMQ client's log output flows through whatever SLF4J backend
+                  the user's application configures.  Including it in the shaded JAR
+                  would isolate logging and prevent users from routing it to Logback, etc.
+                -->
+                <filter>
+                  <artifact>org.slf4j:*</artifact>
+                  <excludes>
+                    <exclude>**</exclude>
+                  </excludes>
+                </filter>
+
+                <!-- Strip JAR signatures, per-artifact manifests, and Maven metadata -->
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/MANIFEST.MF</exclude>
+                    <exclude>META-INF/maven/**</exclude>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
