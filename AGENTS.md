@@ -11,8 +11,10 @@ The Java client and its dependencies are bundled as a single shaded JAR under `l
 `lib/ext/rabbitmq-client-netty-shaded.jar` is a shaded uber-JAR, produced by `mvn package`
 via the Maven Shade plugin (see `pom.xml`). It bundles the RabbitMQ Java client with all
 Netty modules. Netty classes are relocated from `io.netty.*` to
-`com.rabbitmq.marchhare.shaded.netty.*`, so another JRuby gem's own Netty version
+`com.rabbitmq.marchhare.shaded.io.netty.*`, so another JRuby gem's own Netty version
 (Logstash plugins, for example) cannot conflict with March Hare's.
+Keep `io.netty` in the relocated package name: Netty's native library loader only
+supports adding a prefix to the original package.
 
 The SLF4J JARs (`slf4j-api.jar` and `slf4j-simple.jar`) are not shaded and stay separate,
 so the RabbitMQ client's logging goes through whatever SLF4J backend the application uses.

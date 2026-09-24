@@ -47,10 +47,13 @@
                   Relocate every io.netty class to a private package so that other gems
                   bundling a different Netty version do not clash with ours.
                   The RabbitMQ client's internal references are rewritten automatically.
+                  Keep the original io.netty package intact: Netty's native library
+                  loader supports prepending a namespace, but not replacing the
+                  original package.
                 -->
                 <relocation>
                   <pattern>io.netty</pattern>
-                  <shadedPattern>com.rabbitmq.marchhare.shaded.netty</shadedPattern>
+                  <shadedPattern>com.rabbitmq.marchhare.shaded.io.netty</shadedPattern>
                 </relocation>
               </relocations>
 
