@@ -4,7 +4,26 @@
 
 This is March Hare, a JRuby AMQP 0-9-1 client for RabbitMQ built on top of the
 [RabbitMQ Java client](https://github.com/rabbitmq/rabbitmq-java-client).
-The Java client and its dependencies are bundled as JARs under `lib/ext`.
+The Java client and its dependencies are bundled as a single shaded JAR under `lib/ext`.
+
+### Bundled JARs and the Maven Shade Build
+
+`lib/ext/rabbitmq-client-netty-shaded.jar` is a shaded uber-JAR, produced by `mvn package`
+via the Maven Shade plugin (see `pom.xml`). It bundles the RabbitMQ Java client with all
+Netty modules. Netty classes are relocated from `io.netty.*` to
+`com.rabbitmq.marchhare.shaded.netty.*`, so another JRuby gem's own Netty version
+(Logstash plugins, for example) cannot conflict with March Hare's.
+
+The SLF4J JARs (`slf4j-api.jar` and `slf4j-simple.jar`) are not shaded and stay separate,
+so the RabbitMQ client's logging goes through whatever SLF4J backend the application uses.
+
+To bump the RabbitMQ client or Netty version:
+
+ 1. Edit the `com.rabbitmq:amqp-client` version in `pom.xml` (Netty comes in transitively)
+ 2. Run `mvn package` (or `rake jars:build`) to rebuild `lib/ext/rabbitmq-client-netty-shaded.jar`
+ 3. If SLF4J changed too, grab the matching `slf4j-api` and `slf4j-simple` JARs from Maven Central
+    and replace them under `lib/ext`
+ 4. Commit `lib/ext` changes together with `pom.xml`
 
 ## Change Log
 

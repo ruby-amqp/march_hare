@@ -11,3 +11,4 @@ deploy.docs.sh
 .ruby-version
 .idea
 spec/examples.txt
+target/
