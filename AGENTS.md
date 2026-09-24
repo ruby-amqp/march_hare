@@ -6,26 +6,24 @@ This is March Hare, a JRuby AMQP 0-9-1 client for RabbitMQ built on top of the
 [RabbitMQ Java client](https://github.com/rabbitmq/rabbitmq-java-client).
 The Java client and its dependencies are bundled as a single shaded JAR under `lib/ext`.
 
-### Bundled JARs and the Maven shade build
+### Bundled JARs and the Maven Shade Build
 
-`lib/ext/rabbitmq-client-netty-shaded.jar` is a shaded uber-JAR produced by `mvn package` using the
-Maven Shade plugin (see `pom.xml`).  It contains the RabbitMQ Java client together with
-all Netty modules.  All Netty classes are relocated from `io.netty.*` to
-`com.rabbitmq.marchhare.shaded.netty.*` so that other JRuby gems bundling a different
-Netty version on the same JVM (e.g. Logstash plugins) cannot conflict with march_hare's
-own Netty.
+`lib/ext/rabbitmq-client-netty-shaded.jar` is a shaded uber-JAR, produced by `mvn package`
+via the Maven Shade plugin (see `pom.xml`). It bundles the RabbitMQ Java client with all
+Netty modules. Netty classes are relocated from `io.netty.*` to
+`com.rabbitmq.marchhare.shaded.netty.*`, so another JRuby gem's own Netty version
+(Logstash plugins, for example) cannot conflict with March Hare's.
 
-The SLF4J JARs (`slf4j-api.jar`, `slf4j-simple.jar`) are kept as separate files and are
-**not** shaded — this lets the RabbitMQ client's log output flow through whatever SLF4J
-backend the user's application configures.
+The SLF4J JARs (`slf4j-api.jar` and `slf4j-simple.jar`) are not shaded and stay separate,
+so the RabbitMQ client's logging goes through whatever SLF4J backend the application uses.
 
-**To update the RabbitMQ client or Netty version:**
- 1. Edit the `<version>` of `com.rabbitmq:amqp-client` in `pom.xml` (Netty is pulled in
-    transitively at whatever version the client requires)
- 2. Run `mvn package` (or `rake jars:build`) — this writes the new JAR to `lib/ext/rabbitmq-client-netty-shaded.jar`
- 3. Download the matching `slf4j-api` and `slf4j-simple` JARs from Maven Central if the
-    SLF4J version changed, and replace the files in `lib/ext/`
- 4. Commit all changed files under `lib/ext/` together with `pom.xml`
+To bump the RabbitMQ client or Netty version:
+
+ 1. Edit the `com.rabbitmq:amqp-client` version in `pom.xml` (Netty comes in transitively)
+ 2. Run `mvn package` (or `rake jars:build`) to rebuild `lib/ext/rabbitmq-client-netty-shaded.jar`
+ 3. If SLF4J changed too, grab the matching `slf4j-api` and `slf4j-simple` JARs from Maven Central
+    and replace them under `lib/ext`
+ 4. Commit `lib/ext` changes together with `pom.xml`
 
 ## Change Log
 
