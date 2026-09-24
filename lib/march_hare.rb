@@ -8,7 +8,7 @@ require 'ext/slf4j-simple'
 
 # Single shaded JAR bundling the RabbitMQ Java client together with all Netty
 # dependencies.  Netty classes are relocated from io.netty.* to
-# com.rabbitmq.marchhare.shaded.netty.* so they cannot conflict with other gems
+# com.rabbitmq.marchhare.shaded.io.netty.* so they cannot conflict with other gems
 # (e.g. Logstash plugins) that bundle a different Netty version on the same JVM.
 require 'ext/rabbitmq-client-netty-shaded'
 
