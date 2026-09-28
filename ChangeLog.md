@@ -1,6 +1,12 @@
-## Changes Between 4.9.0 and 4.10.0 (in development)
+## Changes Between 4.9.0 and 4.10.0 (Sep 28, 2026)
 
-No changes yet.
+### ### RabbitMQ Java Client Dependdency Conflicts
+
+Netty, a modern RabbitMQ Java client dependency, is now shipped as [shaded JARs](https://maven.apache.org/plugins/maven-shade-plugin/),
+that is, repackaged to use a unique package name, `com.rabbitmq.marchhare.shaded.io.netty`, to avoid conflicts.
+with Netty packages used by the application.
+
+GitHub issues: [#171](https://github.com/ruby-amqp/march_hare/pull/171), [#172](https://github.com/ruby-amqp/march_hare/pull/172).
 
 
 ## Changes Between 4.8.0 and 4.9.0 (Sep 18, 2026)
