@@ -21,7 +21,7 @@
       <groupId>com.rabbitmq</groupId>
       <artifactId>amqp-client</artifactId>
       <!-- Keep in sync with ChangeLog.md / version bump commits -->
-      <version>5.36.0</version>
+      <version>5.37.0</version>
     </dependency>
   </dependencies>
 
